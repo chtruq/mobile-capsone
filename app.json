@@ -2,10 +2,10 @@
   "expo": {
     "name": "mobilecapstone",
     "slug": "mobilecapstone",
+    "scheme": "mobilecapstone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -31,6 +31,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "98f10742-70f2-4d4e-a4b9-f61f0203e89b"
+      }
+    },
+    "owner": "chtruq"
   }
 }
