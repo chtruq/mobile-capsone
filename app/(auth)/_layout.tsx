@@ -8,7 +8,7 @@ const AuthLayout = () => {
       <Stack.Screen
         name="signin"
         options={{
-          headerTitle: "Sign In",
+          headerTitle: "Đăng nhập",
           headerTitleStyle: { fontSize: 24 },
           headerShown: false,
         }}
@@ -16,9 +16,25 @@ const AuthLayout = () => {
       <Stack.Screen
         name="signup"
         options={{
-          headerTitle: "Sign Up",
+          headerTitle: "Tạo tài khoản",
+          headerTitleAlign: "center",
           headerTitleStyle: { fontSize: 24 },
-          headerShown: false,
+          headerBlurEffect: "light",
+          headerBackTitle: "Trở về",
+          // headerBackTitleVisible: false,
+          headerBackTitleStyle: { fontSize: 16 },
+        }}
+      />
+      <Stack.Screen
+        name="otp"
+        options={{
+          headerTitle: "Xác thực OTP",
+          headerTitleAlign: "center",
+          headerTitleStyle: { fontSize: 24 },
+          headerBlurEffect: "light",
+          headerBackTitle: "Trở về",
+          // headerBackTitleVisible: false,
+          headerBackTitleStyle: { fontSize: 16 },
         }}
       />
     </Stack>

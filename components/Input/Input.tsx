@@ -10,11 +10,13 @@ import {
   StyleProp,
   TextStyle,
   ImageSourcePropType,
+  useColorScheme,
 } from "react-native";
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
+import { Colors } from "@/constants/Colors";
 
 interface InputProps {
   placeholder?: string;
@@ -37,6 +39,13 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const [showPassword, setShowPassword] = React.useState(false);
+  const colorScheme = useColorScheme();
+  const backgroundColor =
+    colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
+  const textColor =
+    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
+  const border =
+    colorScheme === "dark" ? Colors.dark.border : Colors.light.border;
 
   return (
     <ThemedView
@@ -44,8 +53,10 @@ const Input: React.FC<InputProps> = ({
         width: "95%",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#F5F4F8",
+        backgroundColor: backgroundColor,
         borderRadius: 10,
+        borderColor: border,
+        borderWidth: 1,
       }}
     >
       {/* <ThemedText>{fieldName}</ThemedText> */}
@@ -56,7 +67,8 @@ const Input: React.FC<InputProps> = ({
           paddingVertical: 10,
           marginVertical: 10,
           borderRadius: 10,
-          backgroundColor: "#F5F4F8",
+          backgroundColor: backgroundColor,
+          borderColor: border,
           marginHorizontal: 10,
         }}
       >
@@ -72,7 +84,7 @@ const Input: React.FC<InputProps> = ({
               flex: 1,
               padding: 10,
               fontSize: 16,
-              color: "#333",
+              color: textColor,
             },
             inputStyle,
           ]}
