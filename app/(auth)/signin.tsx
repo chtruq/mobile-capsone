@@ -8,6 +8,7 @@ import {
   Keyboard,
   Platform,
   TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import React from "react";
 import { ThemedText } from "@/components/ThemedText";
@@ -15,7 +16,13 @@ import { ThemedView } from "@/components/ThemedView";
 import Input from "@/components/Input/Input";
 import Feather from "@expo/vector-icons/Feather";
 import ThemedButton from "@/components/ThemedButton";
+import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
 const signin = () => {
+  const colorScheme = useColorScheme();
+  const backgroundColor =
+    colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
+
   return (
     <ThemedView
       style={{
@@ -65,12 +72,24 @@ const signin = () => {
             }}
           >
             <Input
-              icon={<Feather name="mail" size={24} color="black" />}
+              icon={
+                <Feather
+                  name="mail"
+                  size={24}
+                  color={colorScheme === "dark" ? "white" : "black"}
+                />
+              }
               placeholder="Email"
               fieldName="Email"
             />
             <Input
-              icon={<Feather name="lock" size={24} color="black" />}
+              icon={
+                <Feather
+                  name="lock"
+                  size={24}
+                  color={colorScheme === "dark" ? "white" : "black"}
+                />
+              }
               placeholder="Password"
               fieldName="Password"
               hidePassword
@@ -101,7 +120,7 @@ const signin = () => {
               alignItems: "center",
             }}
           >
-            <ThemedButton />
+            <ThemedButton title="Đăng nhập" />
           </ThemedView>
           <ThemedView
             style={{
@@ -188,7 +207,12 @@ const signin = () => {
             }}
           >
             <ThemedText>Chưa có tài khoản? </ThemedText>
-            <TouchableOpacity onPress={() => console.log("Sign up")}>
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/signup");
+                console.log("Sign up");
+              }}
+            >
               <ThemedText type="link">Đăng kí</ThemedText>
             </TouchableOpacity>
           </ThemedView>

@@ -1,13 +1,28 @@
 import { View, Text, TouchableOpacity, useColorScheme } from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
+import { Href, router } from "expo-router";
 
-const ThemedButton = () => {
+interface ThemedButtonProps {
+  title: string;
+  link?: Href<string | object>;
+}
+
+const ThemedButton: React.FC<ThemedButtonProps> = ({ title, link }) => {
   const colorScheme = useColorScheme();
   const backgroundColor =
-    colorScheme === "dark" ? Colors.dark.background : Colors.light.button;
+    colorScheme === "dark" ? Colors.dark.button : Colors.light.button;
   const textColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.lightText;
+    colorScheme === "dark" ? Colors.dark.darkText : Colors.light.lightText;
+
+  const hanldePress = () => {
+    if (typeof link === "string" || typeof link === "object") {
+      router.push(link);
+    } else {
+      console.log("No link");
+    }
+  };
+
   return (
     <TouchableOpacity
       style={{
@@ -21,6 +36,7 @@ const ThemedButton = () => {
         borderRadius: 10,
         marginVertical: 10,
       }}
+      onPress={hanldePress}
     >
       <Text
         style={{
@@ -29,7 +45,7 @@ const ThemedButton = () => {
           lineHeight: 24,
         }}
       >
-        Đăng nhập
+        {title}
       </Text>
     </TouchableOpacity>
   );
