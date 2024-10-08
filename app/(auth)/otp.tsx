@@ -11,7 +11,7 @@ const otp = () => {
         alignItems: "center",
       }}
     >
-      <Text>otp</Text>
+      <Text>otpp</Text>
     </ThemedView>
   );
 };
