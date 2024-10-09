@@ -18,7 +18,7 @@ import Feather from "@expo/vector-icons/Feather";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-const signin = () => {
+const index = () => {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
@@ -222,7 +222,7 @@ const signin = () => {
   );
 };
 
-export default signin;
+export default index;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
