@@ -15,6 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import Input from "@/components/Input/Input";
 import Feather from "@expo/vector-icons/Feather";
 import ThemedButton from "@/components/ThemedButton";
+import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 
 const signup = () => {
   const colorScheme = useColorScheme();
@@ -107,10 +108,11 @@ const signup = () => {
                 alignItems: "center",
                 marginTop: 20,
               }}
-            >
-              <ThemedButton title="Đăng kí" link={"/"} />
-            </ThemedView>
+            ></ThemedView>
           </ThemedView>
+          <ThemedBottomBtn>
+            <ThemedButton title="Đăng kí" link={"/(auth)/otp"} />
+          </ThemedBottomBtn>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </ThemedView>

@@ -6,13 +6,19 @@ const AuthLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="signin"
+        name="index"
         options={{
-          headerTitle: "Đăng nhập",
-          headerTitleStyle: { fontSize: 24 },
           headerShown: false,
+          headerTitle: "Đăng nhập",
+          headerTitleAlign: "center",
+          headerTitleStyle: { fontSize: 24 },
+          headerBlurEffect: "light",
+          headerBackTitle: "Trở về",
+          // headerBackTitleVisible: false,
+          headerBackTitleStyle: { fontSize: 16 },
         }}
       />
+
       <Stack.Screen
         name="signup"
         options={{
