@@ -14,8 +14,6 @@ const ThemedViewSHKeyboard = (props: React.PropsWithChildren<{}>) => {
     <ThemedView
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

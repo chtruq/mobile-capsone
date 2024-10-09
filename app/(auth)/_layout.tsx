@@ -14,7 +14,6 @@ const AuthLayout = () => {
           headerTitleStyle: { fontSize: 24 },
           headerBlurEffect: "light",
           headerBackTitle: "Trở về",
-          // headerBackTitleVisible: false,
           headerBackTitleStyle: { fontSize: 16 },
         }}
       />
