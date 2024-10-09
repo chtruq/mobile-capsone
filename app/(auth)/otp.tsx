@@ -82,7 +82,7 @@ const otp = () => {
         </ThemedView>
       </ThemedView>
       <ThemedBottomBtn>
-        <ThemedButton title="Xác nhậnn" />
+        <ThemedButton title="Xác nhậnn" link={"/(accountsetup)"} />
       </ThemedBottomBtn>
     </ThemedViewSHKeyboard>
   );
