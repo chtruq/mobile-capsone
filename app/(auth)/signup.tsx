@@ -16,8 +16,9 @@ import Input from "@/components/Input/Input";
 import Feather from "@expo/vector-icons/Feather";
 import ThemedButton from "@/components/ThemedButton";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
+import { router } from "expo-router";
 
-const signup = () => {
+export default function signup() {
   const colorScheme = useColorScheme();
 
   return (
@@ -111,15 +112,18 @@ const signup = () => {
             ></ThemedView>
           </ThemedView>
           <ThemedBottomBtn>
-            <ThemedButton title="Đăng kí" link={"/(auth)/otp"} />
+            <ThemedButton
+              title="Đăng ký"
+              handlePress={() => {
+                router.push("/(auth)/otp");
+              }}
+            />
           </ThemedBottomBtn>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </ThemedView>
   );
-};
-
-export default signup;
+}
 
 const styles = StyleSheet.create({
   container: {

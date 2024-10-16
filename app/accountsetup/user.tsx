@@ -21,7 +21,9 @@ import Input from "@/components/Input/Input";
 import Feather from "@expo/vector-icons/Feather";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 import ThemedButton from "@/components/ThemedButton";
-const user = () => {
+import { router } from "expo-router";
+import SuccessModal from "@/components/AccoutSetting/SuccessModal";
+export default function user() {
   const [image, setImage] = useState<string | null>(null);
   const colorScheme = useColorScheme();
 
@@ -174,13 +176,12 @@ const user = () => {
         </ThemedView>
       </ThemedViewSHKeyboard>
       <ThemedBottomBtn>
-        <ThemedButton title="Hoàn tất" link={"/(accountsetup)/success-modal"} />
+        <ThemedButton title="Hoàn tất" handlePress={() => {}} />
       </ThemedBottomBtn>
     </ThemedView>
   );
-};
+}
 
-export default user;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

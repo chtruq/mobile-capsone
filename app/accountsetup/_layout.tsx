@@ -6,15 +6,6 @@ const AcouuntSetupLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="user"
-        options={{
-          headerTitle: "Thiết lập tài khoản",
-          headerTitleAlign: "center",
-          headerBackTitle: "Trở về",
-          headerBackTitleStyle: { fontSize: 16 },
-        }}
-      />
-      <Stack.Screen
         name="index"
         options={{
           headerShown: true,
@@ -25,12 +16,21 @@ const AcouuntSetupLayout = () => {
           headerBackTitleStyle: { fontSize: 16 },
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="success-modal"
         options={{
           presentation: "transparentModal",
           animation: "fade",
           headerShown: false,
+        }}
+      /> */}
+      <Stack.Screen
+        name="user"
+        options={{
+          headerTitle: "Thiết lập tài khoản",
+          headerTitleAlign: "center",
+          headerBackTitle: "Trở về",
+          headerBackTitleStyle: { fontSize: 16 },
         }}
       />
     </Stack>

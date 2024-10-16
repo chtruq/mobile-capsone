@@ -1,26 +1,37 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Animated, { FadeIn, SlideInDown } from "react-native-reanimated";
-import { Link } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 import ThemedButton from "@/components/ThemedButton";
 import { ThemedView } from "@/components/ThemedView";
-const successModal = () => {
+
+interface SuccessModalProps {
+  state: boolean;
+}
+
+const SuccessModal: React.FC<SuccessModalProps> = ({ state }) => {
+  const [modalVisible, setModalVisible] = useState(state); // Control modal visibility
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  if (!modalVisible) return null;
   return (
     <Animated.View
       entering={FadeIn}
       style={{
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-end",
         alignItems: "center",
+        width: "100%",
         backgroundColor: "#00000040",
       }}
     >
       {/* Dismiss modal when pressing outside */}
-      <Link href={"/"} asChild>
-        <Pressable style={StyleSheet.absoluteFill} />
-      </Link>
+
       <Animated.View
         entering={SlideInDown}
         style={{
@@ -64,11 +75,17 @@ const successModal = () => {
         </ThemedText>
         <ThemedText>Chúc bạn có trải nghiệp thật tuyệt với app </ThemedText>
         <ThemedBottomBtn>
-          <ThemedButton title="Xong" />
+          <ThemedButton
+            title="Xong"
+            handlePress={() => {
+              router.push("/(tabs)");
+              handleCloseModal();
+            }}
+          />
         </ThemedBottomBtn>
       </Animated.View>
     </Animated.View>
   );
 };
 
-export default successModal;
+export default SuccessModal;

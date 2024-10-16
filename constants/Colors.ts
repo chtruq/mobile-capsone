@@ -18,6 +18,8 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     button: "#EECE80",
     border: "#ECEDEE",
+    primary: "#EECE80",
+    textPrice: "#C48C37",
   },
   dark: {
     darkText: "#745E4C",
@@ -30,5 +32,6 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     button: "#EECE80",
     border: "#ECEDEE",
+    textPrice: "#C48C37",
   },
 };

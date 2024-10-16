@@ -8,8 +8,9 @@ import ThemedViewSHKeyboard from "@/components/ThemedViewSHKeyboard";
 import OtpTimer from "@/components/OtpTimer";
 import ThemedButton from "@/components/ThemedButton";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
+import { router } from "expo-router";
 
-const otp = () => {
+export default function Otp() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.button : Colors.light.button;
@@ -82,10 +83,13 @@ const otp = () => {
         </ThemedView>
       </ThemedView>
       <ThemedBottomBtn>
-        <ThemedButton title="Xác nhậnn" link={"/(accountsetup)"} />
+        <ThemedButton
+          title="Xác nhận"
+          handlePress={() => {
+            router.push("/accountsetup");
+          }}
+        />
       </ThemedBottomBtn>
     </ThemedViewSHKeyboard>
   );
-};
-
-export default otp;
+}

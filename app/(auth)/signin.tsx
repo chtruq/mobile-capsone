@@ -18,7 +18,7 @@ import Feather from "@expo/vector-icons/Feather";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-const index = () => {
+export default function signin() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
@@ -220,9 +220,8 @@ const index = () => {
       </TouchableWithoutFeedback>
     </ThemedView>
   );
-};
+}
 
-export default index;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

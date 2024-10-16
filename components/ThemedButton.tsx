@@ -6,22 +6,27 @@ import { Href, router } from "expo-router";
 interface ThemedButtonProps {
   title: string;
   link?: Href<string | object>;
+  handlePress?: () => void;
 }
 
-const ThemedButton: React.FC<ThemedButtonProps> = ({ title, link }) => {
+const ThemedButton: React.FC<ThemedButtonProps> = ({
+  title,
+  link,
+  handlePress,
+}) => {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.button : Colors.light.button;
   const textColor =
     colorScheme === "dark" ? Colors.dark.darkText : Colors.light.lightText;
 
-  const hanldePress = () => {
-    if (typeof link === "string" || typeof link === "object") {
-      router.push(link);
-    } else {
-      console.log("No link");
-    }
-  };
+  // const hanldePress = () => {
+  //   if (typeof link === "string" || typeof link === "object") {
+  //     router.push(link);
+  //   } else {
+  //     console.log("No link");
+  //   }
+  // };
 
   return (
     <TouchableOpacity
@@ -36,7 +41,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({ title, link }) => {
         borderRadius: 10,
         marginVertical: 10,
       }}
-      onPress={hanldePress}
+      onPress={handlePress}
     >
       <Text
         style={{

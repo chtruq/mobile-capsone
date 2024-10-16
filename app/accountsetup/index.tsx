@@ -7,8 +7,9 @@ import Input from "@/components/Input/Input";
 import AddressPicker from "@/components/AccoutSetting/Address";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 import ThemedButton from "@/components/ThemedButton";
+import { router } from "expo-router";
 
-const index = () => {
+export default function AddressSetup() {
   return (
     <ThemedView
       style={{
@@ -45,10 +46,14 @@ const index = () => {
         </ThemedView>
       </ThemedViewSHKeyboard>
       <ThemedBottomBtn>
-        <ThemedButton title="Tiếp tục" link={"/(accountsetup)/user"} />
+        <ThemedButton
+          title="Tiếp tục"
+          link={"/accountsetup/user"}
+          handlePress={() => {
+            router.push("/accountsetup/user");
+          }}
+        />
       </ThemedBottomBtn>
     </ThemedView>
   );
-};
-
-export default index;
+}
