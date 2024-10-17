@@ -10,7 +10,7 @@ import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 
-export default function index() {
+export default function Otp() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.button : Colors.light.button;

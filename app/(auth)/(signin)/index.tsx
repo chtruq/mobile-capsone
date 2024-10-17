@@ -18,7 +18,7 @@ import { Feather } from "@expo/vector-icons";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 
-export default function index() {
+export default function SignIn() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
