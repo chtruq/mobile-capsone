@@ -15,7 +15,6 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="(home)"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
@@ -31,6 +30,7 @@ export default function TabLayout() {
             //   color={color}
             // />
             focused ? <HomeActiveSVG /> : <HomeInactiveSVG />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen

@@ -1,10 +1,12 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 
-export default function index() {
+const Search = () => {
   return (
-    <SafeAreaView>
-      <Text>Searching</Text>
-    </SafeAreaView>
+    <View>
+      <Text>hahah</Text>
+    </View>
   );
-}
+};
+
+export default Search;

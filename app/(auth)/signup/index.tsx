@@ -17,7 +17,7 @@ import ThemedBottomBtn from "@/components/ThemedBottomBtn";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 
-export default function index() {
+export default function SignUp() {
   const colorScheme = useColorScheme();
   return (
     <ThemedView style={styles.container}>

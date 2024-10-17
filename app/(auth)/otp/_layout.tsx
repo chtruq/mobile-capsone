@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { Slot } from "expo-router";
+import { Slot, Stack } from "expo-router";
 
 export default function OtpLayout() {
-  return <Slot />;
+  return <Stack />;
 }

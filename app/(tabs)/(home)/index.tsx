@@ -19,7 +19,7 @@ import ListProviders from "@/components/home/ListProviders";
 import { StatusBar } from "expo-status-bar";
 import ListProject from "@/components/home/ListProject";
 
-export default function index() {
+export default function Home() {
   const colorScheme = useColorScheme();
 
   return (
