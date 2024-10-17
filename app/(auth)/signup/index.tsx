@@ -2,25 +2,23 @@ import {
   View,
   Text,
   StyleSheet,
+  useColorScheme,
+  Keyboard,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
-  Keyboard,
   Platform,
-  SafeAreaView,
-  useColorScheme,
 } from "react-native";
 import React from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import Input from "@/components/Input/Input";
-import Feather from "@expo/vector-icons/Feather";
-import ThemedButton from "@/components/ThemedButton";
+import { Feather } from "@expo/vector-icons";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
+import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 
-export default function signup() {
+export default function index() {
   const colorScheme = useColorScheme();
-
   return (
     <ThemedView style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -124,7 +122,6 @@ export default function signup() {
     </ThemedView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

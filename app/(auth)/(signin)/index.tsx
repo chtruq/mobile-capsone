@@ -1,24 +1,24 @@
 import {
   View,
   Text,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Keyboard,
-  Platform,
-  TouchableOpacity,
   useColorScheme,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
-import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
 import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ThemedText";
 import Input from "@/components/Input/Input";
-import Feather from "@expo/vector-icons/Feather";
+import { Feather } from "@expo/vector-icons";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-export default function signin() {
+
+export default function index() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
@@ -36,7 +36,7 @@ export default function signin() {
         >
           <ThemedView>
             <Image
-              source={require("../../assets/images/signInImage/signinpic.png")}
+              source={require("../../../assets/images/signInImage/signinpic.png")}
               style={{ width: 400, height: 200 }}
               resizeMode="cover"
             />
@@ -193,7 +193,7 @@ export default function signin() {
                 Sign in with Google
               </Text>
               <Image
-                source={require("../../assets/images/signInImage/google-icon.png")}
+                source={require("../../../assets/images/signInImage/google-icon.png")}
                 style={{ width: 24, height: 24, marginLeft: 10 }}
               />
             </TouchableOpacity>
@@ -221,15 +221,3 @@ export default function signin() {
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    color: "white",
-  },
-});

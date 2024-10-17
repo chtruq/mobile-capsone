@@ -1,16 +1,16 @@
-import { View, Text, StyleSheet, useColorScheme } from "react-native";
+import { View, Text, useColorScheme, StyleSheet } from "react-native";
 import React from "react";
+import { Colors } from "@/constants/Colors";
+import ThemedViewSHKeyboard from "@/components/ThemedViewSHKeyboard";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { OtpInput } from "react-native-otp-entry";
-import { Colors } from "@/constants/Colors";
-import ThemedViewSHKeyboard from "@/components/ThemedViewSHKeyboard";
 import OtpTimer from "@/components/OtpTimer";
-import ThemedButton from "@/components/ThemedButton";
 import ThemedBottomBtn from "@/components/ThemedBottomBtn";
+import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
 
-export default function Otp() {
+export default function index() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.button : Colors.light.button;
@@ -44,7 +44,6 @@ export default function Otp() {
       backgroundColor: "rgba(0, 0, 0, 0.3)",
     },
   });
-
   return (
     <ThemedViewSHKeyboard>
       <ThemedView
