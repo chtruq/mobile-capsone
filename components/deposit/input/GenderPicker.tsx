@@ -1,10 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-export default function ProductTetails() {
+const GenderPicker = () => {
   return (
     <View>
-      <Text></Text>
+      <Text>GenderPicker</Text>
     </View>
   );
-}
+};
+
+export default GenderPicker;
