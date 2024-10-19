@@ -6,11 +6,13 @@ import {
   Image,
   ImageBackground,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React from "react";
 import { ThemedText } from "@/components/ThemedText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
+import { Link, router } from "expo-router";
 
 export default function Project() {
   const data = [
@@ -49,68 +51,79 @@ export default function Project() {
     >
       {data.map((item) => {
         return (
-          <TouchableOpacity key={item.id}>
-            <ImageBackground
-              style={{
-                width: 300,
-                height: 200,
-                marginRight: 10,
-                borderRadius: 40,
-                overflow: "hidden",
+          <Pressable key={item.id}>
+            <Link
+              href={{
+                pathname: "/details/[id]",
+                params: { id: item.id },
               }}
-              resizeMode="cover"
-              source={item.image}
             >
-              <FavIcon
+              <ImageBackground
                 style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  zIndex: 1,
+                  width: 300,
+                  height: 200,
+                  marginRight: 10,
+                  borderRadius: 40,
+                  overflow: "hidden",
                 }}
-                isFav={item.isFav}
-              />
-
-              <View
-                style={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                  borderRadius: 10,
-                  marginVertical: 10,
-                  position: "absolute",
-                  bottom: 0,
-                }}
+                resizeMode="cover"
+                source={item.image}
               >
-                <ThemedText
-                  type="subtitle"
+                <FavIcon
                   style={{
-                    fontSize: 16,
-                    fontWeight: "semibold",
-                    color: "white",
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    zIndex: 1,
                   }}
-                >
-                  {item.title}
-                </ThemedText>
+                  isFav={item.isFav}
+                />
+
                 <View
                   style={{
-                    flexDirection: "row",
+                    justifyContent: "space-between",
                     alignItems: "center",
+                    padding: 10,
+                    borderRadius: 10,
+                    marginVertical: 10,
+                    position: "absolute",
+                    bottom: 0,
                   }}
                 >
-                  <MaterialIcons name="location-on" size={20} color="#FA712D" />
                   <ThemedText
+                    type="subtitle"
                     style={{
+                      fontSize: 16,
+                      fontWeight: "semibold",
                       color: "white",
                     }}
-                    type="default"
                   >
-                    {item.location}
+                    {item.title}
                   </ThemedText>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialIcons
+                      name="location-on"
+                      size={20}
+                      color="#FA712D"
+                    />
+                    <ThemedText
+                      style={{
+                        color: "white",
+                      }}
+                      type="default"
+                    >
+                      {item.location}
+                    </ThemedText>
+                  </View>
                 </View>
-              </View>
-            </ImageBackground>
-          </TouchableOpacity>
+              </ImageBackground>
+            </Link>
+          </Pressable>
         );
       })}
     </ScrollView>

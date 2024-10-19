@@ -40,9 +40,18 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="accountsetup" options={{ headerShown: false }} />
+        <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="deposit"
+          options={{
+            headerTitle: "Đặt căn hộ",
+            headerTitleStyle: { fontSize: 24 },
+            headerTitleAlign: "center",
+            headerBackTitleVisible: false,
+          }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

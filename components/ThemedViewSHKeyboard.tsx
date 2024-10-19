@@ -5,6 +5,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from "react-native";
 import React from "react";
 import { ThemedView } from "./ThemedView";
