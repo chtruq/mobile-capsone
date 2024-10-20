@@ -21,6 +21,7 @@ export const Colors = {
     primary: "#EECE80",
     textPrice: "#C48C37",
     money: "#C48C37",
+    arrowIcon: "#252B5C",
   },
   dark: {
     darkText: "#745E4C",

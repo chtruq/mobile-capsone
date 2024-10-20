@@ -8,8 +8,9 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerTitle: "Profile",
+          headerTitle: "Cá nhân",
           headerShown: true,
+          headerTitleAlign: "center",
         }}
       />
     </Stack>
