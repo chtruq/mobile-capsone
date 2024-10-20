@@ -31,7 +31,7 @@ import Button from "@/components/button/Button";
 import BottomSheet from "@/components/BottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
-export default function ProductTetails() {
+export default function ProductDetails() {
   const data = {
     name: "Căn hộ view sông Sài Gòn, view grand park 81 hướng ban công tây nam đầy đủ nội thất  2 phòng ngủ 2 phòng tắm",
     price: "22,3",
