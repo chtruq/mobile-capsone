@@ -2,6 +2,8 @@ import { View, Text, useColorScheme, TouchableOpacity } from "react-native";
 import React from "react";
 import { Href, router } from "expo-router"; // Assuming you are using expo-router
 import { Colors } from "@/constants/Colors";
+import { ThemedText } from "../ThemedText";
+import { AntDesign } from "@expo/vector-icons";
 
 interface ButtonProps {
   title: string;
@@ -10,6 +12,7 @@ interface ButtonProps {
   backgroundColor?: string;
   width?: string | number; // Allow both string (e.g., "80%") or number (e.g., 200)
   textColor?: string;
+  isBack?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   backgroundColor,
   width,
   textColor,
+  isBack,
 }) => {
   const colorScheme = useColorScheme();
   const bgColor =
@@ -51,15 +55,26 @@ const Button: React.FC<ButtonProps> = ({
       }}
       onPress={handleButtonPress}
     >
-      <Text
+      {isBack && (
+        <View
+          style={{
+            marginRight: 10,
+          }}
+        >
+          <AntDesign name="left" size={20} color="black" />
+        </View>
+      )}
+
+      <ThemedText
         style={{
           color: textColor || txtColor,
           fontSize: 16,
           lineHeight: 24,
         }}
+        type="defaultSemiBold"
       >
         {title}
-      </Text>
+      </ThemedText>
     </TouchableOpacity>
   );
 };
