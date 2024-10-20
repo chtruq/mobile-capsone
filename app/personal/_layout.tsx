@@ -43,6 +43,26 @@ const PersonalLayout = () => {
           headerBackTitle: "Back",
         }}
       />
+      <Stack.Screen
+        name="request-manage"
+        options={{
+          headerTitle: "Quản lí yêu cầu",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="request-detail/[id]"
+        options={{
+          headerTitle: "Chi tiết yêu cầu",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
     </Stack>
   );
 };
