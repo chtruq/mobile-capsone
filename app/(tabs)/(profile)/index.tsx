@@ -160,7 +160,9 @@ export default function Profile() {
         />
         <ProfileTabBtn
           title="Danh sách yêu cầu"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/personal/request-manage");
+          }}
           icon={<RequestIcon />}
         />
         <ProfileTabBtn
