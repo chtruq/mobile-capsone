@@ -53,9 +53,9 @@ export default function ProductTetails() {
 
   const { id } = useLocalSearchParams();
 
-  useEffect(() => {
-    console.log(id);
-  }, []);
+  // useEffect(() => {
+  //   console.log(id);
+  // }, []);
 
   const colorScheme = useColorScheme();
 

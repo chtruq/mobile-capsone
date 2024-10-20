@@ -44,6 +44,10 @@ export default function RootLayout() {
         <Stack.Screen name="accountsetup" options={{ headerShown: false }} />
         <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
         <Stack.Screen
+          name="provider-detail/[id]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="deposit"
           options={{
             headerTitle: "Đặt căn hộ",
