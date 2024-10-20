@@ -56,6 +56,15 @@ export default function RootLayout() {
             headerBackTitleVisible: false,
           }}
         />
+        <Stack.Screen
+          name="personal"
+          options={{
+            headerTitle: "Cá nhân",
+            headerShown: false,
+            headerTitleAlign: "center",
+          }}
+        />
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

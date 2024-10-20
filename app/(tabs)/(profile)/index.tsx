@@ -12,6 +12,7 @@ import RequestIcon from "@/assets/icon/profile/RequestIcon";
 import CalendarIcon from "@/assets/icon/profile/CalendarIcon";
 import PhoneIcon from "@/assets/icon/profile/PhoneIcon";
 import MailIcon from "@/assets/icon/profile/MailIcon";
+import { router } from "expo-router";
 
 interface ProfileTabBtnProps {
   title: string;
@@ -30,6 +31,7 @@ export default function Profile() {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
+        onPress={onPress}
       >
         <View
           style={{
@@ -75,6 +77,9 @@ export default function Profile() {
           paddingVertical: 10,
           paddingHorizontal: 20,
           backgroundColor: "#D9D9D9",
+        }}
+        onPress={() => {
+          router.push("/personal/personal-info");
         }}
       >
         <View
@@ -148,7 +153,9 @@ export default function Profile() {
         </ThemedText>
         <ProfileTabBtn
           title="Quản lý giao dịch"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/personal/transaction-manage");
+          }}
           icon={<TransIcon />}
         />
         <ProfileTabBtn
