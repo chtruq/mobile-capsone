@@ -20,6 +20,7 @@ export const Colors = {
     border: "#ECEDEE",
     primary: "#EECE80",
     textPrice: "#C48C37",
+    money: "#C48C37",
   },
   dark: {
     darkText: "#745E4C",
