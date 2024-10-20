@@ -14,7 +14,8 @@ export type ThemedTextProps = TextProps & {
     | "price"
     | "red"
     | "heading"
-    | "deposit";
+    | "deposit"
+    | "small";
 };
 
 export function ThemedText({
@@ -43,6 +44,7 @@ export function ThemedText({
         type === "red" ? styles.red : undefined,
         type === "heading" ? styles.heading : undefined,
         type === "deposit" ? styles.deposit : undefined,
+        type === "small" ? styles.small : undefined,
         style,
       ]}
       {...rest}
@@ -95,5 +97,10 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     lineHeight: 24,
     color: "#000",
+  },
+  small: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#A1A5C1",
   },
 });

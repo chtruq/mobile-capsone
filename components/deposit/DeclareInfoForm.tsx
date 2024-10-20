@@ -71,6 +71,46 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
   const [isChecked1, setChecked1] = useState(false);
   const [isChecked2, setChecked2] = useState(false);
   const [isChecked3, setChecked3] = useState(false);
+
+  // info from QR code
+  const [scannedIdNumber, setScannedIdNumber] = useState("");
+  const [scannedOldIdNumber, setScannedOldIdNumber] = useState("");
+  const [scannedName, setScannedName] = useState("");
+  const [scannedBirthDate, setScannedBirthDate] = useState("");
+  const [scannedGender, setScannedGender] = useState("");
+  const [scannedAddress, setScannedAddress] = useState("");
+  const [scannedIssueDate, setScannedIssueDate] = useState("");
+
+  // address
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
+  const [street, setStreet] = useState("");
+
+  useEffect(() => {
+    if (userInfo) {
+      const [id, idNumber, name, birthDate, gender, address, issueDate] =
+        userInfo.split("|");
+      setScannedIdNumber(id);
+      setScannedOldIdNumber(idNumber);
+      setScannedName(name);
+      setScannedBirthDate(birthDate);
+      setScannedGender(gender);
+      setScannedAddress(address);
+      setScannedIssueDate(issueDate);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (scannedAddress) {
+      const [str, ward, dis, pro] = scannedAddress.split(",");
+      setProvince(pro);
+      setDistrict(dis);
+      setWard(ward);
+      setStreet(str);
+    }
+  }, [scannedAddress]);
+
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
@@ -262,29 +302,65 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
             <ThemedText type="default">Ảnh mặt sau</ThemedText>
           </View>
         </View>
-        <View>
-          <ThemedText type="heading">Thông tin cá nhân</ThemedText>
-          <DeclareInput title="Họ và tên" value="hochitrung" editable={false} />
-          <DeclareInput
-            title="Số giấy tờ chứng thực cá nhân"
-            value=""
-            editable={false}
-          />
-          <DeclareInput title="Giới tính" value="" editable={false} />
-          <DeclareInput title="Ngày cấp" value="" editable={false} />
-          <DeclareInput title="Ngày sinh" value="" editable={false} />
-          <DeclareInput title="Quốc tịch" value="" editable={false} />
-          <ThemedText type="heading">Thông tin địa chỉ</ThemedText>
-          <DeclareInput title="Tỉnh/Thành phố" value="" editable={false} />
-          <DeclareInput title="Quận/Huyện" value="" editable={false} />
-          <DeclareInput
-            title="Tên đường, số nhà, toà nhà"
-            value=""
-            editable={false}
-          />
-          <DeclareInput title="Email" value="" editable={true} />
-          <DeclareInput title="Số điện thoại" value="" editable={true} />
-        </View>
+
+        {selectedFrontImage && selectedBackImage && (
+          <View>
+            <ThemedText type="heading">Thông tin cá nhân</ThemedText>
+            <DeclareInput
+              title="Họ và tên"
+              value={scannedName || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Số giấy tờ chứng thực cá nhân"
+              value={scannedIdNumber || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Giới tính"
+              value={scannedGender || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Ngày cấp"
+              value={scannedIssueDate || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Ngày sinh"
+              value={scannedBirthDate || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Quốc tịch"
+              value={"Việt Nam"}
+              editable={false}
+            />
+            <ThemedText type="heading">Thông tin địa chỉ</ThemedText>
+            <DeclareInput
+              title="Tỉnh/Thành phố"
+              value={province || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Quận/Huyện"
+              value={district || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Phường/Xã"
+              value={ward || ""}
+              editable={false}
+            />
+            <DeclareInput
+              title="Tên đường, số nhà, toà nhà"
+              value={street || ""}
+              editable={false}
+            />
+            <DeclareInput title="Email" value="" editable={true} />
+            <DeclareInput title="Số điện thoại" value="" editable={true} />
+          </View>
+        )}
 
         <View>
           <ThemedText type="heading">Xem hợp đồng đặt cọc mẫu</ThemedText>
@@ -362,7 +438,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
             onBarcodeScanned={async (data) => {
               // Xử lý khi phát hiện mã QR cho mặt trước
               if (data && isFrontImage) {
-                console.log(data);
+                console.log(data.data);
                 const userData = data.data;
                 setUserInfo(userData);
               }
@@ -372,20 +448,32 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
             facing={facing}
           >
             <View style={styles.buttonContainer}>
-              <Text style={styles.text}>
-                Vui lòng đưa cccd vào khung bên dưới
-              </Text>
+              {!userInfo && (
+                <Text style={styles.text}>
+                  Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét thông
+                  tin
+                </Text>
+              )}
+              {userInfo && (
+                <Text style={styles.text}>
+                  Vui lòng đưa cccd vào khung bên dưới và chụp
+                </Text>
+              )}
+
               {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
             </View>
-
+            {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
             <View style={styles.footerCamera}>
               <Pressable style={styles.button} onPress={takePicture}>
-                <Text style={styles.text}> Chụp </Text>
+                {userInfo && <Text style={styles.text}> Chụp </Text>}
               </Pressable>
 
               <Pressable
                 style={styles.button}
                 onPress={() => {
+                  if (userInfo && !selectedFrontImage) {
+                    setUserInfo("");
+                  }
                   closeCamera();
                 }}
               >
@@ -495,12 +583,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "#f4c144",
+    // backgroundColor: "#f4c144",
     padding: 10,
     zIndex: 100,
     position: "absolute",
     bottom: 0,
     paddingBottom: 20,
+    width: "100%",
   },
   checkBoxContainer: {
     flexDirection: "row",

@@ -9,6 +9,10 @@ import ConfirmInactiveIcon from "@/assets/icon/deposit/confirm-inactive";
 import StatusActiveIcon from "@/assets/icon/deposit/status-active";
 import StatusInactiveIcon from "@/assets/icon/deposit/status-inactive";
 import DeclareInfoForm from "@/components/deposit/DeclareInfoForm";
+import Button from "@/components/button/Button";
+import TickGreenIcon from "@/assets/icon/deposit/tick-green";
+import ConfirmInfo from "@/components/deposit/ConfirmInfo";
+import OrderStatus from "@/components/deposit/OrderStatus";
 
 const DepositDeclare = () => {
   const [step, setStep] = useState(0); // Track the current step
@@ -53,7 +57,7 @@ const DepositDeclare = () => {
         >
           {
             // Show the active icon when the step is 0
-            step === 0 ? <DeclareActiveIcon /> : <DeclareInactiveIcon />
+            step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />
           }
 
           <ThemedText type="deposit">Khai báo thông tin</ThemedText>
@@ -64,10 +68,12 @@ const DepositDeclare = () => {
             alignItems: "center",
           }}
         >
+          {step === 0 && <ConfirmInactiveIcon />}
           {
             // Show the active icon when the step is 1
-            step === 1 ? <ConfirmActiveIcon /> : <ConfirmInactiveIcon />
+            step === 1 && <ConfirmActiveIcon />
           }
+          {step === 2 && <TickGreenIcon />}
 
           <ThemedText type="deposit">Xác nhận thông tin </ThemedText>
         </View>
@@ -94,44 +100,86 @@ const DepositDeclare = () => {
             //   nextStep();
             // }}
           />
+        )}
+        {step === 1 && (
+          <ConfirmInfo
+            data={formData}
+            onConfirm={() => nextStep()}
+            onBack={() => prevStep()}
+          />
+        )}
+        {step === 2 && (
+          <OrderStatus data={formData} />
           // <>
           //   <View>
-          //     <Text>1</Text>
+          //     <Text>3</Text>
           //   </View>
           // </>
         )}
-        {step === 1 && (
-          // <ConfirmInfo
-          //   data={formData}
-          //   onConfirm={() => nextStep()}
-          //   onBack={() => prevStep()}
-          // />
-          <>
-            <View>
-              <Text>2</Text>
-            </View>
-          </>
-        )}
-        {step === 2 && (
-          //  <OrderStatus data={formData} />
-          <>
-            <View>
-              <Text>3</Text>
-            </View>
-          </>
-        )}
       </ScrollView>
-      <View
+      <ThemedView
         style={{
           position: "absolute",
           width: "100%",
           bottom: 0,
           height: 95,
           backgroundColor: "#fff",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <ThemedText>button here</ThemedText>
-      </View>
+        {step === 0 ? (
+          <Button
+            width={"90%"}
+            title="Xác nhận thông tin"
+            handlePress={() => nextStep()}
+          />
+        ) : step === 1 ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "90%",
+            }}
+          >
+            <Button
+              width={"30%"}
+              title="Quay lại"
+              handlePress={() => prevStep()}
+              backgroundColor="#fff"
+              textColor="#000"
+              isBack
+            />
+            <Button
+              width={"60%"}
+              title="Xác nhận yêu cầu"
+              handlePress={() => nextStep()}
+            />
+          </View>
+        ) : (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "90%",
+            }}
+          >
+            <Button
+              width={"30%"}
+              title="Quay lại"
+              handlePress={() => prevStep()}
+              backgroundColor="#fff"
+              textColor="#000"
+              isBack
+            />
+            <Button
+              width={"60%"}
+              title="Tiến hành chuyển khoản"
+              handlePress={() => nextStep()}
+            />
+          </View>
+        )}
+      </ThemedView>
     </View>
   );
 };
