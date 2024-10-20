@@ -1,6 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { ScrollView } from "react-native";
+import { router } from "expo-router";
 
 export default function ListProviders() {
   const data = [
@@ -35,6 +36,12 @@ export default function ListProviders() {
             paddingHorizontal: 10,
           }}
           key={item.id}
+          onPress={() => {
+            router.push({
+              pathname: "/provider-detail/[id]",
+              params: { id: item.id },
+            });
+          }}
         >
           <View
             style={{
