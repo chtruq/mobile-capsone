@@ -8,37 +8,58 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
 import { Link, router } from "expo-router";
+import { apartmentsSearch } from "@/services/api/apartments";
+import { Apartment } from "@/model/apartments";
 
 export default function Project() {
-  const data = [
-    {
-      id: 1,
-      title: "Sky Dandelions Apartment",
-      image: require("@/assets/images/home/home.png"),
-      location: "Quận 9, Hồ Chí Minh",
-      isFav: true,
-    },
-    {
-      id: 2,
-      title: "Sky Dandelions Apartment",
-      image: require("@/assets/images/home/home.png"),
+  const [data, setData] = useState([]);
+  // const data = [
+  //   {
+  //     id: 1,
+  //     title: "Sky Dandelions Apartment",
+  //     image: require("@/assets/images/home/home.png"),
+  //     location: "Quận 9, Hồ Chí Minh",
+  //     isFav: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Sky Dandelions Apartment",
+  //     image: require("@/assets/images/home/home.png"),
 
-      location: "Quận 9, Hồ Chí Minh",
-      isFav: false,
-    },
-    {
-      id: 3,
-      title: "Sky Dandelions Apartment",
-      image: require("@/assets/images/home/home.png"),
-      location: "Quận 9, Hồ Chí Minh",
-      isFav: false,
-    },
-  ];
+  //     location: "Quận 9, Hồ Chí Minh",
+  //     isFav: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Sky Dandelions Apartment",
+  //     image: require("@/assets/images/home/home.png"),
+  //     location: "Quận 9, Hồ Chí Minh",
+  //     isFav: false,
+  //   },
+  // ];
+
+  const getApartments = async () => {
+    try {
+      const response = await apartmentsSearch({});
+      return response.data;
+    } catch (error) {
+      console.error("Get project API error:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getApartments();
+      setData(data);
+    };
+    fetchData();
+  }, []);
 
   return (
     <ScrollView
@@ -49,13 +70,15 @@ export default function Project() {
         paddingHorizontal: 10,
       }}
     >
-      {data.map((item) => {
+      {data?.map((item: Apartment) => {
+        console.log("item", item.images[0]?.imageUrl);
+
         return (
-          <Pressable key={item.id}>
+          <Pressable key={item.apartmentID}>
             <Link
               href={{
                 pathname: "/details/[id]",
-                params: { id: item.id },
+                params: { id: item.apartmentID },
               }}
             >
               <ImageBackground
@@ -67,7 +90,9 @@ export default function Project() {
                   overflow: "hidden",
                 }}
                 resizeMode="cover"
-                source={item.image}
+                width={300}
+                height={200}
+                source={{ uri: item.images[0]?.imageUrl }}
               >
                 <FavIcon
                   style={{
@@ -76,7 +101,8 @@ export default function Project() {
                     right: 10,
                     zIndex: 1,
                   }}
-                  isFav={item.isFav}
+                  // isFav={item.isFav}
+                  isFav
                 />
 
                 <View
@@ -91,14 +117,15 @@ export default function Project() {
                   }}
                 >
                   <ThemedText
-                    type="subtitle"
+                    type="heading"
                     style={{
                       fontSize: 16,
                       fontWeight: "semibold",
                       color: "white",
+                      borderBlockColor: "#000",
                     }}
                   >
-                    {item.title}
+                    {item.apartmentName}
                   </ThemedText>
                   <View
                     style={{
@@ -117,7 +144,7 @@ export default function Project() {
                       }}
                       type="default"
                     >
-                      {item.location}
+                      {item.address}
                     </ThemedText>
                   </View>
                 </View>
