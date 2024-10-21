@@ -8,7 +8,7 @@ export default function SearchLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerTitle: "Search",
+          headerTitle: "Tìm kiếm",
           headerShown: true,
         }}
       />
