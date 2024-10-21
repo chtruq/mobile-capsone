@@ -31,19 +31,31 @@ import Button from "@/components/button/Button";
 import BottomSheet from "@/components/BottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
+import { apartmentsDetail } from "@/services/api/apartments";
+import { Apartment } from "@/model/apartments";
 export default function ProductDetails() {
-  const data = {
-    name: "Căn hộ view sông Sài Gòn, view grand park 81 hướng ban công tây nam đầy đủ nội thất  2 phòng ngủ 2 phòng tắm",
-    price: "22,3",
-    description:
-      "Căn hộ cao cấp 2 phòng ngủ tại chung cư Sunrise City, Quận 7, TP. HCM, với diện tích 80m². Nằm trên tầng 20, căn hộ mang đến tầm nhìn toàn cảnh sông Sài Gòn tuyệt đẹp. Thiết kế hiện đại với không gian mở, sàn gỗ tự nhiên, và hệ thống cửa kính lớn giúp đón ánh sáng tự nhiên. Phòng khách rộng rãi, liên thông với khu vực bếp được trang bị đầy đủ nội thất cao cấp như bếp từ, máy hút mùi và tủ lạnh âm tường.Phòng ngủ chính có giường đôi, tủ âm tường và phòng tắm riêng với thiết bị vệ sinh cao cấp. Phòng ngủ phụ cũng có cửa sổ lớn, thích hợp làm phòng làm việc hoặc phòng cho trẻ em. Ban công rộng rãi, đủ chỗ để trồng cây hoặc đặt bàn uống cà phê buổi sáng.Cư dân tại đây sẽ được tận hưởng nhiều tiện ích đẳng cấp như hồ bơi tràn bờ, phòng gym hiện đại, khu vực BBQ, sân chơi trẻ em và bãi đậu xe rộng rãi. An ninh đảm bảo 24/7 với hệ thống bảo vệ và camera giám sát.Giá bán căn hộ là 4.2 tỷ VND, hoặc cho thuê với giá 15 triệu VND/tháng, đã bao gồm phí quản lý. Đây là lựa chọn lý tưởng cho những ai đang tìm kiếm không gian sống sang trọng và tiện nghi tại khu vực phát triển của thành phố.",
-    area: "80",
-    bedrooms: "2",
-    bathrooms: "2",
-    address: "Quận 7, TP. HCM",
-    huongnha: "Tây Nam",
-    huongbancong: "Tây Nam",
+  const [data, setData] = useState<Apartment>();
+
+  const colorScheme = useColorScheme();
+
+  const { id } = useLocalSearchParams();
+  const getApartment = async () => {
+    try {
+      const response = await apartmentsDetail(id);
+      return response.data;
+    } catch (error) {
+      console.error("Get apartment API error:", error);
+      throw error;
+    }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getApartment();
+      setData(data);
+    };
+    fetchData();
+  }, [id]);
 
   const imageArr = [
     require("@/assets/images/home/home.png"),
@@ -51,13 +63,9 @@ export default function ProductDetails() {
     require("@/assets/images/home/home.png"),
   ];
 
-  const { id } = useLocalSearchParams();
-
   // useEffect(() => {
   //   console.log(id);
   // }, []);
-
-  const colorScheme = useColorScheme();
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -140,7 +148,11 @@ export default function ProductDetails() {
         }}
       >
         <FlatList
-          data={imageArr}
+          data={
+            data?.images.map((image) => {
+              return { uri: image.imageUrl };
+            }) || []
+          }
           horizontal
           showsHorizontalScrollIndicator={false}
           snapToInterval={360} // Chiều rộng của mỗi item + padding
@@ -213,7 +225,7 @@ export default function ProductDetails() {
             fontWeight: "500",
           }}
         >
-          {data.name}
+          {data?.apartmentName}
         </ThemedText>
         <View
           style={{
@@ -230,7 +242,7 @@ export default function ProductDetails() {
               textDecorationLine: "underline",
             }}
           >
-            {data.address}
+            {data?.address}
           </ThemedText>
         </View>
 
@@ -253,11 +265,11 @@ export default function ProductDetails() {
           >
             <View>
               <ThemedText>Mức giá:</ThemedText>
-              <ThemedText type="price">{data.price} tỷ</ThemedText>
+              <ThemedText type="price">{data?.recommendedPrice} tỷ</ThemedText>
             </View>
             <View>
               <ThemedText>Diện tích:</ThemedText>
-              <ThemedText type="defaultSemiBold">{data.area} m2</ThemedText>
+              <ThemedText type="defaultSemiBold">{data?.area} m2</ThemedText>
             </View>
           </View>
           <View
@@ -277,7 +289,7 @@ export default function ProductDetails() {
         <View style={{ marginVertical: 10 }}>
           <ThemedText type="heading">Mô tả</ThemedText>
           <ThemedText numberOfLines={showFullDescription ? undefined : 6}>
-            {data.description}
+            {data?.description}
           </ThemedText>
           <Pressable
             style={{
@@ -309,32 +321,32 @@ export default function ProductDetails() {
           </View>
           <View>
             <ApartmentDetails
-              data={data.price}
+              data={data?.recommendedPrice}
               Icon={<PriceIcon width={20} height={20} />}
               title="Mức giá"
             />
             <ApartmentDetails
-              data={data.area}
+              data={data?.area}
               Icon={<AreaIcon width={20} height={20} />}
               title="Diện tích"
             />
             <ApartmentDetails
-              data={data.bedrooms}
+              data={data?.numberOfRooms}
               Icon={<BedIcon width={20} height={20} />}
               title="Số phòng ngủ"
             />
             <ApartmentDetails
-              data={data.bathrooms}
+              data={data?.numberOfBathrooms}
               Icon={<BathRoomIcon width={20} height={20} />}
               title="Số phòng tắm"
             />
             <ApartmentDetails
-              data={data.huongnha}
+              data={data?.balconyDirection}
               Icon={<HouseDirectionIcon width={20} height={20} />}
               title="Hướng nhà"
             />
             <ApartmentDetails
-              data={data.huongbancong}
+              data={data?.balconyDirection}
               Icon={<BalconyDirectionIcon width={20} height={20} />}
               title="Hướng ban công"
             />
