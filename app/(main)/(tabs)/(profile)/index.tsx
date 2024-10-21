@@ -13,6 +13,7 @@ import CalendarIcon from "@/assets/icon/profile/CalendarIcon";
 import PhoneIcon from "@/assets/icon/profile/PhoneIcon";
 import MailIcon from "@/assets/icon/profile/MailIcon";
 import { router } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProfileTabBtnProps {
   title: string;
@@ -21,6 +22,11 @@ interface ProfileTabBtnProps {
 }
 
 export default function Profile() {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
   const ProfileTabBtn: FC<ProfileTabBtnProps> = ({ title, onPress, icon }) => {
     return (
       <TouchableOpacity
@@ -79,7 +85,7 @@ export default function Profile() {
           backgroundColor: "#D9D9D9",
         }}
         onPress={() => {
-          router.push("/personal/personal-info");
+          router.push("/(main)/personal/personal-info");
         }}
       >
         <View
@@ -91,7 +97,7 @@ export default function Profile() {
           }}
         >
           <Image
-            source={require("../../../assets/images/icon.png")}
+            source={require("../../../../assets/images/icon.png")}
             style={{
               width: 70,
               height: 70,
@@ -154,14 +160,14 @@ export default function Profile() {
         <ProfileTabBtn
           title="Quản lý giao dịch"
           onPress={() => {
-            router.push("/personal/transaction-manage");
+            router.push("/(main)/personal/transaction-manage");
           }}
           icon={<TransIcon />}
         />
         <ProfileTabBtn
           title="Danh sách yêu cầu"
           onPress={() => {
-            router.push("/personal/request-manage");
+            router.push("/(main)/personal/request-manage");
           }}
           icon={<RequestIcon />}
         />
@@ -254,6 +260,7 @@ export default function Profile() {
           </View>
           <TouchableOpacity
             style={{ position: "absolute", bottom: 20, right: 20 }}
+            onPress={handleLogout}
           >
             <ThemedText
               type="defaultSemiBold"

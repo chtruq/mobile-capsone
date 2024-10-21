@@ -9,7 +9,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
@@ -17,11 +17,27 @@ import Input from "@/components/Input/Input";
 import { Feather } from "@expo/vector-icons";
 import ThemedButton from "@/components/ThemedButton";
 import { router } from "expo-router";
+import { login } from "@/services/api/auth";
+import { useAuth } from "@/context/AuthContext";
+import { useApi } from "@/hooks/useApi";
 
 export default function SignIn() {
   const colorScheme = useColorScheme();
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
+  const { login: loginUser } = useAuth();
+  const [email, setEmail] = useState("trunghcw@gmail.com");
+  const [password, setPassword] = useState("123456");
+  const { loading, error, request: loginRequest } = useApi(login);
+
+  const handleLogin = async () => {
+    try {
+      const data = await loginRequest(email, password);
+      loginUser(data.data.token);
+    } catch (error) {
+      console.log("Login error:", error);
+    }
+  };
 
   return (
     <ThemedView
@@ -34,6 +50,7 @@ export default function SignIn() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
+          {/* Hiển thị lỗi nếu có */}
           <ThemedView>
             <Image
               source={require("../../../assets/images/signInImage/signinpic.png")}
@@ -81,6 +98,8 @@ export default function SignIn() {
               }
               placeholder="Email"
               fieldName="Email"
+              value={email}
+              onChangeText={(text: string) => setEmail(text)}
             />
             <Input
               icon={
@@ -93,6 +112,8 @@ export default function SignIn() {
               placeholder="Password"
               fieldName="Password"
               hidePassword
+              value={password}
+              onChangeText={(text: string) => setPassword(text)}
             />
           </ThemedView>
           <ThemedView
@@ -120,7 +141,7 @@ export default function SignIn() {
               alignItems: "center",
             }}
           >
-            <ThemedButton title="Đăng nhập" />
+            <ThemedButton handlePress={handleLogin} title="Đăng nhập" />
           </ThemedView>
           <ThemedView
             style={{

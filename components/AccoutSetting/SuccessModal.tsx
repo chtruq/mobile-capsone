@@ -78,7 +78,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ state }) => {
           <ThemedButton
             title="Xong"
             handlePress={() => {
-              router.push("/(tabs)");
+              router.push("/(main)/(tabs)");
               handleCloseModal();
             }}
           />
