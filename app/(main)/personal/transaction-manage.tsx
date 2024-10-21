@@ -58,7 +58,7 @@ const TransactionManage = () => {
             <TouchableOpacity
               onPress={() => {
                 router.push({
-                  pathname: "/personal/transaction-detail/[id]",
+                  pathname: "/(main)/personal/transaction-detail/[id]",
                   params: { id: item.id },
                 });
               }}

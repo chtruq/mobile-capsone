@@ -38,7 +38,7 @@ export default function ListProviders() {
           key={item.id}
           onPress={() => {
             router.push({
-              pathname: "/provider-detail/[id]",
+              pathname: "/(main)/provider-detail/[id]",
               params: { id: item.id },
             });
           }}

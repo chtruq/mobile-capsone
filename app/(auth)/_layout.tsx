@@ -1,8 +1,18 @@
 import { View, Text } from "react-native";
-import React from "react";
-import { Stack } from "expo-router";
+import React, { useEffect } from "react";
+import { router, Stack } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
 
 const AuthLayout = () => {
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Nếu người dùng đã xác thực, điều hướng đến (main)
+      router.replace("/(main)");
+    }
+  }, [isAuthenticated]);
+
   return (
     <Stack>
       <Stack.Screen

@@ -24,8 +24,9 @@ interface InputProps {
   fieldName?: string;
   inputStyle?: StyleProp<TextStyle>;
   value?: string;
-  handleChangeText?: (text: string) => void;
+  onChangeText?: (text: string) => void;
   hidePassword?: boolean;
+  errorMessage?: string;
   [key: string]: any; // For any additional props
 }
 const Input: React.FC<InputProps> = ({
@@ -34,8 +35,10 @@ const Input: React.FC<InputProps> = ({
   fieldName,
   inputStyle,
   value,
-  handleChangeText,
+  onChangeText,
   hidePassword,
+  onBlur,
+  errorMessage,
   ...props
 }) => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -48,50 +51,54 @@ const Input: React.FC<InputProps> = ({
     colorScheme === "dark" ? Colors.dark.border : Colors.light.border;
 
   return (
-    <ThemedView
-      style={{
-        width: "95%",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: backgroundColor,
-        borderRadius: 10,
-        borderColor: border,
-        borderWidth: 1,
-      }}
-    >
-      {/* <ThemedText>{fieldName}</ThemedText> */}
+    <>
       <ThemedView
         style={{
-          flexDirection: "row",
+          width: "95%",
+          justifyContent: "center",
           alignItems: "center",
-          paddingVertical: 10,
-          marginVertical: 10,
-          borderRadius: 10,
           backgroundColor: backgroundColor,
+          borderRadius: 10,
           borderColor: border,
-          marginHorizontal: 10,
+          borderWidth: 1,
         }}
       >
-        {icon && icon}
-        <TextInput
-          placeholder={placeholder}
-          onChangeText={handleChangeText}
-          value={value}
-          secureTextEntry={hidePassword && !showPassword}
-          {...props}
-          style={[
-            {
-              flex: 1,
-              padding: 10,
-              fontSize: 16,
-              color: textColor,
-            },
-            inputStyle,
-          ]}
-        />
-        {hidePassword && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            {/* <Image
+        {/* <ThemedText>{fieldName}</ThemedText> */}
+
+        <ThemedView
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 10,
+            marginVertical: 10,
+            borderRadius: 10,
+            backgroundColor: backgroundColor,
+            borderColor: border,
+            marginHorizontal: 10,
+          }}
+        >
+          {icon && icon}
+          <TextInput
+            placeholder={placeholder}
+            onChangeText={onChangeText}
+            value={value}
+            onBlur={onBlur}
+            secureTextEntry={hidePassword && !showPassword}
+            {...props}
+            style={[
+              {
+                flex: 1,
+                padding: 10,
+                fontSize: 16,
+                color: textColor,
+              },
+              inputStyle,
+            ]}
+          />
+
+          {hidePassword && (
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              {/* <Image
                 source={
                   !showPassword ? (
                     <FontAwesome name="eye" size={24} color="black" />
@@ -103,15 +110,35 @@ const Input: React.FC<InputProps> = ({
                 resizeMode="contain"
               /> */}
 
-            {!showPassword ? (
-              <FontAwesome name="eye" size={20} color="gray" />
-            ) : (
-              <FontAwesome name="eye-slash" size={20} color="gray" />
-            )}
-          </TouchableOpacity>
-        )}
+              {!showPassword ? (
+                <FontAwesome name="eye" size={20} color="gray" />
+              ) : (
+                <FontAwesome name="eye-slash" size={20} color="gray" />
+              )}
+            </TouchableOpacity>
+          )}
+        </ThemedView>
+        {errorMessage ? (
+          <ThemedView
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+            }}
+          >
+            <ThemedText
+              style={{
+                color: "red",
+                fontSize: 12,
+              }}
+              type="error"
+            >
+              {errorMessage}
+            </ThemedText>
+          </ThemedView>
+        ) : null}
       </ThemedView>
-    </ThemedView>
+    </>
   );
 };
 

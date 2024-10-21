@@ -43,7 +43,7 @@ const RequestItem: FC<RequestItemProps> = ({
       style={styles.itemContainer}
       onPress={() => {
         router.push({
-          pathname: "/personal/request-detail/[id]",
+          pathname: "/(main)/personal/request-detail/[id]",
           params: { id: requestId },
         });
       }}
