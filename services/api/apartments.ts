@@ -27,3 +27,13 @@ export const apartmentsSearch = async (params: ApartmentSearchParams) => {
     throw error;
   }
 };
+
+export const apartmentsDetail = async (id: string | string[]) => {
+  try {
+    const response = await apiClient.get(`/apartments/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Apartments detail API error:", error);
+    throw error;
+  }
+};
