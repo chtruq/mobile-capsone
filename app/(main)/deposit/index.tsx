@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import DeclareActiveIcon from "@/assets/icon/deposit/declare-active";
@@ -13,23 +13,51 @@ import Button from "@/components/button/Button";
 import TickGreenIcon from "@/assets/icon/deposit/tick-green";
 import ConfirmInfo from "@/components/deposit/ConfirmInfo";
 import OrderStatus from "@/components/deposit/OrderStatus";
+import { useLocalSearchParams } from "expo-router";
+import { apartmentsDetail } from "@/services/api/apartments";
+import { Apartment } from "@/model/apartments";
+import { useAuth } from "@/context/AuthContext";
+import { ScannedInfo } from "@/model/deposit";
 
 const DepositDeclare = () => {
   const [step, setStep] = useState(0); // Track the current step
-  const [formData, setFormData] = useState({}); // Store user-entered data
-
+  const [formData, setFormData] = useState<ScannedInfo>(); // Store user-entered data
+  const [checkValidation, setCheckValidation] = useState(false);
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+  const [apartmentInfo, setApartmentInfo] = useState<Apartment>();
+  const { userInfo } = useAuth();
 
-  const apartmentInfo = {
-    name: "Căn hộ view sông Sài Gòn, view grand park 81 hướng ban công tây nam đầy đủ nội thất  2 phòng ngủ 2 phòng tắm",
-    price: 22300000000,
-    image: require("@/assets/images/home/home.png"),
-    depositPrice: 50000000,
-    tax: 0,
-    quantity: 1,
-    totalPrice: 50000000,
+  const { id } = useLocalSearchParams();
+
+  const getApartmentInfo = async () => {
+    try {
+      const response = await apartmentsDetail(id?.toString());
+      console.log("Apartments detail API response:", response);
+      setApartmentInfo(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Apartments detail API error:", error);
+      throw error;
+    }
   };
+
+  useEffect(() => {
+    getApartmentInfo();
+  }, []);
+
+  const handleFormSubmit = (data: any) => {
+    setFormData({
+      ...data,
+      apartmentId: id,
+      accountId: userInfo.id,
+    });
+    nextStep();
+  };
+
+  useEffect(() => {
+    console.log("Form data after setting state:", formData);
+  }, [formData]);
 
   return (
     <View
@@ -91,14 +119,11 @@ const DepositDeclare = () => {
           <ThemedText type="deposit">Trạng thái đơn hàng</ThemedText>
         </View>
       </ThemedView>
-      <ScrollView>
+      <View>
         {step === 0 && (
           <DeclareInfoForm
             data={apartmentInfo}
-            // onSubmit={(data) => {
-            //   setFormData(data);
-            //   nextStep();
-            // }}
+            onSubmitInfo={handleFormSubmit}
           />
         )}
         {step === 1 && (
@@ -109,15 +134,15 @@ const DepositDeclare = () => {
           />
         )}
         {step === 2 && (
-          <OrderStatus data={formData} />
+          <OrderStatus />
           // <>
           //   <View>
           //     <Text>3</Text>
           //   </View>
           // </>
         )}
-      </ScrollView>
-      <ThemedView
+      </View>
+      {/* <ThemedView
         style={{
           position: "absolute",
           width: "100%",
@@ -132,7 +157,9 @@ const DepositDeclare = () => {
           <Button
             width={"90%"}
             title="Xác nhận thông tin"
-            handlePress={() => nextStep()}
+            handlePress={() => {
+              handleFormSubmit(formData);
+            }}
           />
         ) : step === 1 ? (
           <View
@@ -179,7 +206,7 @@ const DepositDeclare = () => {
             />
           </View>
         )}
-      </ThemedView>
+      </ThemedView> */}
     </View>
   );
 };
