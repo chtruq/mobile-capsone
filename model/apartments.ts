@@ -15,7 +15,7 @@ export interface Apartment {
   location: string; // Location information, such as "Beachfront"
   direction: number; // Direction represented as an integer (e.g., 1 for North, 2 for East, etc.)
   pricePerSquareMeter: number; // Price per square meter
-  recommendedPrice: number; // Total recommended price of the apartment
+  price: number; // Total recommended price of the apartment
   expiryDate: string; // Expiry date in ISO format (e.g., "2027-10-17T16:46:58.6403193+07:00")
   apartmentStatus: string; // Status of the apartment (e.g., "Sold", "Available")
   apartmentType: string; // Type of the apartment (e.g., "Penthouse")
@@ -23,4 +23,22 @@ export interface Apartment {
   projectApartmentName: string; // Name of the apartment project
   verificationID: string; // Verification ID, can be a placeholder for unverified apartments
   images: ApartmentImage[]; // Array of URLs for images
+}
+export interface ApartmentSearchParams {
+  apartmentName?: string;
+  address?: string;
+  district?: string;
+  ward?: string;
+  apartmentTypes?: number[];
+  minPrice?: number;
+  maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  numberOfRooms?: number;
+  numberOfBathrooms?: number;
+  directions?: number[];
+  balconyDirections?: number[];
+  saleStatuses?: number[];
+  pageIndex?: number;
+  pageSize?: number;
 }

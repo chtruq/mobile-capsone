@@ -8,17 +8,11 @@ import {
 import React, { FC } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { Apartment } from "@/model/apartments";
+import { formatCurrency } from "@/model/other";
 
 interface DepositCardProps {
-  data: {
-    name: string;
-    price: number;
-    image: ImageSourcePropType;
-    depositPrice: number;
-    tax: number;
-    quantity: number;
-    totalPrice: number;
-  };
+  data: Apartment | undefined;
 }
 
 const DepositCard: FC<DepositCardProps> = ({ data }) => {
@@ -39,7 +33,7 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
             width: 100,
             height: 100,
           }}
-          source={data.image}
+          source={{ uri: data?.images[0].imageUrl }}
         />
         <View
           style={{
@@ -53,10 +47,10 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
               marginBottom: 5,
             }}
           >
-            {data.price}
+            {formatCurrency(data?.price)}
           </ThemedText>
           <ThemedText type="default" numberOfLines={3}>
-            {data.name}
+            {data?.apartmentName}
           </ThemedText>
         </View>
       </View>
@@ -76,11 +70,13 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
         >
           <View style={styles.flexRow}>
             <ThemedText type="default">Phí đặt cọc căn hộ</ThemedText>
-            <ThemedText type="default">{data.depositPrice}</ThemedText>
+            <ThemedText type="default">
+              {formatCurrency(data?.pricePerSquareMeter)}
+            </ThemedText>
           </View>
           <View style={styles.flexRow}>
             <ThemedText type="default">Phí dịch vụ phát sinh</ThemedText>
-            <ThemedText type="default">{data.tax}</ThemedText>
+            <ThemedText type="default">{"0"}</ThemedText>
           </View>
         </View>
         <View
@@ -92,17 +88,19 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
         >
           <View style={styles.flexRow}>
             <ThemedText type="default">Tổng tiền tạm tính</ThemedText>
-            <ThemedText type="default">{data.totalPrice}</ThemedText>
+            <ThemedText type="default">
+              {formatCurrency(data?.pricePerSquareMeter)}
+            </ThemedText>
           </View>
           <View style={styles.flexRow}>
             <ThemedText type="default">Số lượng căn hộ</ThemedText>
-            <ThemedText type="default">{data.quantity} căn</ThemedText>
+            <ThemedText type="default">{"1"} căn</ThemedText>
           </View>
         </View>
 
-        <View style={styles.flexRow}>
+        <View style={[styles.flexRow, styles.endRow]}>
           <ThemedText>Phải thanh toán</ThemedText>
-          <ThemedText type="price"> {data.totalPrice} VND </ThemedText>
+          <ThemedText type="price">{data?.pricePerSquareMeter} VND </ThemedText>
         </View>
       </View>
     </View>
@@ -130,5 +128,9 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingVertical: 2,
+  },
+  endRow: {
+    marginTop: 10,
   },
 });

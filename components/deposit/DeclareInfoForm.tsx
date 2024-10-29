@@ -9,11 +9,11 @@ import {
   Pressable,
   Modal,
   Image,
-  Button,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { ThemedView } from "../ThemedView";
@@ -37,30 +37,32 @@ import ThemedViewSHKeyboard from "../ThemedViewSHKeyboard";
 import ContractIcon from "@/assets/icon/deposit/contract";
 import { center } from "@shopify/react-native-skia";
 import Checkbox from "expo-checkbox";
+import { Apartment } from "@/model/apartments";
+import user from "@/app/accountsetup/user";
+import { OverlayQR } from "./input/CameraOverlay/OverlayQR";
+import { declareInfoValidationSchema } from "@/utils/validation/depositSchemas";
+import { createLog } from "@react-native-community/cli-platform-apple";
+import { Formik, useFormik } from "formik";
+import Button from "../button/Button";
+import { useAuth } from "@/context/AuthContext";
 
 interface DeclareInfoFormProps {
-  onSubmit: () => void;
-  data: {
-    name: string;
-    price: number;
-    image: ImageSourcePropType;
-    depositPrice: number;
-    tax: number;
-    quantity: number;
-    totalPrice: number;
-  };
+  onSubmitInfo: (data: any) => void;
+  data: Apartment | undefined;
 }
 
-const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
+type ImageType = string | null;
+
+const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   const [selectedOption, setSelectedOption] = useState("personal");
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedFrontImage, setSelectedFrontImage] = useState(null);
-  const [selectedBackImage, setSelectedBackImage] = useState<string | null>(
-    null
-  );
+  const [selectedFrontImage, setSelectedFrontImage] = useState<ImageType>(null);
+  const [selectedBackImage, setSelectedBackImage] = useState<ImageType>(null);
   const [isFrontImage, setIsFrontImage] = useState(true);
 
-  const [userInfo, setUserInfo] = useState<String>();
+  const [userInfo, setUserInfo] = useState<String>(
+    "0222222222221|283333386|Hồ Chí Trung|21092002|Nam|Ấp Chiến Thắng, Định An, Dầu Tiếng, Bình Dương|31052021"
+  );
   const [errMes, setErrMes] = useState<String>("");
 
   const [facing, setFacing] = useState<CameraType>("back");
@@ -71,7 +73,6 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
   const [isChecked1, setChecked1] = useState(false);
   const [isChecked2, setChecked2] = useState(false);
   const [isChecked3, setChecked3] = useState(false);
-
   // info from QR code
   const [scannedIdNumber, setScannedIdNumber] = useState("");
   const [scannedOldIdNumber, setScannedOldIdNumber] = useState("");
@@ -80,6 +81,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
   const [scannedGender, setScannedGender] = useState("");
   const [scannedAddress, setScannedAddress] = useState("");
   const [scannedIssueDate, setScannedIssueDate] = useState("");
+  const [email, setEmail] = useState("trunghc@gmail.com");
+  const [phone, setPhone] = useState<string>("0978214001");
 
   // address
   const [province, setProvince] = useState("");
@@ -112,7 +115,6 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
   }, [scannedAddress]);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
@@ -123,13 +125,14 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
         <Text style={styles.message}>
           We need your permission to show the camera
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button handlePress={requestPermission} title="grant permission" />
       </View>
     );
   }
 
   const closeCamera = () => {
     if (cameraRef.current) {
+      // @ts-ignore
       cameraRef.current.stopRecording(); // Only if the camera was recording, ensure it stops
     }
     setModalVisible(false); // Close the modal
@@ -137,6 +140,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
+        // @ts-ignore
         const photo = await cameraRef.current.takePictureAsync();
         if (isFrontImage) {
           if (!userInfo) {
@@ -161,330 +165,483 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmit, data }) => {
     }
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      Alert.alert("Vui lòng nhập email");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      Alert.alert("Email không hợp lệ");
+      return;
+    }
+    if (email.length > 50) {
+      Alert.alert("Email không được quá 50 ký tự");
+      return;
+    }
+    return true;
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    const phoneRegex2 = /^\d{11}$/;
+    if (!phone) {
+      Alert.alert("Vui lòng nhập số điện thoại");
+      return false;
+    }
+    if (!phoneRegex.test(phone) && !phoneRegex2.test(phone)) {
+      Alert.alert("Số điện thoại không hợp lệ");
+      return;
+    }
+    return true;
+  };
+
+  const validation = () => {
+    if (!selectedFrontImage) {
+      Alert.alert("Vui lòng chụp ảnh mặt trước CCCD");
+      return false;
+    }
+    if (!selectedBackImage) {
+      Alert.alert("Vui lòng chụp ảnh mặt sau CCCD");
+      return false;
+    }
+    if (!scannedName) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!scannedIdNumber) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!scannedGender) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!scannedBirthDate) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!scannedIssueDate) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!scannedAddress) {
+      Alert.alert("Vui lòng chụp ảnh CCCD");
+      return false;
+    }
+    if (!validateEmail(email)) {
+      return false;
+    }
+    if (!validatePhone(phone)) {
+      return false;
+    }
+    if (!isChecked1) {
+      Alert.alert("Bạn cần đồng ý với các Điều kiện & Điều khoản của Luxuer");
+      return false;
+    }
+    if (!isChecked2) {
+      Alert.alert("Vui lòng cam kết thông tin cá nhân chính xác");
+      return false;
+    }
+    if (!isChecked3) {
+      Alert.alert("Vui lòng xác nhận đồng ý với Hợp đồng đặt cọc");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = () => {
+    if (validation() === false) {
+      return;
+    }
+    onSubmitInfo({
+      scannedName,
+      scannedIdNumber,
+      scannedGender,
+      scannedBirthDate,
+      scannedIssueDate,
+      email,
+      phone,
+      scannedAddress,
+      selectedFrontImage,
+      selectedBackImage,
+    });
+  };
+
   return (
-    <ScrollView>
-      <ThemedView
+    <>
+      <ScrollView
         style={{
-          margin: 5,
-          borderRadius: 10,
-          padding: 10,
+          backgroundColor: "#fff",
+          marginBottom: 100,
+          marginTop: 5,
         }}
       >
-        <DepositCard data={data} />
-      </ThemedView>
-      <ThemedView
-        style={{
-          margin: 5,
-          borderRadius: 10,
-          padding: 10,
-        }}
-      >
-        <ThemedText type="defaultSemiBold">
-          Quý khách vui lòng điền đầy dủ và chính xác các thông tin dưới đây để
-          tiến hành đặt cọc
-        </ThemedText>
-        <ThemedText type="heading">Thông tin khách hàng</ThemedText>
-
-        <View style={styles.container}>
-          <TouchableOpacity
-            style={styles.optionContainer}
-            onPress={() => setSelectedOption("personal")}
-          >
-            <View style={styles.radioButton}>
-              {selectedOption === "personal" && (
-                <View style={styles.radioButtonSelected} />
-              )}
-            </View>
-            <ThemedText
-              style={{
-                width: "90%",
-              }}
-              type="default"
-            >
-              Tôi là Cá nhân đặt cọc căn hộ và đứng tên Hợp đồng đặt cọc
-            </ThemedText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.optionContainer}
-            onPress={() => setSelectedOption("other")}
-          >
-            <View style={styles.radioButton}>
-              {selectedOption === "other" && (
-                <View style={styles.radioButtonSelected} />
-              )}
-            </View>
-            <ThemedText
-              style={{
-                width: "90%",
-              }}
-            >
-              Tôi đặt cọc hộ người khác
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
-
-        <ThemedText type="heading">Giấy tờ chứng thực cá nhân</ThemedText>
-        <ThemedText type="default">
-          Quý khách hàng vui lòng cung cấp hình ảnh Căn cước công dân/Chứng mình
-          thư nhân dân.
-        </ThemedText>
-
-        <View>
-          {/* Ảnh mặt trước */}
-          <View
-            style={{
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#D9D9D9",
-                padding: 10,
-                borderRadius: 8,
-                marginTop: 10,
-                height: 200,
-                width: "80%",
-              }}
-              onPress={() => {
-                setModalVisible(true);
-                setIsFrontImage(true);
-              }}
-            >
-              {selectedFrontImage ? (
-                <Image
-                  source={{ uri: selectedFrontImage }}
-                  style={{ width: "100%", height: "100%" }}
-                />
-              ) : (
-                <UploadIcon />
-              )}
-            </TouchableOpacity>
-            <ThemedText type="default">Ảnh mặt trước</ThemedText>
-          </View>
-
-          {/* Ảnh mặt sau */}
-
-          <View
-            style={{
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#D9D9D9",
-                padding: 10,
-                borderRadius: 8,
-                marginTop: 10,
-                height: 200,
-                width: "80%",
-              }}
-              onPress={() => {
-                setModalVisible(true);
-                setIsFrontImage(false);
-              }}
-            >
-              {selectedBackImage ? (
-                <Image
-                  source={{ uri: selectedBackImage }}
-                  style={{ width: "100%", height: "100%" }}
-                />
-              ) : (
-                <UploadIcon />
-              )}
-            </TouchableOpacity>
-            <ThemedText type="default">Ảnh mặt sau</ThemedText>
-          </View>
-        </View>
-
-        {selectedFrontImage && selectedBackImage && (
-          <View>
-            <ThemedText type="heading">Thông tin cá nhân</ThemedText>
-            <DeclareInput
-              title="Họ và tên"
-              value={scannedName || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Số giấy tờ chứng thực cá nhân"
-              value={scannedIdNumber || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Giới tính"
-              value={scannedGender || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Ngày cấp"
-              value={scannedIssueDate || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Ngày sinh"
-              value={scannedBirthDate || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Quốc tịch"
-              value={"Việt Nam"}
-              editable={false}
-            />
-            <ThemedText type="heading">Thông tin địa chỉ</ThemedText>
-            <DeclareInput
-              title="Tỉnh/Thành phố"
-              value={province || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Quận/Huyện"
-              value={district || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Phường/Xã"
-              value={ward || ""}
-              editable={false}
-            />
-            <DeclareInput
-              title="Tên đường, số nhà, toà nhà"
-              value={street || ""}
-              editable={false}
-            />
-            <DeclareInput title="Email" value="" editable={true} />
-            <DeclareInput title="Số điện thoại" value="" editable={true} />
-          </View>
-        )}
-
-        <View>
-          <ThemedText type="heading">Xem hợp đồng đặt cọc mẫu</ThemedText>
-          <ThemedText type="default">
-            Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc dưới đây. Hợp
-            đồng đặt cọc chính thức có giá trị pháp lý khi khách hàng xác nhận
-            chuyển cọc trên hệ thống.
-          </ThemedText>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <ContractIcon />
-            <ThemedText
-              style={{
-                textDecorationLine: "underline",
-              }}
-              type="defaultSemiBold"
-            >
-              Xem hợp đồng đặt cọc mẫu
-            </ThemedText>
-          </View>
-          <View style={styles.checkBoxContainer}>
-            <Checkbox
-              value={isChecked1}
-              onValueChange={setChecked1}
-              style={styles.checkbox}
-              color={isChecked1 ? "#000000" : undefined}
-            />
-            <ThemedText style={styles.checkBoxText}>
-              Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
-            </ThemedText>
-          </View>
-          <View style={styles.checkBoxContainer}>
-            <Checkbox
-              value={isChecked2}
-              onValueChange={setChecked2}
-              style={styles.checkbox}
-              color={isChecked2 ? "#000000" : undefined}
-            />
-            <ThemedText style={styles.checkBoxText}>
-              Tôi cam kêt các thông tin Bên đặt cọc được cung cấp tại đay là
-              hoàn toàn chính xác
-            </ThemedText>
-          </View>
-          <View style={styles.checkBoxContainer}>
-            <Checkbox
-              value={isChecked3}
-              onValueChange={setChecked3}
-              style={styles.checkbox}
-              color={isChecked3 ? "#000000" : undefined}
-            />
-            <ThemedText style={styles.checkBoxText}>
-              Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung Hợp
-              đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc trên hệ
-              thống Luxuer
-            </ThemedText>
-          </View>
-        </View>
-
-        {/* camera */}
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            closeCamera();
+        <ThemedView
+          style={{
+            margin: 5,
+            borderRadius: 10,
+            padding: 10,
           }}
-          style={styles.CameraContainer}
         >
-          <CameraView
-            onBarcodeScanned={async (data) => {
-              // Xử lý khi phát hiện mã QR cho mặt trước
-              if (data && isFrontImage) {
-                console.log(data.data);
-                const userData = data.data;
-                setUserInfo(userData);
-              }
-            }}
-            ref={cameraRef}
-            style={styles.camera}
-            facing={facing}
-          >
-            <View style={styles.buttonContainer}>
-              {!userInfo && (
-                <Text style={styles.text}>
-                  Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét thông
-                  tin
-                </Text>
-              )}
-              {userInfo && (
-                <Text style={styles.text}>
-                  Vui lòng đưa cccd vào khung bên dưới và chụp
-                </Text>
-              )}
+          <DepositCard data={data} />
+        </ThemedView>
+        <ThemedView
+          style={{
+            margin: 5,
+            borderRadius: 10,
+            padding: 10,
+          }}
+        >
+          <ThemedText type="defaultSemiBold">
+            Quý khách vui lòng điền đầy dủ và chính xác các thông tin dưới đây
+            để tiến hành đặt cọc
+          </ThemedText>
+          <ThemedText type="heading">Thông tin khách hàng</ThemedText>
 
-              {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
-            </View>
-            {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
-            <View style={styles.footerCamera}>
-              <Pressable style={styles.button} onPress={takePicture}>
-                {userInfo && <Text style={styles.text}> Chụp </Text>}
-              </Pressable>
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.optionContainer}
+              onPress={() => setSelectedOption("personal")}
+            >
+              <View style={styles.radioButton}>
+                {selectedOption === "personal" && (
+                  <View style={styles.radioButtonSelected} />
+                )}
+              </View>
+              <ThemedText
+                style={{
+                  width: "90%",
+                }}
+                type="default"
+              >
+                Tôi là Cá nhân đặt cọc căn hộ và đứng tên Hợp đồng đặt cọc
+              </ThemedText>
+            </TouchableOpacity>
 
-              <Pressable
-                style={styles.button}
-                onPress={() => {
-                  if (userInfo && !selectedFrontImage) {
-                    setUserInfo("");
-                  }
-                  closeCamera();
+            <TouchableOpacity
+              style={styles.optionContainer}
+              onPress={() => setSelectedOption("other")}
+            >
+              <View style={styles.radioButton}>
+                {selectedOption === "other" && (
+                  <View style={styles.radioButtonSelected} />
+                )}
+              </View>
+              <ThemedText
+                style={{
+                  width: "90%",
                 }}
               >
-                <Text style={styles.text}> Đóng </Text>
-              </Pressable>
+                Tôi đặt cọc hộ người khác
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+
+          <ThemedText type="heading">Giấy tờ chứng thực cá nhân</ThemedText>
+          <ThemedText type="default">
+            Quý khách hàng vui lòng cung cấp hình ảnh Căn cước công dân/Chứng
+            mình thư nhân dân.
+          </ThemedText>
+
+          <View>
+            {/* Ảnh mặt trước */}
+            <View
+              style={{
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#D9D9D9",
+                  padding: 10,
+                  borderRadius: 8,
+                  marginTop: 10,
+                  height: 200,
+                  width: "80%",
+                }}
+                onPress={() => {
+                  setModalVisible(true);
+                  setIsFrontImage(true);
+                }}
+              >
+                {selectedFrontImage ? (
+                  <Image
+                    source={{ uri: selectedFrontImage }}
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                ) : (
+                  <UploadIcon />
+                )}
+              </TouchableOpacity>
+              <ThemedText type="default">Ảnh mặt trước</ThemedText>
             </View>
-            <Overlay />
-          </CameraView>
-        </Modal>
+
+            {/* Ảnh mặt sau */}
+
+            <View
+              style={{
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#D9D9D9",
+                  padding: 10,
+                  borderRadius: 8,
+                  marginTop: 10,
+                  height: 200,
+                  width: "80%",
+                }}
+                onPress={() => {
+                  setModalVisible(true);
+                  setIsFrontImage(false);
+                }}
+              >
+                {selectedBackImage ? (
+                  <Image
+                    source={{ uri: selectedBackImage }}
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                ) : (
+                  <UploadIcon />
+                )}
+              </TouchableOpacity>
+              <ThemedText type="default">Ảnh mặt sau</ThemedText>
+            </View>
+          </View>
+
+          {selectedFrontImage && selectedBackImage && (
+            <View>
+              <ThemedText type="heading">Thông tin cá nhân</ThemedText>
+
+              <DeclareInput
+                title="Họ và tên"
+                value={scannedName || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Số giấy tờ chứng thực cá nhân"
+                value={scannedIdNumber || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Giới tính"
+                value={scannedGender || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Ngày cấp"
+                value={scannedIssueDate || ""}
+                editable={false}
+                isDate
+              />
+              <DeclareInput
+                title="Ngày sinh"
+                value={scannedBirthDate || ""}
+                editable={false}
+                isDate
+              />
+              <DeclareInput
+                title="Quốc tịch"
+                value={"Việt Nam"}
+                editable={false}
+              />
+              <ThemedText type="heading">Thông tin địa chỉ</ThemedText>
+              <DeclareInput
+                title="Tỉnh/Thành phố"
+                value={province || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Quận/Huyện"
+                value={district || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Phường/Xã"
+                value={ward || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Tên đường, số nhà, toà nhà"
+                value={street || ""}
+                editable={false}
+              />
+              <DeclareInput
+                title="Email"
+                value={email}
+                editable={true}
+                onChangeText={(text) => {
+                  setEmail(text);
+                }}
+                // onBlur={handleBlur("email")}
+              />
+
+              <DeclareInput
+                title="Số điện thoại"
+                value={phone}
+                editable={true}
+                onChangeText={(text) => {
+                  setPhone(text);
+                }}
+                // onBlur={handleBlur("phone")}
+                isNumber
+              />
+            </View>
+          )}
+
+          <View>
+            <ThemedText type="heading">Xem hợp đồng đặt cọc mẫu</ThemedText>
+            <ThemedText type="default">
+              Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc dưới đây. Hợp
+              đồng đặt cọc chính thức có giá trị pháp lý khi khách hàng xác nhận
+              chuyển cọc trên hệ thống.
+            </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <ContractIcon />
+              <ThemedText
+                style={{
+                  textDecorationLine: "underline",
+                }}
+                type="defaultSemiBold"
+              >
+                Xem hợp đồng đặt cọc mẫu
+              </ThemedText>
+            </View>
+            <View style={styles.checkBoxContainer}>
+              <Checkbox
+                value={isChecked1}
+                onValueChange={setChecked1}
+                style={styles.checkbox}
+                color={isChecked1 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
+              </ThemedText>
+            </View>
+            <View style={styles.checkBoxContainer}>
+              <Checkbox
+                value={isChecked2}
+                onValueChange={setChecked2}
+                style={styles.checkbox}
+                color={isChecked2 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi cam kết các thông tin Bên đặt cọc được cung cấp tại đây là
+                hoàn toàn chính xác
+              </ThemedText>
+            </View>
+            <View style={styles.checkBoxContainer}>
+              <Checkbox
+                value={isChecked3}
+                onValueChange={setChecked3}
+                style={styles.checkbox}
+                color={isChecked3 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung Hợp
+                đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc trên
+                hệ thống Luxuer
+              </ThemedText>
+            </View>
+          </View>
+
+          {/* camera */}
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              closeCamera();
+            }}
+            style={styles.CameraContainer}
+          >
+            <CameraView
+              onBarcodeScanned={async (data) => {
+                // Xử lý khi phát hiện mã QR cho mặt trước
+                if (data && isFrontImage) {
+                  console.log(data.data);
+                  const userData = data.data;
+                  setUserInfo(userData);
+                }
+              }}
+              ref={cameraRef}
+              style={styles.camera}
+              facing={facing}
+            >
+              <View style={styles.buttonContainer}>
+                {!userInfo && (
+                  <Text style={styles.text}>
+                    Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét
+                    thông tin
+                  </Text>
+                )}
+                {userInfo && (
+                  <Text style={styles.text}>
+                    Vui lòng đưa cccd vào khung bên dưới và chụp
+                  </Text>
+                )}
+
+                {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
+              </View>
+              {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
+              <View style={styles.footerCamera}>
+                <Pressable style={styles.button} onPress={takePicture}>
+                  {userInfo && <Text style={styles.text}> Chụp </Text>}
+                </Pressable>
+
+                <Pressable
+                  style={styles.button}
+                  onPress={() => {
+                    if (userInfo && !selectedFrontImage) {
+                      setUserInfo("");
+                    }
+                    closeCamera();
+                  }}
+                >
+                  <Text style={styles.text}> Đóng </Text>
+                </Pressable>
+              </View>
+              {!userInfo ? <OverlayQR /> : <Overlay />}
+            </CameraView>
+          </Modal>
+        </ThemedView>
+      </ScrollView>
+      <ThemedView
+        style={{
+          position: "absolute",
+          width: "100%",
+          bottom: 0,
+          height: 95,
+          backgroundColor: "#fff",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          width={"90%"}
+          title="Xác nhận thông tin"
+          handlePress={() => {
+            validation();
+            handleSubmit();
+          }}
+        />
       </ThemedView>
-    </ScrollView>
+    </>
   );
 };
 
@@ -599,10 +756,14 @@ const styles = StyleSheet.create({
 
   checkBoxText: {
     width: "90%",
-    marginLeft: 10,
-    // lineHeight: 0.4,
+    marginLeft: 20,
   },
-  checkbox: {},
+  checkbox: {
+    position: "absolute",
+    left: 0,
+    top: 10,
+    paddingRight: 10,
+  },
 });
 
 export default DeclareInfoForm;

@@ -33,6 +33,7 @@ import { useSharedValue } from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
 import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
+import { formatArea, formatCurrency } from "@/model/other";
 export default function ProductDetails() {
   const [data, setData] = useState<Apartment>();
 
@@ -265,11 +266,15 @@ export default function ProductDetails() {
           >
             <View>
               <ThemedText>Mức giá:</ThemedText>
-              <ThemedText type="price">{data?.recommendedPrice} tỷ</ThemedText>
+              <ThemedText type="price">
+                {formatCurrency(data?.price) || "Liên hệ"}
+              </ThemedText>
             </View>
             <View>
               <ThemedText>Diện tích:</ThemedText>
-              <ThemedText type="defaultSemiBold">{data?.area} m2</ThemedText>
+              <ThemedText type="defaultSemiBold">
+                {formatArea(data?.area)}
+              </ThemedText>
             </View>
           </View>
           <View
@@ -321,12 +326,12 @@ export default function ProductDetails() {
           </View>
           <View>
             <ApartmentDetails
-              data={data?.recommendedPrice}
+              data={formatCurrency(data?.price) || "Liên hệ"}
               Icon={<PriceIcon width={20} height={20} />}
               title="Mức giá"
             />
             <ApartmentDetails
-              data={data?.area}
+              data={formatArea(data?.area)}
               Icon={<AreaIcon width={20} height={20} />}
               title="Diện tích"
             />
@@ -384,7 +389,17 @@ export default function ProductDetails() {
               width: "50%",
             }}
           >
-            <Button title="Đặt cọc" width={"90%"} link={"/deposit"} />
+            <Button
+              title="Đặt cọc"
+              width={"90%"}
+              handlePress={() => {
+                router.push({
+                  pathname: "/(main)/deposit",
+                  params: { id: id },
+                });
+              }}
+              link={"/deposit"}
+            />
           </View>
         </View>
       </View>
