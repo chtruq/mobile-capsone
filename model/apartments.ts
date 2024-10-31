@@ -42,3 +42,23 @@ export interface ApartmentSearchParams {
   pageIndex?: number;
   pageSize?: number;
 }
+
+export const ApartmentTypes = [
+  { label: "Căn Hộ Truyền Thống", value: 1 },
+  { label: "Penthouse", value: 2 },
+  { label: "Duplex", value: 3 },
+  { label: "Shophouse", value: 4 },
+  { label: "Studio", value: 5 },
+  { label: "Officetel", value: 6 },
+];
+
+export const Directions = [
+  { label: "Đông", value: 1 },
+  { label: "Tây", value: 2 },
+  { label: "Nam", value: 3 },
+  { label: "Bắc", value: 4 },
+  { label: "Đông Bắc", value: 5 },
+  { label: "Đông Nam", value: 6 },
+  { label: "Tây Bắc", value: 7 },
+  { label: "Tây Nam", value: 8 },
+];
