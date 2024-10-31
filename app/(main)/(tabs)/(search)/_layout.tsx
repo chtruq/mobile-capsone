@@ -9,7 +9,7 @@ export default function SearchLayout() {
         name="index"
         options={{
           headerTitle: "Tìm kiếm",
-          headerShown: true,
+          headerShown: false,
         }}
       />
     </Stack>

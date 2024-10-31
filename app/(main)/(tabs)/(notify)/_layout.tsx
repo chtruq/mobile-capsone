@@ -6,7 +6,7 @@ export default function NotifyLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
+        name="noti"
         options={{
           headerTitle: "Notify",
           headerShown: true,

@@ -1,10 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-export default function Notify() {
+const ProjectSearch = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>ProjectSearch</Text>
     </View>
   );
-}
+};
+
+export default ProjectSearch;

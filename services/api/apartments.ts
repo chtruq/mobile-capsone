@@ -2,6 +2,7 @@ import { ApartmentSearchParams } from "@/model/apartments";
 import apiClient from "./apiClient";
 
 export const apartmentsSearch = async (params: ApartmentSearchParams) => {
+  console.log("params", params);
   try {
     const response = await apiClient.get("/apartments/search", { params });
     return response.data;
