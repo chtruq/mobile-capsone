@@ -78,7 +78,7 @@ const Search = () => {
               // data={ProjectData}
               />
             ) : (
-              <ApartmentSearch data={ApartmentData} />
+              <ApartmentSearch searchQuery={search} data={ApartmentData} />
             )}
           </SafeAreaView>
         </KeyboardAvoidingView>
