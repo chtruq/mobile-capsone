@@ -24,8 +24,10 @@ import AreaRanges from "./filter/AreaRanges";
 import RoomRanges from "./filter/RoomRanges";
 import ApartmentDirection from "./filter/ApartmentDirection";
 import { apartmentsSearch } from "@/services/api/apartments";
+import ApartmentCard from "./Apartment/ApartmentCard";
 interface ApartmentSearchProps {
   data: any;
+  searchQuery: string;
 }
 
 interface ItemCheckboxProps {
@@ -61,7 +63,7 @@ const ItemCheckbox: FC<ItemCheckboxProps> = ({
   );
 };
 
-const ApartmentSearch: FC<ApartmentSearchProps> = ({ data }) => {
+const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const [selectedSort, setSelectedSort] = React.useState("");
 
   const [ApartmentData, setApartmentData] = React.useState([]);
@@ -78,6 +80,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data }) => {
   const [isDistrictOpen, setIsDistrictOpen] = useState(false);
   const [isWardOpen, setIsWardOpen] = useState(false);
   const [formParams, setFormParams] = useState({
+    apartmentName: searchQuery,
     district: "",
     ward: "",
     apartmentTypes: [] as number[],
@@ -241,6 +244,10 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data }) => {
       }
     });
 
+    if (processedParams.apartmentName === "") {
+      delete processedParams.apartmentName;
+    }
+
     if (processedParams.district === "Chọn quận huyện") {
       delete processedParams.district;
     }
@@ -284,8 +291,13 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data }) => {
     }
   };
 
+  useEffect(() => {
+    getApartmentData();
+  }, []);
+
   const clearAllFilters = () => {
     setFormParams({
+      apartmentName: "",
       district: "",
       ward: "",
       apartmentTypes: [],
@@ -308,50 +320,63 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data }) => {
         padding: 8,
       }}
     >
-      <View style={styles.filter}>
-        <TouchableOpacity
-          onPress={() => {
-            setFilterVisible(!filterVisible);
-          }}
-          style={styles.filterItem}
-        >
-          <FilterIcon />
-          <ThemedText type="defaultSemiBold">Bộ lọc</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterItem}>
-          <ThemedText type="defaultSemiBold">Loại hình</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterItem}>
-          <ThemedText type="defaultSemiBold">Khoảng giá</ThemedText>
-        </TouchableOpacity>
-      </View>
-      <View
+      <ScrollView
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
+          marginBottom: 110,
         }}
       >
-        <View>
-          <ThemedText type="small">
-            {data.length} căn hộ được tìm thấy
-          </ThemedText>
+        <View style={styles.filter}>
+          <TouchableOpacity
+            onPress={() => {
+              setFilterVisible(!filterVisible);
+            }}
+            style={styles.filterItem}
+          >
+            <FilterIcon />
+            <ThemedText type="defaultSemiBold">Bộ lọc</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterItem}>
+            <ThemedText type="defaultSemiBold">Loại hình</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterItem}>
+            <ThemedText type="defaultSemiBold">Khoảng giá</ThemedText>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
+        <View
           style={{
             flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
           }}
-          onPress={() => setVisible(true)}
         >
-          <ThemedText type="small">
-            {selectedSort ? selectedSort : "Mới nhất"}
-          </ThemedText>
-          <AntDesign name="down" size={16} color="#252B5C" />
-        </TouchableOpacity>
-      </View>
+          <View>
+            <ThemedText type="small">
+              {data.length} căn hộ được tìm thấy
+            </ThemedText>
+          </View>
 
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+            onPress={() => setVisible(true)}
+          >
+            <ThemedText type="small">
+              {selectedSort ? selectedSort : "Mới nhất"}
+            </ThemedText>
+            <AntDesign name="down" size={16} color="#252B5C" />
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          {ApartmentData.length === 0 && (
+            <ThemedText>Không tìm thấy căn hộ nào</ThemedText>
+          )}
+          {ApartmentData?.length > 0 &&
+            ApartmentData.map((item: any) => <ApartmentCard data={item} />)}
+        </View>
+      </ScrollView>
       {/* sortby */}
       <Modal
         transparent={true}
@@ -696,7 +721,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   filterModelContent: {
-    padding: 10,
+    padding: 5,
     marginBottom: 100,
   },
   filterModelFooter: {
