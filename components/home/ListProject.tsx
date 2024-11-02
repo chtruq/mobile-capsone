@@ -6,58 +6,76 @@ import {
   ImageBackground,
   useColorScheme,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollView } from "react-native";
 import Area from "@/assets/icon/area";
 import { ThemedText } from "../ThemedText";
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FavIcon from "../favoriteIcon/FavIcon";
+import { apartmentsSearch } from "@/services/api/apartments";
+import { Apartment } from "@/model/apartments";
+import { router } from "expo-router";
 
 export default function ListProject() {
-  const data = [
-    {
-      id: 1,
-      name: "Căn hộ view sông Sài Gòn, view grand park 81",
-      image: require("@/assets/images/home/home.png"),
-      area: "55,8",
-      location: "Quận 9, TP.HCM",
-      price: "1,5 tỷ",
-      isFav: true,
-    },
-    {
-      id: 2,
-      name: "Căn hộ view sông Sài Gòn, view grand park 81",
-      image: require("@/assets/images/home/home.png"),
+  const [data, setData] = React.useState([]);
 
-      area: "55,8",
-      location: "Quận 9, TP.HCM",
-      price: "1,5 tỷ",
-      isFav: true,
-    },
-    {
-      id: 3,
-      name: "Căn hộ view sông Sài Gòn, view grand park 81",
-      image: require("@/assets/images/home/home.png"),
+  // const data = [
+  //   {
+  //     id: 1,
+  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
+  //     image: require("@/assets/images/home/home.png"),
+  //     area: "55,8",
+  //     location: "Quận 9, TP.HCM",
+  //     price: "1,5 tỷ",
+  //     isFav: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
+  //     image: require("@/assets/images/home/home.png"),
 
-      area: "55,8",
-      location: "Quận 9, TP.HCM",
-      price: "1,5 tỷ",
-      isFav: false,
-    },
-    {
-      id: 4,
-      name: "Căn hộ view sông Sài Gòn, view grand park 81",
-      image: require("@/assets/images/home/home.png"),
+  //     area: "55,8",
+  //     location: "Quận 9, TP.HCM",
+  //     price: "1,5 tỷ",
+  //     isFav: true,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
+  //     image: require("@/assets/images/home/home.png"),
 
-      area: "55,8",
-      location: "Quận 9, TP.HCM",
-      price: "1,5 tỷ",
-      isFav: false,
-    },
-  ];
+  //     area: "55,8",
+  //     location: "Quận 9, TP.HCM",
+  //     price: "1,5 tỷ",
+  //     isFav: false,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
+  //     image: require("@/assets/images/home/home.png"),
+
+  //     area: "55,8",
+  //     location: "Quận 9, TP.HCM",
+  //     price: "1,5 tỷ",
+  //     isFav: false,
+  //   },
+  // ];
 
   const colorScheme = useColorScheme();
+  const getApartments = async () => {
+    try {
+      const response = await apartmentsSearch({});
+      setData(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getApartments();
+  }, []);
 
   return (
     <ScrollView
@@ -67,7 +85,7 @@ export default function ListProject() {
         backgroundColor: "#fff",
       }}
     >
-      {data.map((item) => (
+      {data.map((item: Apartment) => (
         <TouchableOpacity
           style={{
             backgroundColor: "#f5f4f8",
@@ -76,11 +94,17 @@ export default function ListProject() {
             height: 330,
             width: 250,
           }}
-          key={item.id}
+          key={item.apartmentID}
+          onPress={() => {
+            router.push({
+              pathname: "/details/[id]",
+              params: { id: item.apartmentID },
+            });
+          }}
         >
           <View>
             <Image
-              source={item.image}
+              source={{ uri: item?.images[0]?.imageUrl }}
               style={{
                 width: 250,
                 height: 200,
@@ -88,7 +112,8 @@ export default function ListProject() {
               }}
             />
             <FavIcon
-              isFav={item.isFav}
+              // isFav={item.isFav}
+              isFav={true}
               style={{ position: "absolute", top: 10, right: 10 }}
             />
           </View>
@@ -152,7 +177,7 @@ export default function ListProject() {
               ellipsizeMode="tail"
             >
               {/* name */}
-              {item.name}
+              {item.apartmentName}
             </ThemedText>
             {/* location */}
             <View

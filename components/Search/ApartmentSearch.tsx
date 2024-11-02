@@ -8,6 +8,7 @@ import {
   Touchable,
   ScrollView,
   TextInput,
+  RefreshControl,
 } from "react-native";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { ThemedView } from "../ThemedView";
@@ -17,7 +18,7 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import Button from "../button/Button";
 import HCMCData from "../../utils/address/HCMC_tree.json";
 import { Picker } from "@react-native-picker/picker";
-import { ApartmentTypes } from "@/model/apartments";
+import { Apartment, ApartmentTypes } from "@/model/apartments";
 import Checkbox from "expo-checkbox";
 import PriceRanges from "./filter/PriceRanges";
 import AreaRanges from "./filter/AreaRanges";
@@ -314,6 +315,14 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     setSelectedWard(null);
   };
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getApartmentData();
+    setRefreshing(false);
+  }, []);
+
   return (
     <ThemedView
       style={{
@@ -324,6 +333,13 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         style={{
           marginBottom: 110,
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#4630EB"]}
+          />
+        }
       >
         <View style={styles.filter}>
           <TouchableOpacity
@@ -350,7 +366,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         >
           <View>
             <ThemedText type="small">
-              {data.length} căn hộ được tìm thấy
+              {ApartmentData.length} căn hộ được tìm thấy
             </ThemedText>
           </View>
 
@@ -369,12 +385,20 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
           </TouchableOpacity>
         </View>
 
-        <View>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
           {ApartmentData.length === 0 && (
             <ThemedText>Không tìm thấy căn hộ nào</ThemedText>
           )}
           {ApartmentData?.length > 0 &&
-            ApartmentData.map((item: any) => <ApartmentCard data={item} />)}
+            ApartmentData.map((item: Apartment) => (
+              <ApartmentCard key={item.apartmentID} data={item} />
+            ))}
         </View>
       </ScrollView>
       {/* sortby */}

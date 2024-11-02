@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import React, { FC } from "react";
 import BuyIcon from "@/assets/icon/search/BuyIcon";
+import ProviderIcon from "@/assets/icon/search/ProviderIcon";
 
 interface SearchModalProps {
   value: string;
@@ -8,6 +9,7 @@ interface SearchModalProps {
   placeholder: string;
   isOpen: any;
   toggleSheet: any;
+  searchType: string;
 }
 
 const SearchModal: FC<SearchModalProps> = ({
@@ -16,6 +18,7 @@ const SearchModal: FC<SearchModalProps> = ({
   placeholder,
   isOpen,
   toggleSheet,
+  searchType,
 }) => {
   return (
     <View
@@ -38,7 +41,22 @@ const SearchModal: FC<SearchModalProps> = ({
         }}
         onPress={toggleSheet}
       >
-        <BuyIcon width="40" height="40" />
+        {searchType === "Dự án" ? (
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#f5f4f8",
+              borderRadius: 10,
+            }}
+          >
+            <ProviderIcon width={30} height={30} />
+          </View>
+        ) : (
+          <BuyIcon width="40" height="40" />
+        )}
       </TouchableOpacity>
       <View
         style={{
