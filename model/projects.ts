@@ -8,4 +8,6 @@ export interface ProjectApartment {
   projectApartmentStatus: number; // Status represented as an integer (e.g., 0: inactive, 1: active)
   apartmentProjectProviderID: string; // UUID of the provider responsible for the project apartment
   apartmentProjectProviderName: string | null; // Name of the provider, which may be null if not available
+  projectImages: any[]; // Array to hold project images, type can be refined as needed
+  facilities: any[]; // Array to hold facilities, type can be refined as needed
 }

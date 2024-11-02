@@ -57,13 +57,16 @@ const Search = () => {
         >
           <SafeAreaView>
             <SearchModal
-              placeholder="Tìm kiếm"
+              placeholder={
+                searchType === "Dự án" ? "Tìm kiếm dự án" : `Tìm kiếm căn hộ `
+              }
               value={search}
               isOpen={isOpen1}
               toggleSheet={toggleSheet1}
               onChangeText={() => {
                 setSearch(search);
               }}
+              searchType={searchType}
             />
             {/* {searchType === "" && (
               <View>
