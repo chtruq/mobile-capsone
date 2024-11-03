@@ -146,7 +146,9 @@ export default function Profile() {
         />
         <ProfileTabBtn
           title="Danh sách ký gửi"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/(main)/personal/consignment-manage");
+          }}
           icon={<BuildingIcon />}
         />
         <ThemedText
@@ -167,13 +169,23 @@ export default function Profile() {
         <ProfileTabBtn
           title="Danh sách yêu cầu"
           onPress={() => {
-            router.push("/(main)/personal/request-manage");
+            router.push({
+              pathname: "/(main)/personal/request-manage",
+              params: {
+                status: 0,
+              },
+            });
           }}
           icon={<RequestIcon />}
         />
         <ProfileTabBtn
           title="Danh sách lịch hẹn"
-          onPress={() => {}}
+          onPress={() => {
+            router.push({
+              pathname: "/(main)/personal/request-manage",
+              params: { status: 1 },
+            });
+          }}
           icon={<CalendarIcon />}
         />
         <ThemedText

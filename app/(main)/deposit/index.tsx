@@ -50,7 +50,7 @@ const DepositDeclare = () => {
     setFormData({
       ...data,
       apartmentId: id,
-      accountId: userInfo.id,
+      accountId: userInfo?.id,
     });
     nextStep();
   };
@@ -128,13 +128,16 @@ const DepositDeclare = () => {
         )}
         {step === 1 && (
           <ConfirmInfo
-            data={formData}
+            data={formData as ScannedInfo}
             onConfirm={() => nextStep()}
             onBack={() => prevStep()}
           />
         )}
         {step === 2 && (
-          <OrderStatus />
+          <OrderStatus
+            onConfirm={() => nextStep()}
+            prevStep={() => prevStep()}
+          />
           // <>
           //   <View>
           //     <Text>3</Text>

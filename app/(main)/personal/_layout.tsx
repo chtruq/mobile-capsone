@@ -63,6 +63,16 @@ const PersonalLayout = () => {
           headerBackTitle: "Back",
         }}
       />
+      <Stack.Screen
+        name="consignment-manage"
+        options={{
+          headerTitle: "Quản lí ký gửi",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
     </Stack>
   );
 };

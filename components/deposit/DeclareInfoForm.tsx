@@ -90,6 +90,18 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   const [ward, setWard] = useState("");
   const [street, setStreet] = useState("");
 
+  const formatDateTime = (dateString: string): string => {
+    if (dateString.length !== 8) {
+      throw new Error("Invalid dateString format. Expected format: DDMMYYYY");
+    }
+
+    const formattedDate = `${dateString.slice(2, 4)}/${dateString.slice(
+      0,
+      2
+    )}/${dateString.slice(4)}`;
+    return formattedDate;
+  };
+
   useEffect(() => {
     if (userInfo) {
       const [id, idNumber, name, birthDate, gender, address, issueDate] =
@@ -97,11 +109,12 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
       setScannedIdNumber(id);
       setScannedOldIdNumber(idNumber);
       setScannedName(name);
-      setScannedBirthDate(birthDate);
+      setScannedBirthDate(formatDateTime(birthDate));
       setScannedGender(gender);
       setScannedAddress(address);
-      setScannedIssueDate(issueDate);
+      setScannedIssueDate(formatDateTime(issueDate));
     }
+    console.log("userInfo", userInfo);
   }, [userInfo]);
 
   useEffect(() => {
@@ -145,7 +158,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
         if (isFrontImage) {
           if (!userInfo) {
             setErrMes("Ảnh chưa hợp lệ, vui lòng chụp lại");
-            console.log("err", errMes);
+            // console.log("err", errMes);
             return;
           } else {
             setSelectedFrontImage(photo.uri);
@@ -158,7 +171,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           closeCamera();
           return;
         }
-        console.log("Photo taken:", photo.uri);
+        // console.log("Photo taken:", photo.uri);
       } catch (error) {
         console.log("Error taking picture:", error);
       }
@@ -636,7 +649,6 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           width={"90%"}
           title="Xác nhận thông tin"
           handlePress={() => {
-            validation();
             handleSubmit();
           }}
         />

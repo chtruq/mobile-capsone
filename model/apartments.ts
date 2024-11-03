@@ -23,6 +23,7 @@ export interface Apartment {
   projectApartmentName: string; // Name of the apartment project
   verificationID: string; // Verification ID, can be a placeholder for unverified apartments
   images: ApartmentImage[]; // Array of URLs for images
+  userLiked: boolean; // Whether the user has liked the apartment
 }
 export interface ApartmentSearchParams {
   apartmentName?: string;
@@ -39,6 +40,7 @@ export interface ApartmentSearchParams {
   directions?: number[];
   balconyDirections?: number[];
   saleStatuses?: number[];
+  accountId?: string;
   pageIndex?: number;
   pageSize?: number;
 }

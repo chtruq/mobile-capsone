@@ -15,6 +15,7 @@ import FavIcon from "@/components/favoriteIcon/FavIcon";
 import { Link, router } from "expo-router";
 import { apartmentsSearch } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Project() {
   const [data, setData] = useState([]);
@@ -42,10 +43,13 @@ export default function Project() {
   //     isFav: false,
   //   },
   // ];
+  const { userInfo } = useAuth();
 
   const getApartments = async () => {
     try {
-      const response = await apartmentsSearch({});
+      const response = await apartmentsSearch({
+        accountId: userInfo?.id,
+      });
       return response.data;
     } catch (error) {
       console.error("Get project API error:", error);
@@ -101,8 +105,7 @@ export default function Project() {
                     right: 10,
                     zIndex: 1,
                   }}
-                  // isFav={item.isFav}
-                  isFav
+                  isFav={item.userLiked}
                 />
 
                 <View

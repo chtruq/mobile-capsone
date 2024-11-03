@@ -2,36 +2,46 @@ import React, { FC } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Deposit } from "@/model/deposit";
 
 interface RequestItemProps {
-  status: string;
-  requestId: string;
-  requestType: string;
-  createTime: string;
-  appointmentTime: string;
+  data: Deposit;
 }
 
-const RequestItem: FC<RequestItemProps> = ({
-  status,
-  requestId,
-  requestType,
-  createTime,
-  appointmentTime,
-}) => {
+const RequestItem: FC<RequestItemProps> = ({ data }) => {
   // Set status styles
   let statusStyle = styles.statusPending;
   let statusText = "Chờ xử lý";
 
-  switch (status) {
-    case "processed":
+  switch (data.depositStatus) {
+    case 0:
       statusStyle = styles.statusProcessed;
       statusText = "Đã xử lý";
       break;
-    case "canceled":
+    case 1:
       statusStyle = styles.statusCanceled;
-      statusText = "Đã hủy";
+      statusText = "Chờ xử lý";
       break;
-    case "pending":
+    case 2:
+      statusStyle = styles.statusCanceled;
+      statusText = "Chờ thanh toán";
+      break;
+    case 3:
+      statusStyle = styles.statusProcessed;
+      statusText = "Đã huỷ";
+      break;
+    case 4:
+      statusStyle = styles.statusCanceled;
+      statusText = "Đã huỷ";
+      break;
+    case 5:
+      statusStyle = styles.statusProcessed;
+      statusText = "Thanh toán thất bại";
+      break;
+    case 6:
+      statusStyle = styles.statusProcessed;
+      statusText = "Thanh toán thành công";
+      break;
     default:
       statusStyle = styles.statusPending;
       statusText = "Chờ xử lý";
@@ -44,7 +54,7 @@ const RequestItem: FC<RequestItemProps> = ({
       onPress={() => {
         router.push({
           pathname: "/(main)/personal/request-detail/[id]",
-          params: { id: requestId },
+          params: { id: data?.depositID },
         });
       }}
     >
@@ -52,19 +62,19 @@ const RequestItem: FC<RequestItemProps> = ({
         <Text style={styles.statusText}>{statusText}</Text>
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.requestId}>Mã yêu cầu: {requestId}</Text>
-        <Text style={styles.requestType}>{requestType}</Text>
+        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositID}</Text>
+        <Text style={styles.requestType}>{data?.description}</Text>
         <View style={styles.timeRow}>
           <View style={styles.timeInfo}>
             <View>
               <Text style={styles.timeText}>Thời gian tạo</Text>
-              <Text style={styles.timeValue}>{createTime}</Text>
+              <Text style={styles.timeValue}>{data?.createDate}</Text>
             </View>
           </View>
           <View style={styles.timeInfo}>
             <View>
-              <Text style={styles.timeText}>Thời gian hẹn</Text>
-              <Text style={styles.timeValue}>{appointmentTime}</Text>
+              {/* <Text style={styles.timeText}>Thời gian hẹn</Text> */}
+              {/* <Text style={styles.timeValue}>{appointmentTime}</Text> */}
             </View>
           </View>
         </View>
@@ -100,6 +110,13 @@ const styles = StyleSheet.create({
   statusCanceled: {
     backgroundColor: "#B0BEC5", // Grey
   },
+  statusFailed: {
+    backgroundColor: "#FF5722", // Red
+  },
+  statusSuccess: {
+    backgroundColor: "#4CAF50", // Green
+  },
+
   statusText: {
     color: "#FFFFFF",
     fontWeight: "bold",

@@ -9,6 +9,7 @@ import BedIcon1 from "@/assets/icon/details/bedroom1";
 import BathRoomIcon from "@/assets/icon/details/bathroom";
 import LocationIcon from "@/assets/icon/details/location";
 import { router } from "expo-router";
+import FavIcon from "@/components/favoriteIcon/FavIcon";
 
 interface ApartmentCardProps {
   data: Apartment;
@@ -47,6 +48,10 @@ const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
           <Image
             source={{ uri: data?.images[0]?.imageUrl }}
             style={{ width: "100%", height: 200 }}
+          />
+          <FavIcon
+            isFav={data.userLiked}
+            style={{ position: "absolute", top: 10, right: 10 }}
           />
         </View>
 

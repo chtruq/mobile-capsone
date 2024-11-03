@@ -28,6 +28,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } else {
           setUserToken(token);
           scheduleAutoLogout(decoded.exp);
+          setIsAuthenticated(true);
+          const userInfo = await SecureStore.getItemAsync("userInfo");
+          if (userInfo) {
+            setUserInfo(JSON.parse(userInfo));
+          }
         }
       }
     };
@@ -54,9 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUserToken(token);
     await SecureStore.setItemAsync("userToken", token);
     const decoded: any = jwtDecode(token);
+    if (!decoded || Object.keys(decoded).length === 0) {
+      handleLogout();
+      return;
+    }
     setIsAuthenticated(true);
     scheduleAutoLogout(decoded.exp);
     setUserInfo(decoded);
+    await SecureStore.setItemAsync("userInfo", JSON.stringify(decoded));
   };
 
   const handleLogout = async () => {

@@ -16,6 +16,7 @@ import FavIcon from "../favoriteIcon/FavIcon";
 import { apartmentsSearch } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { router } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ListProject() {
   const [data, setData] = React.useState([]);
@@ -62,10 +63,14 @@ export default function ListProject() {
   //   },
   // ];
 
+  const { userInfo } = useAuth();
+
   const colorScheme = useColorScheme();
   const getApartments = async () => {
     try {
-      const response = await apartmentsSearch({});
+      const response = await apartmentsSearch({
+        accountId: userInfo?.id,
+      });
       setData(response.data);
       return response.data;
     } catch (error) {
@@ -112,8 +117,8 @@ export default function ListProject() {
               }}
             />
             <FavIcon
-              // isFav={item.isFav}
-              isFav={true}
+              isFav={item.userLiked}
+              // isFav={true}
               style={{ position: "absolute", top: 10, right: 10 }}
             />
           </View>
