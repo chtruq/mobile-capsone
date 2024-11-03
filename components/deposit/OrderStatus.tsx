@@ -1,10 +1,17 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { FC } from "react";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
 import { Colors } from "@/constants/Colors";
+import Button from "../button/Button";
+import { router } from "expo-router";
 
-const OrderStatus = () => {
+interface Props {
+  onConfirm: () => void;
+  prevStep: () => void;
+}
+
+const OrderStatus: FC<Props> = ({ prevStep }) => {
   return (
     <ThemedView
       style={{
@@ -55,6 +62,43 @@ const OrderStatus = () => {
             Yêu cầu đặt cọc căn hộ của bạn đang kiểm duyệt vui lòng chờ tới
             trong 24 giờ.
           </ThemedText>
+        </View>
+      </ThemedView>
+      <ThemedView
+        style={{
+          position: "absolute",
+          width: "100%",
+          bottom: 0,
+          height: 95,
+          backgroundColor: "#fff",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "90%",
+          }}
+        >
+          {/* <Button
+            width={"30%"}
+            title="Quay lại"
+            handlePress={() => prevStep()}
+            backgroundColor="#fff"
+            textColor="#000"
+            isBack
+          /> */}
+          <Button
+            width={"100%"}
+            title="Xem yêu cầu của bạn"
+            handlePress={() =>
+              router.replace({
+                pathname: "/(main)/personal/request-manage",
+              })
+            }
+          />
         </View>
       </ThemedView>
     </ThemedView>

@@ -2,6 +2,7 @@ import { View, Text, TextInput } from "react-native";
 import React, { FC } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { date } from "yup";
 
 interface DeclareInputProps {
   title: string;
@@ -13,13 +14,6 @@ interface DeclareInputProps {
   onBlur?: (e: any) => void;
   otherProps?: any;
 }
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-  const year = String(date.getFullYear()).slice(); // Get last two digits of the year
-  return `${day}/${month}/${year}`;
-};
 
 const DeclareInput: FC<DeclareInputProps> = ({
   title,
@@ -30,8 +24,6 @@ const DeclareInput: FC<DeclareInputProps> = ({
   onBlur,
   onChangeText,
 }) => {
-  const displayValue = isDate ? formatDate(value) : value;
-
   return (
     <ThemedView
       style={{
@@ -51,7 +43,7 @@ const DeclareInput: FC<DeclareInputProps> = ({
         {title}
       </ThemedText>
       <TextInput
-        value={displayValue}
+        value={value}
         editable={editable}
         onChangeText={onChangeText}
         placeholder="Nhập thông tin"

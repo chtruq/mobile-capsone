@@ -1,8 +1,8 @@
 import { ApartmentSearchParams } from "@/model/apartments";
 import apiClient from "./apiClient";
+import { useAuth } from "@/context/AuthContext";
 
 export const apartmentsSearch = async (params: ApartmentSearchParams) => {
-  console.log("params", params);
   try {
     const response = await apiClient.get("/apartments/search", { params });
     return response.data;

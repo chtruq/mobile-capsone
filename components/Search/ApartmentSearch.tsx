@@ -26,6 +26,7 @@ import RoomRanges from "./filter/RoomRanges";
 import ApartmentDirection from "./filter/ApartmentDirection";
 import { apartmentsSearch } from "@/services/api/apartments";
 import ApartmentCard from "./Apartment/ApartmentCard";
+import { useAuth } from "@/context/AuthContext";
 interface ApartmentSearchProps {
   data: any;
   searchQuery: string;
@@ -80,6 +81,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const [selectedWard, setSelectedWard] = useState(null);
   const [isDistrictOpen, setIsDistrictOpen] = useState(false);
   const [isWardOpen, setIsWardOpen] = useState(false);
+  const { userInfo } = useAuth();
   const [formParams, setFormParams] = useState({
     apartmentName: searchQuery,
     district: "",
@@ -93,6 +95,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     numberOfBathrooms: 0,
     directions: [] as number[],
     balconyDirections: [] as number[],
+    accountId: userInfo?.id,
   });
 
   const handleSelect = (item: any) => {
@@ -310,6 +313,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
       numberOfBathrooms: 0,
       directions: [],
       balconyDirections: [],
+      accountId: userInfo?.id,
     });
     setSelectedDistrict(null);
     setSelectedWard(null);

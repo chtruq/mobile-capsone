@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { FC } from "react";
 import { ThemedView } from "../ThemedView";
@@ -17,7 +18,7 @@ import { depositRequest } from "@/services/api/deposit";
 interface Props {
   onConfirm: () => void;
   onBack: () => void;
-  data: ScannedInfo | undefined;
+  data: ScannedInfo;
 }
 
 const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
@@ -34,8 +35,14 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
 
   const onSubmit = async () => {
     try {
-      await depositRequest(data);
-      onConfirm();
+      const res = await depositRequest(data);
+      if (res) {
+        onConfirm();
+      } else {
+        console.error("Có lỗi xảy ra:", res);
+        Alert.alert("Có lỗi xảy ra:", res);
+      }
+      // onConfirm();
     } catch (error) {
       console.error("Có lỗi xảy ra:", error);
       throw error;
@@ -186,7 +193,7 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
             title="Xác nhận yêu cầu"
             handlePress={() => {
               onSubmit();
-              onConfirm();
+              // onConfirm();
             }}
           />
         </View>
