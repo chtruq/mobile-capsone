@@ -66,7 +66,27 @@ const PersonalLayout = () => {
       <Stack.Screen
         name="consignment-manage"
         options={{
-          headerTitle: "Quản lí ký gửi",
+          headerTitle: "Danh sách ký gửi",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="fav-apartment"
+        options={{
+          headerTitle: "Danh sách yêu thích",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="consignment-request"
+        options={{
+          headerTitle: "Yêu cầu ký gửi",
           headerShown: true,
           headerTitleAlign: "center",
           headerBackTitleVisible: false,

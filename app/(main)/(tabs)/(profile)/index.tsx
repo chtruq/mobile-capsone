@@ -131,7 +131,9 @@ export default function Profile() {
         {/*  */}
         <ProfileTabBtn
           title="Căn hộ yêu thích"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/(main)/personal/fav-apartment");
+          }}
           icon={<HeartIcon />}
         />
         <ProfileTabBtn

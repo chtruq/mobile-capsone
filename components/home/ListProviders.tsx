@@ -36,7 +36,6 @@ export default function ListProviders() {
     try {
       const res = await getListProjectProvider();
       setData(res.data);
-      console.log("abc", res.data);
       return res.data;
     } catch (error) {
       console.error(error);

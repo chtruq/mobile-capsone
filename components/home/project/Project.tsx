@@ -16,8 +16,9 @@ import { Link, router } from "expo-router";
 import { apartmentsSearch } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { useAuth } from "@/context/AuthContext";
+import ApartmentCard from "@/components/Search/Apartment/ApartmentCard";
 
-export default function Project() {
+const Project = ({ refreshData }: { refreshData: () => void }) => {
   const [data, setData] = useState([]);
   // const data = [
   //   {
@@ -50,6 +51,7 @@ export default function Project() {
       const response = await apartmentsSearch({
         accountId: userInfo?.id,
       });
+      setData(response.data);
       return response.data;
     } catch (error) {
       console.error("Get project API error:", error);
@@ -58,12 +60,8 @@ export default function Project() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getApartments();
-      setData(data);
-    };
-    fetchData();
-  }, []);
+    getApartments();
+  }, [userInfo, apartmentsSearch]);
 
   return (
     <ScrollView
@@ -75,87 +73,20 @@ export default function Project() {
       }}
     >
       {data?.map((item: Apartment) => {
-        console.log("item", item.images[0]?.imageUrl);
-
         return (
-          <Pressable key={item.apartmentID}>
-            <Link
-              href={{
-                pathname: "/details/[id]",
-                params: { id: item.apartmentID },
-              }}
-            >
-              <ImageBackground
-                style={{
-                  width: 300,
-                  height: 200,
-                  marginRight: 10,
-                  borderRadius: 40,
-                  overflow: "hidden",
-                }}
-                resizeMode="cover"
-                width={300}
-                height={200}
-                source={{ uri: item.images[0]?.imageUrl }}
-              >
-                <FavIcon
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    zIndex: 1,
-                  }}
-                  isFav={item.userLiked}
-                />
-
-                <View
-                  style={{
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: 10,
-                    borderRadius: 10,
-                    marginVertical: 10,
-                    position: "absolute",
-                    bottom: 0,
-                  }}
-                >
-                  <ThemedText
-                    type="heading"
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "semibold",
-                      color: "white",
-                      borderBlockColor: "#000",
-                    }}
-                  >
-                    {item.apartmentName}
-                  </ThemedText>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <MaterialIcons
-                      name="location-on"
-                      size={20}
-                      color="#FA712D"
-                    />
-                    <ThemedText
-                      style={{
-                        color: "white",
-                      }}
-                      type="default"
-                    >
-                      {item.address}
-                    </ThemedText>
-                  </View>
-                </View>
-              </ImageBackground>
-            </Link>
-          </Pressable>
+          <View
+            style={{
+              width: 350,
+              marginRight: 10,
+            }}
+            key={item.apartmentID}
+          >
+            <ApartmentCard data={item} />
+          </View>
         );
       })}
     </ScrollView>
   );
-}
+};
+
+export default Project;

@@ -4,6 +4,8 @@ import {
   SafeAreaView,
   useColorScheme,
   TouchableOpacity,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import React from "react";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
@@ -18,138 +20,155 @@ import Project from "@/components/home/project/Project";
 import ListProviders from "@/components/home/ListProviders";
 import { StatusBar } from "expo-status-bar";
 import ListProject from "@/components/home/ListProject";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function Home() {
   const colorScheme = useColorScheme();
 
+  //make refreshData function
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const refreshData = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ThemedScrollView style={{}}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor:
-              colorScheme === "dark"
-                ? Colors.dark.background
-                : Colors.light.background,
-            marginHorizontal: 10,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <UserHeader />
-            <Notify />
+    <ThemedView
+      style={{
+        flex: 1,
+      }}
+    >
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refreshData} />
+        }
+        style={{
+          flex: 1,
+          paddingBottom: 10,
+          paddingTop: 10,
+        }}
+      >
+        <SafeAreaView>
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              <UserHeader />
+              <Notify />
+            </View>
+
+            <ThemedViewSHKeyboard>
+              <CircleBg />
+              <SearchInput />
+              {/* Home content */}
+              {/* Du an noi bat */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText
+                  type="title"
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "semibold",
+                    marginBottom: 10,
+                  }}
+                >
+                  Dự án nổi bật
+                </ThemedText>
+                <TouchableOpacity>
+                  <ThemedText
+                    type="default"
+                    style={{
+                      fontSize: 16,
+                    }}
+                  >
+                    Xem tất cả
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+              <Project refreshData={refreshData} />
+
+              {/* Provider noi bat */}
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText
+                  type="title"
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "semibold",
+                    marginBottom: 10,
+                  }}
+                >
+                  Nhà cung cấp nổi bật
+                </ThemedText>
+                <TouchableOpacity>
+                  <ThemedText
+                    type="default"
+                    style={{
+                      fontSize: 16,
+                    }}
+                  >
+                    Xem thêm
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+              <ListProviders />
+              {/* Apartment */}
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText
+                  type="title"
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "semibold",
+                    marginBottom: 10,
+                  }}
+                >
+                  Mua bán
+                </ThemedText>
+                <TouchableOpacity>
+                  <ThemedText
+                    type="default"
+                    style={{
+                      fontSize: 16,
+                    }}
+                  >
+                    Xem thêm
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+              <ListProject />
+            </ThemedViewSHKeyboard>
+
+            <StatusBar
+              backgroundColor={colorScheme === "dark" ? "#fff" : "#000"}
+              style="auto"
+            />
           </View>
-
-          <ThemedViewSHKeyboard>
-            <CircleBg />
-            <SearchInput />
-            {/* Home content */}
-            {/* Du an noi bat */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <ThemedText
-                type="title"
-                style={{
-                  fontSize: 24,
-                  fontWeight: "semibold",
-                  marginBottom: 10,
-                }}
-              >
-                Dự án nổi bật
-              </ThemedText>
-              <TouchableOpacity>
-                <ThemedText
-                  type="default"
-                  style={{
-                    fontSize: 16,
-                  }}
-                >
-                  Xem tất cả
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
-            <Project />
-
-            {/* Provider noi bat */}
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <ThemedText
-                type="title"
-                style={{
-                  fontSize: 24,
-                  fontWeight: "semibold",
-                  marginBottom: 10,
-                }}
-              >
-                Nhà cung cấp nổi bật
-              </ThemedText>
-              <TouchableOpacity>
-                <ThemedText
-                  type="default"
-                  style={{
-                    fontSize: 16,
-                  }}
-                >
-                  Xem thêm
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
-            <ListProviders />
-            {/* Apartment */}
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <ThemedText
-                type="title"
-                style={{
-                  fontSize: 24,
-                  fontWeight: "semibold",
-                  marginBottom: 10,
-                }}
-              >
-                Mua bán
-              </ThemedText>
-              <TouchableOpacity>
-                <ThemedText
-                  type="default"
-                  style={{
-                    fontSize: 16,
-                  }}
-                >
-                  Xem thêm
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
-            <ListProject />
-          </ThemedViewSHKeyboard>
-
-          <StatusBar
-            backgroundColor={colorScheme === "dark" ? "#fff" : "#000"}
-            style="auto"
-          />
-        </View>
-      </ThemedScrollView>
-    </SafeAreaView>
+        </SafeAreaView>
+      </ScrollView>
+    </ThemedView>
   );
 }

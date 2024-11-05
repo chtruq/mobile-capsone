@@ -17,6 +17,7 @@ import { apartmentsSearch } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import ApartmentCard from "../Search/Apartment/ApartmentCard";
 
 export default function ListProject() {
   const [data, setData] = React.useState([]);
@@ -64,7 +65,6 @@ export default function ListProject() {
   // ];
 
   const { userInfo } = useAuth();
-
   const colorScheme = useColorScheme();
   const getApartments = async () => {
     try {
@@ -80,7 +80,9 @@ export default function ListProject() {
 
   useEffect(() => {
     getApartments();
-  }, []);
+  }, [userInfo, apartmentsSearch]);
+
+  //refresh when add or remove favorite
 
   return (
     <ScrollView
@@ -91,111 +93,9 @@ export default function ListProject() {
       }}
     >
       {data.map((item: Apartment) => (
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#f5f4f8",
-            marginRight: 10,
-            borderRadius: 40,
-            height: 330,
-            width: 250,
-          }}
-          key={item.apartmentID}
-          onPress={() => {
-            router.push({
-              pathname: "/details/[id]",
-              params: { id: item.apartmentID },
-            });
-          }}
-        >
-          <View>
-            <Image
-              source={{ uri: item?.images[0]?.imageUrl }}
-              style={{
-                width: 250,
-                height: 200,
-                borderRadius: 40,
-              }}
-            />
-            <FavIcon
-              isFav={item.userLiked}
-              // isFav={true}
-              style={{ position: "absolute", top: 10, right: 10 }}
-            />
-          </View>
-
-          <View
-            style={{
-              margin: 10,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <ThemedText
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? Colors.dark.textPrice
-                      : Colors.light.textPrice,
-                  fontSize: 20,
-                }}
-              >
-                {/* price */}
-                {item.price}
-              </ThemedText>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignContent: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {/* svg */}
-                <View
-                  style={{
-                    width: 20,
-                    height: 20,
-                    alignContent: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Area />
-                </View>
-                {/* area */}
-                <Text>{item.area}m2</Text>
-              </View>
-            </View>
-
-            <ThemedText
-              type="title"
-              style={{
-                fontSize: 16,
-                color:
-                  colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
-                lineHeight: 25,
-              }}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {/* name */}
-              {item.apartmentName}
-            </ThemedText>
-            {/* location */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <MaterialIcons name="location-on" size={20} color="#FA712D" />
-              <Text>{item.location}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+        <View key={item.apartmentID}>
+          <ApartmentCard data={item} />
+        </View>
       ))}
     </ScrollView>
   );

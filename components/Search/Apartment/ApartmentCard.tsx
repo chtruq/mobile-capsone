@@ -51,6 +51,7 @@ const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
           />
           <FavIcon
             isFav={data.userLiked}
+            ApartmentId={data.apartmentID}
             style={{ position: "absolute", top: 10, right: 10 }}
           />
         </View>
