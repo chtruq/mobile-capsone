@@ -22,17 +22,7 @@ interface Props {
 }
 
 const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
-  // const Data = {
-  //   type: "Cá nhân",
-  //   name: "Nguyen Van A",
-  //   idcccd: "07928281103",
-  //   email: "nguyenvana@gmail.com",
-  //   phone: "0978123122",
-  //   nationality: "Việt Nam",
-  //   address: "123 Đường ABC, Quận 1, TP.HCM",
-  // };
   const [isChecked, setChecked] = React.useState(true);
-
   const onSubmit = async () => {
     try {
       const res = await depositRequest(data);

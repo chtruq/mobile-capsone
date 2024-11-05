@@ -9,6 +9,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
@@ -34,15 +35,18 @@ import { Colors } from "@/constants/Colors";
 import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { formatArea, formatCurrency } from "@/model/other";
+import { useAuth } from "@/context/AuthContext";
+
 export default function ProductDetails() {
   const [data, setData] = useState<Apartment>();
 
   const colorScheme = useColorScheme();
 
   const { id } = useLocalSearchParams();
+  const { userInfo } = useAuth();
   const getApartment = async () => {
     try {
-      const response = await apartmentsDetail(id);
+      const response = await apartmentsDetail(id, userInfo?.id);
       return response.data;
     } catch (error) {
       console.error("Get apartment API error:", error);
@@ -134,276 +138,301 @@ export default function ProductDetails() {
     "17:00",
   ];
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  //refresh
+  const refreshData = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
+
   return (
-    <ThemedScrollView
-      style={{
-        flex: 1,
-      }}
-    >
-      <View
+    <>
+      <ThemedScrollView
         style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          width: "100%",
-          height: 300,
+          flex: 1,
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refreshData} />
+        }
       >
-        <FlatList
-          data={
-            data?.images.map((image) => {
-              return { uri: image.imageUrl };
-            }) || []
-          }
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={360} // Chiều rộng của mỗi item + padding
-          snapToAlignment="center"
-          decelerationRate="fast"
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Pressable>
-              <Image
-                source={item}
-                style={{
-                  width: 350,
-                  height: 300,
-                  marginHorizontal: 5,
-                }}
-                // resizeMode="contain"
-                resizeMethod="auto"
-              />
-            </Pressable>
-          )}
-          contentContainerStyle={{
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            width: "100%",
             height: 300,
           }}
+        >
+          <FlatList
+            data={
+              data?.images.map((image) => {
+                return { uri: image.imageUrl };
+              }) || []
+            }
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={360} // Chiều rộng của mỗi item + padding
+            snapToAlignment="center"
+            decelerationRate="fast"
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Pressable>
+                <Image
+                  source={item}
+                  style={{
+                    width: 350,
+                    height: 300,
+                    marginHorizontal: 5,
+                  }}
+                  // resizeMode="contain"
+                  resizeMethod="auto"
+                />
+              </Pressable>
+            )}
+            contentContainerStyle={{
+              height: 300,
+            }}
+            style={{
+              width: "100%",
+            }}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+          />
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+              backgroundColor: "rgba(166, 166, 166, 0.65)",
+              width: 50,
+              borderRadius: 10,
+              marginRight: 10,
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                marginVertical: 10,
+                color: "white",
+              }}
+            >
+              {currentIndex + 1}/{imageArr.length}
+            </Text>
+          </View>
+        </View>
+        <FavIcon
+          isFav={data?.userLiked ?? false}
           style={{
-            width: "100%",
+            position: "absolute",
+            top: 40,
+            right: 20,
+            zIndex: 1,
           }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
+          ApartmentId={data?.apartmentID}
         />
         <View
           style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            backgroundColor: "rgba(166, 166, 166, 0.65)",
-            width: 50,
-            borderRadius: 10,
-            marginRight: 10,
-            marginBottom: 10,
+            backgroundColor: "white",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            marginHorizontal: 10,
           }}
         >
-          <Text
-            style={{ textAlign: "center", marginVertical: 10, color: "white" }}
-          >
-            {currentIndex + 1}/{imageArr.length}
-          </Text>
-        </View>
-      </View>
-      <FavIcon
-        isFav
-        style={{
-          position: "absolute",
-          top: 40,
-          right: 20,
-          zIndex: 1,
-        }}
-      />
-      <View
-        style={{
-          backgroundColor: "white",
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          marginHorizontal: 10,
-        }}
-      >
-        <ThemedText
-          type="title"
-          style={{
-            fontSize: 20,
-            fontWeight: "500",
-          }}
-        >
-          {data?.apartmentName}
-        </ThemedText>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <MaterialIcons name="location-on" size={16} color="#53587A" />
           <ThemedText
-            type="default"
+            type="title"
             style={{
-              fontSize: 16,
-              color: "gray",
-              textDecorationLine: "underline",
+              fontSize: 20,
+              fontWeight: "500",
             }}
           >
-            {data?.address}
+            {data?.apartmentName}
           </ThemedText>
-        </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <MaterialIcons name="location-on" size={16} color="#53587A" />
+            <ThemedText
+              type="default"
+              style={{
+                fontSize: 16,
+                color: "gray",
+                textDecorationLine: "underline",
+              }}
+            >
+              {data?.address}
+            </ThemedText>
+          </View>
 
-        {/* price/ Area */}
-        <View
-          style={{
-            flexDirection: "row",
-            marginVertical: 10,
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 20,
-          }}
-        >
+          {/* price/ Area */}
           <View
             style={{
               flexDirection: "row",
               marginVertical: 10,
+              justifyContent: "space-between",
+              alignItems: "center",
               gap: 20,
             }}
           >
-            <View>
-              <ThemedText>Mức giá:</ThemedText>
-              <ThemedText type="price">
-                {formatCurrency(data?.price) || "Liên hệ"}
-              </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                marginVertical: 10,
+                gap: 20,
+              }}
+            >
+              <View>
+                <ThemedText>Mức giá:</ThemedText>
+                <ThemedText type="price">
+                  {formatCurrency(data?.price) || "Liên hệ"}
+                </ThemedText>
+              </View>
+              <View>
+                <ThemedText>Diện tích:</ThemedText>
+                <ThemedText type="defaultSemiBold">
+                  {formatArea(data?.area)}
+                </ThemedText>
+              </View>
             </View>
-            <View>
-              <ThemedText>Diện tích:</ThemedText>
-              <ThemedText type="defaultSemiBold">
-                {formatArea(data?.area)}
-              </ThemedText>
+            <View
+              style={{
+                borderRadius: 100,
+                backgroundColor: "#F4F4F4",
+                width: 60,
+                height: 60,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View360 height={40} width={40} />
             </View>
           </View>
-          <View
-            style={{
-              borderRadius: 100,
-              backgroundColor: "#F4F4F4",
-              width: 60,
-              height: 60,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View360 height={40} width={40} />
-          </View>
-        </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <ThemedText type="heading">Mô tả</ThemedText>
-          <ThemedText numberOfLines={showFullDescription ? undefined : 6}>
-            {data?.description}
-          </ThemedText>
-          <Pressable
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 5,
-            }}
-            onPress={toggleDescription}
-          >
-            <ThemedText type="red">
-              {showFullDescription ? "Thu gọn" : "Xem thêm"}
+          <View style={{ marginVertical: 10 }}>
+            <ThemedText type="heading">Mô tả</ThemedText>
+            <ThemedText numberOfLines={showFullDescription ? undefined : 6}>
+              {data?.description}
             </ThemedText>
-          </Pressable>
-        </View>
+            <Pressable
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 5,
+              }}
+              onPress={toggleDescription}
+            >
+              <ThemedText type="red">
+                {showFullDescription ? "Thu gọn" : "Xem thêm"}
+              </ThemedText>
+            </Pressable>
+          </View>
 
-        <View
-          style={{
-            marginVertical: 10,
-          }}
-        >
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+              marginVertical: 10,
             }}
           >
-            <ThemedText type="heading">Đặc điểm bất động sản</ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <ThemedText type="heading">Đặc điểm bất động sản</ThemedText>
+            </View>
+            <View>
+              <ApartmentDetails
+                data={formatCurrency(data?.price) || "Liên hệ"}
+                Icon={<PriceIcon width={20} height={20} />}
+                title="Mức giá"
+              />
+              <ApartmentDetails
+                data={formatArea(data?.area)}
+                Icon={<AreaIcon width={20} height={20} />}
+                title="Diện tích"
+              />
+              <ApartmentDetails
+                data={data?.numberOfRooms}
+                Icon={<BedIcon width={20} height={20} />}
+                title="Số phòng ngủ"
+              />
+              <ApartmentDetails
+                data={data?.numberOfBathrooms}
+                Icon={<BathRoomIcon width={20} height={20} />}
+                title="Số phòng tắm"
+              />
+              <ApartmentDetails
+                data={data?.balconyDirection}
+                Icon={<HouseDirectionIcon width={20} height={20} />}
+                title="Hướng nhà"
+              />
+              <ApartmentDetails
+                data={data?.balconyDirection}
+                Icon={<BalconyDirectionIcon width={20} height={20} />}
+                title="Hướng ban công"
+              />
+            </View>
           </View>
           <View>
-            <ApartmentDetails
-              data={formatCurrency(data?.price) || "Liên hệ"}
-              Icon={<PriceIcon width={20} height={20} />}
-              title="Mức giá"
-            />
-            <ApartmentDetails
-              data={formatArea(data?.area)}
-              Icon={<AreaIcon width={20} height={20} />}
-              title="Diện tích"
-            />
-            <ApartmentDetails
-              data={data?.numberOfRooms}
-              Icon={<BedIcon width={20} height={20} />}
-              title="Số phòng ngủ"
-            />
-            <ApartmentDetails
-              data={data?.numberOfBathrooms}
-              Icon={<BathRoomIcon width={20} height={20} />}
-              title="Số phòng tắm"
-            />
-            <ApartmentDetails
-              data={data?.balconyDirection}
-              Icon={<HouseDirectionIcon width={20} height={20} />}
-              title="Hướng nhà"
-            />
-            <ApartmentDetails
-              data={data?.balconyDirection}
-              Icon={<BalconyDirectionIcon width={20} height={20} />}
-              title="Hướng ban công"
-            />
+            <ThemedText type="heading">Thông tin dự án</ThemedText>
           </View>
         </View>
-        <View>
-          <ThemedText type="heading">Thông tin dự án</ThemedText>
-        </View>
 
+        <StatusBar style="auto" />
+      </ThemedScrollView>
+      <ThemedView
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          borderTopColor: "#000",
+          borderTopWidth: 1,
+          paddingVertical: 10,
+          width: "100%",
+          paddingHorizontal: 10,
+        }}
+      >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginVertical: 10,
-            borderTopColor: "#000",
-            borderTopWidth: 1,
-            paddingVertical: 10,
+            width: "50%",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <View
-            style={{
-              width: "50%",
-            }}
-          >
-            <Button
-              title="Đặt lịch xem"
-              width={"90%"}
-              backgroundColor="#F5F4F8"
-              textColor="#252B5C"
-              handlePress={toggleSheet}
-            />
-          </View>
-          <View
-            style={{
-              width: "50%",
-            }}
-          >
-            <Button
-              title="Đặt cọc"
-              width={"90%"}
-              handlePress={() => {
-                router.push({
-                  pathname: "/(main)/deposit",
-                  params: { id: id },
-                });
-              }}
-              link={"/deposit"}
-            />
-          </View>
+          <Button
+            title="Đặt lịch xem"
+            width={"90%"}
+            backgroundColor="#F5F4F8"
+            textColor="#252B5C"
+            handlePress={toggleSheet}
+          />
         </View>
-      </View>
-
+        <View
+          style={{
+            width: "50%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            title="Đặt cọc"
+            width={"90%"}
+            handlePress={() => {
+              router.push({
+                pathname: "/(main)/deposit",
+                params: { id: id },
+              });
+            }}
+            link={"/deposit"}
+          />
+        </View>
+      </ThemedView>
       <BottomSheet isOpen={isOpen} toggleSheet={toggleSheet}>
         <ThemedText type="heading">Đặt lịch tư vấn và xem căn hộ</ThemedText>
         <View
@@ -727,8 +756,6 @@ export default function ProductDetails() {
           />
         </View>
       </BottomSheet>
-
-      <StatusBar style="auto" />
-    </ThemedScrollView>
+    </>
   );
 }

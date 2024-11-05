@@ -13,56 +13,60 @@ interface Props {
 
 const OrderStatus: FC<Props> = ({ prevStep }) => {
   return (
-    <ThemedView
-      style={{
-        paddingBottom: 300,
-      }}
-    >
-      <ThemedText type="heading">Trạng thái đặt cọc</ThemedText>
+    <>
       <ThemedView
         style={{
-          justifyContent: "center",
+          // justifyContent: "center",
           alignItems: "center",
-          padding: 15,
-          borderColor: "#ccc",
-          borderWidth: 1,
-          margin: 15,
-          borderRadius: 10,
+          height: "100%",
         }}
       >
-        <View
+        <ThemedText type="heading">Trạng thái đặt cọc</ThemedText>
+        <ThemedView
           style={{
-            borderRadius: 100,
-            backgroundColor: Colors.light.primary,
-            width: 100,
-            height: 100,
             justifyContent: "center",
             alignItems: "center",
+            padding: 15,
+            borderColor: "#ccc",
+            borderWidth: 1,
+            margin: 15,
+            borderRadius: 10,
           }}
         >
-          <Text
+          <View
             style={{
-              color: Colors.light.background,
-              fontSize: 30,
+              borderRadius: 100,
+              backgroundColor: Colors.light.primary,
+              width: 100,
+              height: 100,
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            !
-          </Text>
-        </View>
-        <View>
-          <ThemedText
-            style={{
-              alignSelf: "center",
-            }}
-            type="heading"
-          >
-            Đang chờ xác thực
-          </ThemedText>
-          <ThemedText type="default">
-            Yêu cầu đặt cọc căn hộ của bạn đang kiểm duyệt vui lòng chờ tới
-            trong 24 giờ.
-          </ThemedText>
-        </View>
+            <Text
+              style={{
+                color: Colors.light.background,
+                fontSize: 30,
+              }}
+            >
+              !
+            </Text>
+          </View>
+          <View>
+            <ThemedText
+              style={{
+                alignSelf: "center",
+              }}
+              type="heading"
+            >
+              Đang chờ xác thực
+            </ThemedText>
+            <ThemedText type="default">
+              Yêu cầu đặt cọc căn hộ của bạn đang kiểm duyệt vui lòng chờ tới
+              trong 24 giờ.
+            </ThemedText>
+          </View>
+        </ThemedView>
       </ThemedView>
       <ThemedView
         style={{
@@ -96,12 +100,15 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
             handlePress={() =>
               router.replace({
                 pathname: "/(main)/personal/request-manage",
+                params: {
+                  status: 0,
+                },
               })
             }
           />
         </View>
       </ThemedView>
-    </ThemedView>
+    </>
   );
 };
 
