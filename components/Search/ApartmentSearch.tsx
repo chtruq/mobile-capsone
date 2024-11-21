@@ -288,7 +288,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
 
     try {
       const response = await apartmentsSearch(processedParams);
-      setApartmentData(response.data);
+      setApartmentData(response.data?.apartments);
       console.log("response", response);
     } catch (error) {
       console.error(error);

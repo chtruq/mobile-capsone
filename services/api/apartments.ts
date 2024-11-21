@@ -18,7 +18,7 @@ export const apartmentsSearch = async (params?: ApartmentSearchParams | {}) => {
 
 export const apartmentsDetail = async (
   id: string | string[],
-  accountID: string
+  accountID?: string
 ) => {
   try {
     const response = await apiClient.get(`/apartments/${id}`, {
