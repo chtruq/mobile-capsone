@@ -22,6 +22,8 @@ export const Colors = {
     textPrice: "#C48C37",
     money: "#C48C37",
     arrowIcon: "#252B5C",
+    cancel: "#FFC6C6",
+    success: "#8bc840",
   },
   dark: {
     darkText: "#745E4C",

@@ -71,8 +71,8 @@ export default function ListProject() {
       const response = await apartmentsSearch({
         accountId: userInfo?.id,
       });
-      setData(response.data);
-      return response.data;
+      setData(response.data.apartments);
+      return response.data.apartments;
     } catch (error) {
       console.error(error);
     }

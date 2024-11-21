@@ -51,7 +51,7 @@ const Project = ({ refreshData }: { refreshData: () => void }) => {
       const response = await apartmentsSearch({
         accountId: userInfo?.id,
       });
-      setData(response.data);
+      setData(response.data.apartments);
       return response.data;
     } catch (error) {
       console.error("Get project API error:", error);
