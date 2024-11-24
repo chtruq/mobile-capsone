@@ -53,6 +53,9 @@ export default function ListProviders() {
           style={{
             padding: 10,
             paddingHorizontal: 10,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           key={item.apartmentProjectProviderID}
           onPress={() => {
@@ -64,14 +67,18 @@ export default function ListProviders() {
         >
           <View
             style={{
-              borderColor: "#ccc",
+              padding: 10,
               borderWidth: 4,
               borderRadius: 100,
-              padding: 10,
+              borderColor: "#ccc",
+              width: 100,
+              height: 100,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <Image
-              // source={item.image}
+              // source={{ uri: item.image }}
               style={{
                 width: 60,
                 height: 60,

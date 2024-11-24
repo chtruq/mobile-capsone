@@ -162,7 +162,7 @@ export default function Profile() {
           Quản lý giao dịch và yêu cầu
         </ThemedText>
         <ProfileTabBtn
-          title="Quản lý giao dịch"
+          title="Giao dịch mua"
           onPress={() => {
             router.push("/(main)/personal/transaction-manage");
           }}

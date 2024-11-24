@@ -6,6 +6,8 @@ import {
   Image,
   Touchable,
   TouchableOpacity,
+  Modal,
+  SafeAreaView,
 } from "react-native";
 import React, { FC, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -14,75 +16,90 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { getDepositDetail } from "@/services/api/deposit";
 import ApartmentTransCard from "@/components/transaction/ApartmentTransCard";
-import { Deposit } from "@/model/deposit";
+import { Deposit, DepositStatus } from "@/model/deposit";
 import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { formatCurrency, numberToWords } from "@/model/other";
 import Line from "@/components/other/Line";
 import { AntDesign } from "@expo/vector-icons";
 import Button from "@/components/button/Button";
-
-enum DepositStatus {
-  Active = 0,
-  Request = 1,
-  Accept = 2,
-  Reject = 3,
-  Disable = 4,
-  PaymentFailed = 5,
-  Paid = 6,
-}
+import { createPayment } from "@/services/api/payment";
+import { WebView } from "react-native-webview";
+import PaymentModal from "@/components/payment/paymentModal/PaymentModal";
 interface TransactionStatusProps {
   status: DepositStatus;
 }
 
 const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   const statusColors: { [key in DepositStatus]: string } = {
-    [DepositStatus.Request]: Colors.light.primary,
-    [DepositStatus.Accept]: Colors.light.success,
-    [DepositStatus.Reject]: Colors.light.cancel,
-    [DepositStatus.Paid]: Colors.light.success,
-    [DepositStatus.PaymentFailed]: Colors.light.cancel,
-    [DepositStatus.Active]: Colors.light.primary,
-    [DepositStatus.Disable]: Colors.light.cancel,
+    [DepositStatus.Pending]: "#FFD700",
+    [DepositStatus.Accept]: "#32CD32",
+    [DepositStatus.Reject]: "#FF4040",
+    [DepositStatus.Disable]: "#ccc",
+    [DepositStatus.PaymentFailed]: "#FF4040",
+    [DepositStatus.Paid]: "#32CD32",
+    [DepositStatus.TradeRequested]: "#FFD700",
+    [DepositStatus.Exported]: "#0000FF",
   };
 
   const backgroundColor = statusColors[status] || Colors.light.background;
   const statusIcon = (() => {
     switch (status) {
-      case 1:
+      case DepositStatus.Pending:
         return "🔍";
-      case 2:
+      case DepositStatus.Accept:
         return "✅";
-      case 3:
+      case DepositStatus.Reject:
         return "❌";
+      case DepositStatus.Disable:
+        return "❌";
+      case DepositStatus.PaymentFailed:
+        return "❌";
+      case DepositStatus.Paid:
+        return "✅";
+      case DepositStatus.TradeRequested:
+        return "🔄";
       default:
         return "❔";
     }
   })();
   const textContent = (() => {
     switch (status) {
-      case DepositStatus.Request:
-        return "Đang chờ xác nhận";
+      case DepositStatus.Pending:
+        return "Tạo yêu cầu thành công";
       case DepositStatus.Accept:
-        return "Xác nhận giao dịch";
+        return "Đã tạo yêu cầu giao dịch";
       case DepositStatus.Reject:
         return "Giao dịch đã huỷ";
-      case DepositStatus.Paid:
-        return "Giao dịch hoàn tất";
+      case DepositStatus.Disable:
+        return "Giao dịch đã bị vô hiệu hóa";
       case DepositStatus.PaymentFailed:
         return "Thanh toán thất bại";
+      case DepositStatus.Paid:
+        return "Đã thanh toán";
+      case DepositStatus.TradeRequested:
+        return "Giao dịch trao đổi đã được yêu cầu";
       default:
         return "Trạng thái không xác định";
     }
   })();
   const textContentNote = (() => {
     switch (status) {
-      case 1:
-        return "Giao dịch đang chờ xác nhận từ bên bán";
-      case 2:
-        return "Giao dịch đã hoàn tất";
-      case 3:
-        return "Giao dịch này đã huỷ do lý do gì đó. Bạn có thể tham khảo thông tin chi tiết bên dưới.";
+      case DepositStatus.Pending:
+        return "Sẽ có nhân viên liên hệ và tiến hành xác nhận yêu cầu của bạn";
+      case DepositStatus.Accept:
+        return "Yêu cầu giao dịch đã được tạo thành công";
+      case DepositStatus.Reject:
+        return "Giao dịch đã bị huỷ";
+      case DepositStatus.Disable:
+        return "Giao dịch đã bị vô hiệu hóa, vì các lý do sau: không thanh toán, không xác nhận giao dịch";
+      case DepositStatus.PaymentFailed:
+        return "Thanh toán thất bại";
+      case DepositStatus.Paid:
+        return "Đã thanh toán";
+      case DepositStatus.TradeRequested:
+        return "Giao dịch trao đổi đã được yêu cầu";
+
       default:
         return "Không xác định";
     }
@@ -173,7 +190,7 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
           title="Xác nhận giao dịch"
         />
         <ProcessItems
-          currentStatus={DepositStatus.Request}
+          currentStatus={DepositStatus.Accept}
           title="Đã tạo yêu cầu giao dịch"
         />
       </View>
@@ -193,6 +210,8 @@ const TransactionDetail = () => {
   const { id } = useLocalSearchParams();
   const [apartmentDetail, setApartmentDetail] = useState<Apartment>();
   const [data, setData] = useState<Deposit>();
+  const [paymentUrl, setPaymentUrl] = useState<string>();
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const fetchDepositDetail = async () => {
     try {
       const res = await getDepositDetail(id);
@@ -208,12 +227,12 @@ const TransactionDetail = () => {
   }, []);
 
   const apartmentID = data?.apartmentID;
-
   const getApartmentDetail = async () => {
     try {
       const response = await apartmentsDetail(String(apartmentID));
-      setApartmentDetail(response.data);
-      return response.data;
+      console.log("Get apartment detail", response?.data);
+      setApartmentDetail(response?.data);
+      return response?.data;
     } catch (error) {
       console.error("Get apartment detail API error:", error);
       throw error;
@@ -221,8 +240,25 @@ const TransactionDetail = () => {
   };
 
   React.useEffect(() => {
-    getApartmentDetail();
+    if (data?.apartmentID) getApartmentDetail();
   }, [apartmentID]);
+
+  const onPayment = async () => {
+    try {
+      const res = await createPayment(data?.depositID);
+      setPaymentUrl(res.url);
+      setPaymentModalVisible(true);
+      // return res.url;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (data?.depositStatus === DepositStatus.Paid) {
+      setPaymentModalVisible(false);
+    }
+  }, [data?.depositStatus]);
 
   return (
     <ThemedView
@@ -237,8 +273,8 @@ const TransactionDetail = () => {
           }}
         >
           <ThemedView>
-            <TransactionStatus status={4} />
-            <TransactionProcess status={4} />
+            <TransactionStatus status={data?.depositStatus as DepositStatus} />
+            <TransactionProcess status={data?.depositStatus as DepositStatus} />
           </ThemedView>
 
           <ThemedView
@@ -302,7 +338,7 @@ const TransactionDetail = () => {
               <View style={styles.transactionInfoCol}>
                 <ThemedText type="small">Mã giao dịch</ThemedText>
                 <ThemedText style={styles.transactionInfoTitle} type="default">
-                  {data?.depositID}
+                  {data?.depositCode}
                 </ThemedText>
               </View>
             </View>
@@ -366,10 +402,21 @@ const TransactionDetail = () => {
               paddingBottom: 20,
             }}
           >
-            <Button title="Thanh toán tiền cọc" width={"90%"} />
+            <Button
+              handlePress={() => {
+                onPayment();
+              }}
+              title="Thanh toán tiền cọc"
+              width={"90%"}
+            />
           </ThemedView>
         </>
       )}
+      <PaymentModal
+        paymentModalVisible={paymentModalVisible}
+        setPaymentModalVisible={setPaymentModalVisible}
+        paymentUrl={paymentUrl || ""}
+      />
     </ThemedView>
   );
 };
@@ -442,5 +489,14 @@ const styles = StyleSheet.create({
   },
   transactionInfoTitle: {
     fontSize: 14,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  webView: {
+    flex: 1,
+    width: "100%",
   },
 });

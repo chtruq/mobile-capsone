@@ -10,12 +10,15 @@ import BathRoomIcon from "@/assets/icon/details/bathroom";
 import LocationIcon from "@/assets/icon/details/location";
 import { router } from "expo-router";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
+import { useAuth } from "@/context/AuthContext";
+import { handleInteraction } from "@/services/api/interaction";
 
 interface ApartmentCardProps {
   data: Apartment;
 }
 
 const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
+  const { userInfo } = useAuth();
   return (
     <TouchableOpacity
       style={{
@@ -24,11 +27,12 @@ const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
         borderRadius: 8,
         marginBottom: 8,
       }}
-      onPress={() => {
+      onPress={async () => {
         router.push({
           pathname: "/details/[id]",
           params: { id: data.apartmentID },
         });
+        await handleInteraction(data.apartmentID, userInfo?.id);
       }}
     >
       <View

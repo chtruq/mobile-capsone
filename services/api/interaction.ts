@@ -28,3 +28,19 @@ export const handleFavorite = async (
     console.log(error);
   }
 };
+
+export const handleInteraction = async (
+  apartmentID: string,
+  accountID: string
+) => {
+  try {
+    const res = await apiClient.post("/apartment-interactions/create", {
+      apartmentID,
+      accountID,
+      interactionTypes: 2,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

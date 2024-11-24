@@ -21,6 +21,7 @@ import ListProviders from "@/components/home/ListProviders";
 import { StatusBar } from "expo-status-bar";
 import ListProject from "@/components/home/ListProject";
 import { ThemedView } from "@/components/ThemedView";
+import { router } from "expo-router";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -31,6 +32,7 @@ export default function Home() {
   const refreshData = () => {
     setRefreshing(true);
     setTimeout(() => {
+      router.canDismiss();
       setRefreshing(false);
     }, 1000);
   };
@@ -83,7 +85,7 @@ export default function Home() {
                     marginBottom: 10,
                   }}
                 >
-                  Dự án nổi bật
+                  Dự án mới nhất
                 </ThemedText>
                 <TouchableOpacity>
                   <ThemedText
