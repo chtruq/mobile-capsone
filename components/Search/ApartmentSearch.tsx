@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { ThemedView } from "../ThemedView";
@@ -68,7 +69,7 @@ const ItemCheckbox: FC<ItemCheckboxProps> = ({
 const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const [selectedSort, setSelectedSort] = React.useState("");
 
-  const [ApartmentData, setApartmentData] = React.useState([]);
+  const [ApartmentData, setApartmentData] = React.useState<Apartment[]>([]);
 
   const [visible, setVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
@@ -82,6 +83,10 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const [isDistrictOpen, setIsDistrictOpen] = useState(false);
   const [isWardOpen, setIsWardOpen] = useState(false);
   const { userInfo } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadMore, setIsLoadMore] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
   const [formParams, setFormParams] = useState({
     apartmentName: searchQuery,
     district: "",
@@ -228,9 +233,9 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     });
   };
 
-  useEffect(() => {
-    console.log("formParams", formParams);
-  }, [formParams]);
+  // useEffect(() => {
+  //   console.log("formParams", formParams);
+  // }, [formParams]);
 
   const processFormData = (formParams: any) => {
     // Example: Remove empty or null values
@@ -282,16 +287,27 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   };
 
   const getApartmentData = async () => {
-    console.log("formParams", formParams);
-    const processedParams = processFormData(formParams);
-    console.log("processedParams", processedParams);
+    if (isLoading || (!hasMore && isLoadMore)) return;
 
+    setIsLoading(true);
+    const processedParams = processFormData({
+      ...formParams,
+      pageIndex: pageNumber,
+      pageSize: 10,
+    });
     try {
       const response = await apartmentsSearch(processedParams);
-      setApartmentData(response.data?.apartments);
-      console.log("response", response);
+      if (isLoadMore) {
+        setApartmentData((prev) => [...prev, ...response.data?.apartments]);
+      } else {
+        setApartmentData(response.data?.apartments);
+      }
+      setHasMore(response.data?.apartments.length === 10); // Kiểm tra còn data không
+      setPageNumber(pageNumber);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -325,7 +341,16 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     setRefreshing(true);
     getApartmentData();
     setRefreshing(false);
+    clearAllFilters();
   }, []);
+
+  const handleLoadMore = () => {
+    if (!isLoading && hasMore) {
+      setIsLoadMore(true);
+      setPageNumber((prev) => prev + 1);
+      getApartmentData();
+    }
+  };
 
   return (
     <ThemedView
@@ -344,7 +369,23 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
             colors={["#4630EB"]}
           />
         }
+        onScroll={({ nativeEvent }) => {
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const isCloseToBottom =
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - 20;
+
+          if (isCloseToBottom) {
+            handleLoadMore();
+          }
+        }}
+        scrollEventThrottle={400}
       >
+        {isLoading && (
+          <View style={{ padding: 10 }}>
+            <ActivityIndicator size="small" color="#4630EB" />
+          </View>
+        )}
         <View style={styles.filter}>
           <TouchableOpacity
             onPress={() => {
@@ -388,7 +429,6 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
             <AntDesign name="down" size={16} color="#252B5C" />
           </TouchableOpacity>
         </View>
-
         <View
           style={{
             flexDirection: "row",

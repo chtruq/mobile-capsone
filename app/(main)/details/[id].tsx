@@ -10,14 +10,17 @@ import {
   TouchableOpacity,
   TextInput,
   RefreshControl,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { StatusBar } from "expo-status-bar";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import View360 from "@/assets/icon/360";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
 import PriceIcon from "@/assets/icon/details/price";
@@ -36,12 +39,21 @@ import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { formatArea, formatCurrency } from "@/model/other";
 import { useAuth } from "@/context/AuthContext";
+import { createAppointment } from "@/services/api/appointment";
 
 export default function ProductDetails() {
+  const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
   const [data, setData] = useState<Apartment>();
+  const [userName, setUserName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const colorScheme = useColorScheme();
+  const scrollViewRef = useRef<ScrollView>(null);
 
+  // Thêm function để handle focus
+  const handleFocus = () => {
+    scrollViewRef.current?.scrollTo({ y: 200, animated: true });
+  };
   const { id } = useLocalSearchParams();
   const { userInfo } = useAuth();
   const getApartment = async () => {
@@ -61,12 +73,6 @@ export default function ProductDetails() {
     };
     fetchData();
   }, [id]);
-
-  const imageArr = [
-    require("@/assets/images/home/home.png"),
-    require("@/assets/images/home/home.png"),
-    require("@/assets/images/home/home.png"),
-  ];
 
   // useEffect(() => {
   //   console.log(id);
@@ -125,17 +131,17 @@ export default function ProductDetails() {
 
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const times = [
-    "All",
-    "8:00",
-    "9:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
+    { value: "all", label: "Tất cả" },
+    { value: "08:00:00", label: "8:00" },
+    { value: "09:00:00", label: "9:00" },
+    { value: "10:00:00", label: "10:00" },
+    { value: "11:00:00", label: "11:00" },
+    { value: "12:00:00", label: "12:00" },
+    { value: "13:00:00", label: "13:00" },
+    { value: "14:00:00", label: "14:00" },
+    { value: "15:00:00", label: "15:00" },
+    { value: "16:00:00", label: "16:00" },
+    { value: "17:00:00", label: "17:00" },
   ];
 
   const [refreshing, setRefreshing] = useState(false);
@@ -146,6 +152,68 @@ export default function ProductDetails() {
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
+  };
+
+  const validation = () => {
+    if (!selectedDate || !selectedTime || !userName || !phoneNumber) {
+      Alert.alert("Vui lòng điền đẩy đủ thông tin");
+      return false;
+    }
+    if (phoneNumber.length < 10) {
+      Alert.alert("Tên và số điện thoại không hợp lệ");
+      return false;
+    }
+    if (phoneNumber.length > 11) {
+      Alert.alert("Số điện thoại không hợp lệ");
+      return false;
+    }
+    if (selectedDate < new Date()) {
+      Alert.alert("Ngày không hợp lệ");
+      return false;
+    }
+
+    if (!selectedTime) {
+      Alert.alert("Vui lòng chọn thời gian");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleCreateAppointment = async () => {
+    if (!selectedDate || !selectedTime) {
+      return;
+    }
+    const preferredDate = new Date(selectedDate);
+    const preferredTime = selectedTime;
+
+    console.log("preferredTime", preferredTime);
+    console.log("preferredDate", preferredDate);
+    console.log("id", id);
+    console.log("userName", userName);
+    console.log("phoneNumber", phoneNumber);
+    try {
+      if (!validation()) {
+        return;
+      }
+      const response = await createAppointment(
+        id as string,
+        userInfo?.id,
+        preferredDate,
+        preferredTime,
+        userName,
+        phoneNumber
+      );
+      console.log("response", response);
+      toggleSheet();
+      toggleSheetSuccessRequest();
+      return response.data;
+    } catch (error) {
+      console.error("Create appointment API error:", error);
+      Alert.alert("Lỗi khi đặt lịch xem");
+
+      throw error;
+    }
   };
 
   return (
@@ -220,7 +288,7 @@ export default function ProductDetails() {
                 color: "white",
               }}
             >
-              {currentIndex + 1}/{imageArr.length}
+              {currentIndex + 1}/{data?.images?.length}
             </Text>
           </View>
         </View>
@@ -396,11 +464,37 @@ export default function ProductDetails() {
           paddingVertical: 10,
           width: "100%",
           paddingHorizontal: 10,
+          alignItems: "center",
         }}
       >
+        <Pressable
+          style={{
+            width: "20%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: "#ccc",
+            borderRadius: 20,
+            height: 70,
+          }}
+          onPress={() => {
+            router.push({
+              pathname: "/(main)/chat",
+              params: {
+                id: id,
+              },
+            });
+          }}
+        >
+          <MaterialCommunityIcons
+            name="message-text-outline"
+            size={24}
+            color="black"
+          />
+        </Pressable>
         <View
           style={{
-            width: "50%",
+            width: "40%",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -415,7 +509,7 @@ export default function ProductDetails() {
         </View>
         <View
           style={{
-            width: "50%",
+            width: "40%",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -434,186 +528,211 @@ export default function ProductDetails() {
         </View>
       </ThemedView>
       <BottomSheet isOpen={isOpen} toggleSheet={toggleSheet}>
-        <ThemedText type="heading">Đặt lịch tư vấn và xem căn hộ</ThemedText>
-        <View
-          style={{
-            borderBottomColor: "#000",
-            borderBottomWidth: 1,
-            width: "120%",
-          }}
-        ></View>
-        <View
-          style={{
-            marginVertical: 10,
-          }}
-        >
-          <ThemedText type="default">
-            Quý khách muốn đặt lịch hẹn vào ngày nào?
-          </ThemedText>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginVertical: 10,
-            }}
+        <View style={{ flex: 1, maxHeight: "100%" }}>
+          {/* Thêm container có maxHeight */}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}
           >
             <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{}}
+              ref={scrollViewRef}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ paddingBottom: 150 }}
             >
-              {
-                // 7 ngày tiếp theo
-                days.map((day, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={{
-                        borderWidth: 1,
-                        width: 100,
-                        height: 100,
-                        borderColor:
-                          selectedDate?.getDate() === day.getDate()
-                            ? Colors.light.money
-                            : "#ccc",
-                        borderRadius: 10,
-                        marginHorizontal: 10,
-                      }}
-                      onPress={() => {
-                        setSelectedDate(day);
-                      }}
-                    >
-                      <View
-                        style={{
-                          borderTopEndRadius: 10,
-                          borderTopStartRadius: 10,
-                          backgroundColor:
-                            selectedDate?.getDate() === day.getDate()
-                              ? Colors.light.primary
-                              : "#F5F5F5",
-                          // width: 100,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <ThemedText>{dateOfTheWeekStr(day)}</ThemedText>
-                      </View>
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: 60,
-                        }}
-                      >
-                        <ThemedText
-                          type="defaultSemiBold"
-                          style={{
-                            fontSize: 20,
-                          }}
-                        >
-                          {day.getDate()}/{day.getMonth() + 1}
-                        </ThemedText>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })
-              }
-            </ScrollView>
-          </View>
+              <ThemedText type="heading">
+                Đặt lịch tư vấn và xem căn hộ
+              </ThemedText>
+              <View
+                style={{
+                  borderBottomColor: "#000",
+                  borderBottomWidth: 1,
+                  width: "120%",
+                }}
+              ></View>
+              <View
+                style={{
+                  marginVertical: 10,
+                }}
+              >
+                <ThemedText type="default">
+                  Quý khách muốn đặt lịch hẹn vào ngày nào?
+                </ThemedText>
 
-          <ThemedText type="default">
-            Quý khách muốn đặt lịch hẹn vào khung giờ nào?
-          </ThemedText>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{
-                marginTop: 5,
-                // marginBottom: 10,
-              }}
-            >
-              {times.map((time, index) => {
-                return (
-                  <TouchableOpacity
-                    key={index}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginVertical: 10,
+                  }}
+                >
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={{}}
+                  >
+                    {
+                      // 7 ngày tiếp theo
+                      days.map((day, index) => {
+                        return (
+                          <TouchableOpacity
+                            key={index}
+                            style={{
+                              borderWidth: 1,
+                              width: 100,
+                              height: 100,
+                              borderColor:
+                                selectedDate?.getDate() === day.getDate()
+                                  ? Colors.light.money
+                                  : "#ccc",
+                              borderRadius: 10,
+                              marginHorizontal: 10,
+                            }}
+                            onPress={() => {
+                              setSelectedDate(day);
+                            }}
+                          >
+                            <View
+                              style={{
+                                borderTopEndRadius: 10,
+                                borderTopStartRadius: 10,
+                                backgroundColor:
+                                  selectedDate?.getDate() === day.getDate()
+                                    ? Colors.light.primary
+                                    : "#F5F5F5",
+                                // width: 100,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <ThemedText>{dateOfTheWeekStr(day)}</ThemedText>
+                            </View>
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: 60,
+                              }}
+                            >
+                              <ThemedText
+                                type="defaultSemiBold"
+                                style={{
+                                  fontSize: 20,
+                                }}
+                              >
+                                {day.getDate()}/{day.getMonth() + 1}
+                              </ThemedText>
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      })
+                    }
+                  </ScrollView>
+                </View>
+
+                <ThemedText type="default">
+                  Quý khách muốn đặt lịch hẹn vào khung giờ nào?
+                </ThemedText>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
                     style={{
-                      borderWidth: 1,
-                      width: 80,
-                      height: 30,
-                      borderColor:
-                        selectedTime === time ? Colors.light.money : "#ccc",
-                      borderRadius: 10,
-                      marginHorizontal: 10,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginVertical: 10,
-                      backgroundColor:
-                        selectedTime === time
-                          ? Colors.light.primary
-                          : "#F5F5F5",
-                    }}
-                    onPress={() => {
-                      setSelectedTime(time);
+                      marginTop: 5,
+                      // marginBottom: 10,
                     }}
                   >
-                    <ThemedText>{time === "All" ? "Tất cả " : time}</ThemedText>
-                  </TouchableOpacity>
-                );
-              })}
+                    {times.map((time, index) => {
+                      return (
+                        <TouchableOpacity
+                          key={time.value}
+                          style={{
+                            borderWidth: 1,
+                            width: 80,
+                            height: 30,
+                            borderColor:
+                              selectedTime === time.value
+                                ? Colors.light.money
+                                : "#ccc",
+                            borderRadius: 10,
+                            marginHorizontal: 10,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginVertical: 10,
+                            backgroundColor:
+                              selectedTime === time.value
+                                ? Colors.light.primary
+                                : "#F5F5F5",
+                          }}
+                          onPress={() => {
+                            setSelectedTime(time.value);
+                          }}
+                        >
+                          <ThemedText>{time.label}</ThemedText>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+                <ThemedText type="defaultSemiBold">
+                  Thông tin liên hệ
+                </ThemedText>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    marginVertical: 10,
+                  }}
+                >
+                  <TextInput
+                    style={{
+                      width: "100%",
+
+                      padding: 15,
+                    }}
+                    placeholder="Họ và tên"
+                    value={userName}
+                    onChangeText={setUserName}
+                    onFocus={handleFocus}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                  }}
+                >
+                  <TextInput
+                    style={{
+                      width: "100%",
+                      padding: 15,
+                    }}
+                    placeholder="Số điện thoại"
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    keyboardType="number-pad"
+                    onFocus={handleFocus}
+                  />
+                </View>
+              </View>
             </ScrollView>
-          </View>
-          <ThemedText type="defaultSemiBold">Thông tin liên hệ</ThemedText>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: "#ccc",
-              marginVertical: 10,
-            }}
-          >
-            <TextInput
-              style={{
-                width: "100%",
-
-                padding: 15,
-              }}
-              placeholder="Họ và tên"
-              value=""
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: "#ccc",
-            }}
-          >
-            <TextInput
-              style={{
-                width: "100%",
-                padding: 15,
-              }}
-              placeholder="Số điện thoại"
-              value=""
-            />
-          </View>
+          </KeyboardAvoidingView>
         </View>
-
         <View
           style={{
             flexDirection: "row",
@@ -631,8 +750,10 @@ export default function ProductDetails() {
             title="Đặt lịch"
             width={"100%"}
             handlePress={() => {
-              toggleSheet();
-              toggleSheetSuccessRequest();
+              handleCreateAppointment();
+              // toggleSheet();
+
+              // toggleSheetSuccessRequest();
             }}
           />
         </View>

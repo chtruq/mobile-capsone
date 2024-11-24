@@ -37,6 +37,7 @@ const MainLayout = () => {
           headerTitleAlign: "center",
         }}
       />
+      <Stack.Screen name="chat" options={{ headerShown: false }} />
     </Stack>
   );
 };

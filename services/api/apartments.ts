@@ -1,13 +1,11 @@
 import { ApartmentSearchParams } from "@/model/apartments";
 import apiClient from "./apiClient";
-
+import qs from "qs";
 export const apartmentsSearch = async (params?: ApartmentSearchParams | {}) => {
   try {
-    const response = await apiClient.get("/apartments/search", {
-      params: {
-        ...params,
-      },
-    });
+    const response = await apiClient.get(
+      `/apartments/search?${qs.stringify(params)}`
+    );
     console.log("response", response.data);
     return response.data;
   } catch (error) {

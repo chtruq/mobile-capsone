@@ -90,6 +90,7 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
             <ThemedText
               style={{
                 fontSize: 14,
+                paddingHorizontal: 5,
               }}
               type="defaultSemiBold"
             >
@@ -191,7 +192,8 @@ const styles = StyleSheet.create({
   statusPaid: {
     borderRadius: 10,
     paddingVertical: 5,
-    backgroundColor: "#fff",
+    backgroundColor: "#49cc90",
+    color: "#fff",
   },
   statusTradeRequested: {
     borderRadius: 10,
