@@ -2,87 +2,87 @@ import { View, Text, Button, FlatList, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import * as SignalR from "@microsoft/signalr";
 import { ThemedView } from "@/components/ThemedView";
+import { useNotifications } from "@/context/NotificationContext";
+import { ThemedText } from "@/components/ThemedText";
+import { signalRService } from "@/services/api/signalRservice";
+import { useAuth } from "@/context/AuthContext";
 
 const Notify = () => {
-  const [connection, setConnection] = useState<SignalR.HubConnection | null>(
-    null
-  );
-  const [notifications, setNotifications] = useState<
-    { title: string; description: string }[]
-  >([]);
-  const [status, setStatus] = useState<string>("Connecting...");
-
-  const URL = process.env.EXPO_PUBLIC_BASE_URL;
+  const { userToken } = useAuth();
+  const { notifications, addNotification } = useNotifications();
+  const [connectionStatus, setConnectionStatus] =
+    useState<string>("Disconnected");
 
   useEffect(() => {
-    const connectSignalR = async () => {
-      const hubConnection = new SignalR.HubConnectionBuilder()
-        .withUrl(URL + "/notificationHub/negotiate") // Replace with your SignalR server URL and hub endpoint
-        .withAutomaticReconnect()
-        .configureLogging(SignalR.LogLevel.Information)
-        .build();
+    const initializeSignalR = async () => {
+      if (!userToken) {
+        console.log("No user token available");
+        return;
+      }
 
       try {
-        await hubConnection.start();
-        setStatus("Connected");
-        setConnection(hubConnection);
-        console.log("SignalR connected.");
+        console.log("Initializing SignalR...");
+        setConnectionStatus("Connecting...");
+
+        signalRService.setNotificationCallback((notification) => {
+          console.log("Notification callback triggered:", notification);
+          addNotification(notification);
+        });
+
+        await signalRService.startConnection(userToken);
+        setConnectionStatus("Connected");
       } catch (error) {
-        setStatus("Connection failed");
-        console.error("SignalR connection error:", error);
+        console.error("SignalR initialization error:", error);
+        setConnectionStatus("Connection Failed");
       }
     };
 
-    console.log("SignalR URL:", URL + "/notificationHub");
-    connectSignalR();
+    initializeSignalR();
 
-    // Clean up connection on unmount
     return () => {
-      if (connection) {
-        connection?.stop();
-      }
+      console.log("Cleaning up SignalR connection...");
+      signalRService.stopConnection();
     };
-  }, []);
-
-  useEffect(() => {
-    if (connection) {
-      // Listen for notifications
-      connection.on(
-        "ReceiveNotification",
-        (title: string, description: string) => {
-          setNotifications((prevNotifications) => [
-            ...prevNotifications,
-            { title, description },
-          ]);
-        }
-      );
-    }
-  }, [connection]);
-
-  const sendMessage = async () => {
-    if (connection) {
-      try {
-        await connection.invoke("SendMessage", "user1", "Hello from Expo!");
-      } catch (err) {
-        console.error("Error sending message:", err);
-      }
-    }
-  };
+  }, [userToken]);
 
   return (
-    <ThemedView style={styles.container}>
-      <Text style={styles.status}>{status}</Text>
-      <FlatList
-        data={notifications}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.notification}>
-            <Text style={styles.title}>Title: {item.title}</Text>
-            <Text>Description: {item.description}</Text>
-          </View>
-        )}
-      />
-      <Button title="Send Test Notification" onPress={sendMessage} />
+    <ThemedView style={{ flex: 1, padding: 16 }}>
+      {/* Debug Info */}
+      <View style={{ marginBottom: 20 }}>
+        <ThemedText>Connection Status: {connectionStatus}</ThemedText>
+        <ThemedText>User Token: {userToken ? "Present" : "Missing"}</ThemedText>
+        <ThemedText>Total Notifications: {notifications.length}</ThemedText>
+      </View>
+
+      {/* Notifications List */}
+      {notifications.length === 0 ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ThemedText>Không có thông báo nào</ThemedText>
+        </View>
+      ) : (
+        <FlatList
+          data={notifications}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                padding: 16,
+                backgroundColor: "#f5f5f5",
+                marginBottom: 8,
+                borderRadius: 8,
+              }}
+            >
+              <ThemedText type="defaultSemiBold">{item.title}</ThemedText>
+              <ThemedText>{item.description}</ThemedText>
+              <ThemedText type="small" style={{ marginTop: 4 }}>
+                Type: {item.type}
+              </ThemedText>
+            </View>
+          )}
+        />
+      )}
     </ThemedView>
   );
 };

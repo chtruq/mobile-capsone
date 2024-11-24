@@ -51,6 +51,7 @@ export default function Home() {
           flex: 1,
           paddingBottom: 10,
           paddingTop: 10,
+          paddingHorizontal: 10,
         }}
       >
         <SafeAreaView>
@@ -85,7 +86,7 @@ export default function Home() {
                     marginBottom: 10,
                   }}
                 >
-                  Dự án mới nhất
+                  Căn hộ mới nhất
                 </ThemedText>
                 <TouchableOpacity>
                   <ThemedText

@@ -22,7 +22,7 @@ interface ProfileTabBtnProps {
 }
 
 export default function Profile() {
-  const { logout } = useAuth();
+  const { logout, userInfo } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -90,30 +90,13 @@ export default function Profile() {
       >
         <View
           style={{
-            width: 70,
-            height: 70,
-            backgroundColor: "red",
-            borderRadius: 50,
-          }}
-        >
-          <Image
-            source={require("../../../../assets/images/icon.png")}
-            style={{
-              width: 70,
-              height: 70,
-              borderRadius: 50,
-            }}
-          />
-        </View>
-        <View
-          style={{
             flexDirection: "column",
             justifyContent: "flex-start",
             marginLeft: 10,
             width: "70%",
           }}
         >
-          <ThemedText type="defaultSemiBold">Nguyen Van A</ThemedText>
+          <ThemedText type="defaultSemiBold">{userInfo?.name}</ThemedText>
           <ThemedText>Xem thông tin cá nhân</ThemedText>
         </View>
 
@@ -136,11 +119,7 @@ export default function Profile() {
           }}
           icon={<HeartIcon />}
         />
-        <ProfileTabBtn
-          title="Dự án yêu thích yêu thích"
-          onPress={() => {}}
-          icon={<HeartIcon />}
-        />
+
         <ProfileTabBtn
           title="Đã xem"
           onPress={() => {}}

@@ -21,7 +21,7 @@ import TransactionCard from "@/components/transaction/transactionCard";
 const TransactionManage = () => {
   const { userInfo } = useAuth();
 
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState<Deposit[]>([]);
   const [page, setPage] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
   const [hasMore, setHasMore] = React.useState(true);
