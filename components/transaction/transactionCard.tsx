@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import React, { FC, useEffect } from "react";
 import { Deposit } from "@/model/deposit";
 import { router } from "expo-router";
@@ -10,6 +10,16 @@ import { formatCurrency } from "@/model/other";
 interface TransProps {
   data: Deposit;
 }
+enum DepositStatus {
+  Pending = "Pending",
+  Accept = "Accept",
+  Reject = "Reject",
+  Disable = "Disable",
+  PaymentFailed = "PaymentFailed",
+  Paid = "Paid",
+  TradeRequested = "TradeRequested",
+  Exported = "Exported",
+}
 
 const TransactionCard: FC<TransProps> = ({ data }) => {
   const apartmentID = data.apartmentID.toString();
@@ -18,7 +28,8 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
   const getApartmentDetail = async () => {
     try {
       const response = await apartmentsDetail(apartmentID);
-      setApartmentDetail(response.data);
+      console.log("Get apartment detail API response:", response?.data);
+      setApartmentDetail(response?.data);
       return response.data;
     } catch (error) {
       console.error("Get apartment detail API error:", error);
@@ -29,6 +40,27 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
   useEffect(() => {
     getApartmentDetail();
   }, []);
+
+  const getStatusStyle = (status: DepositStatus) => {
+    switch (status) {
+      case DepositStatus.Pending:
+        return styles.statusPending;
+      case DepositStatus.Accept:
+        return styles.statusAccept;
+      case DepositStatus.Reject:
+        return styles.statusReject;
+      case DepositStatus.Disable:
+        return styles.statusDisable;
+      case DepositStatus.PaymentFailed:
+        return styles.statusPaymentFailed;
+      case DepositStatus.Paid:
+        return styles.statusPaid;
+      case DepositStatus.TradeRequested:
+        return styles.statusTradeRequested;
+      default:
+        return {};
+    }
+  };
 
   return (
     <>
@@ -54,20 +86,34 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
             marginBottom: 10,
           }}
         >
-          <ThemedText type="defaultSemiBold">
-            {data?.depositStatus === 1
-              ? "Đang chờ xác nhận"
-              : data?.depositStatus === 2
-              ? "Tạo giao dịch thành công"
-              : data?.depositStatus === 3
-              ? "Đã từ chối"
-              : data?.depositStatus === 4
-              ? "Giao dịch đã bị huỷ"
-              : "Không xác định"}
-          </ThemedText>
+          <View style={getStatusStyle(data?.depositStatus)}>
+            <ThemedText
+              style={{
+                fontSize: 14,
+              }}
+              type="defaultSemiBold"
+            >
+              {data?.depositStatus === "Pending"
+                ? "Đang chờ xác nhận"
+                : data?.depositStatus === "Accept"
+                ? "Đang chờ thanh toán"
+                : data?.depositStatus === "Reject"
+                ? "Đang chờ xử lý"
+                : data?.depositStatus === "Disable"
+                ? "Đã bị huỷ"
+                : data?.depositStatus === "PaymentFailed"
+                ? "Giao dịch đã bị huỷ"
+                : data?.depositStatus === "Paid"
+                ? "Đã thanh toán"
+                : data?.depositStatus === "TradeRequested"
+                ? "Đã gửi yêu cầu trao đổi"
+                : "Không xác định"}
+            </ThemedText>
+          </View>
+
           <ThemedText type="small">
             Mã căn:
-            <ThemedText>{data?.depositID}</ThemedText>
+            <ThemedText>{data?.depositCode}</ThemedText>
           </ThemedText>
         </View>
         <View
@@ -84,6 +130,8 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
           <View
             style={{
               marginLeft: 10,
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
             <ThemedText type="price">
@@ -109,5 +157,47 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  statusPending: {
+    backgroundColor: "#ccc",
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    fontSize: 12,
+  },
+  statusAccept: {
+    backgroundColor: "#ccc",
+    borderRadius: 10,
+    paddingVertical: 5,
+  },
+  statusReject: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    backgroundColor: "#ccc",
+  },
+  statusDisable: {
+    borderRadius: 10,
+    backgroundColor: "#ffc6c6",
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+  },
+  statusPaymentFailed: {
+    borderRadius: 10,
+    backgroundColor: "#ccc",
+    paddingVertical: 5,
+    color: "#0091ff",
+  },
+  statusPaid: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    backgroundColor: "#fff",
+  },
+  statusTradeRequested: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    backgroundColor: "#fdff",
+  },
+});
 
 export default TransactionCard;

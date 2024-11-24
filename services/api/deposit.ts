@@ -76,6 +76,22 @@ export const getDepositHistory = async (id: any) => {
   }
 };
 
+export const getDepositHistoryByAccount = async (
+  id: any,
+  pageNumber: number
+) => {
+  try {
+    const response = await apiClient.get(
+      `/deposits/search?accountId=${id}&pageIndex=${pageNumber}&pageSize=5`
+    );
+    console.log("Deposit history API response:", response.data.data);
+    return response.data.data;
+  } catch (error) {
+    console.error("Deposit history API error:", error);
+    throw error;
+  }
+};
+
 export const getDepositDetail = async (id: any) => {
   try {
     const response = await apiClient.get(`/deposits/${id}`);

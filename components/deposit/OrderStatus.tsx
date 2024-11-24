@@ -99,7 +99,7 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
             title="Xem yêu cầu của bạn"
             handlePress={() =>
               router.replace({
-                pathname: "/(main)/personal/request-manage",
+                pathname: "/(main)/personal/transaction-manage",
                 params: {
                   status: 0,
                 },

@@ -93,7 +93,7 @@ export default function ListProject() {
       }}
     >
       {data.map((item: Apartment) => (
-        <View key={item.apartmentID}>
+        <View style={{ padding: 5, width: 300 }} key={item.apartmentID}>
           <ApartmentCard data={item} />
         </View>
       ))}

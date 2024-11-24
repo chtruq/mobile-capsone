@@ -46,15 +46,37 @@ export interface DepositProfile {
 
 export interface Deposit {
   depositID: string;
+  depositCode: string;
+  oldDepositCode: string | null;
+  apartmentCode: string;
   depositPercentage: number;
   depositAmount: number;
+  paymentAmount: number;
+  brokerageFee: number;
+  commissionFee: number;
+  securityDeposit: number;
+  tradeFee: number | null;
   note: string;
   description: string;
   createDate: string;
   updateDate: string;
   expiryDate: string;
-  depositStatus: number;
+  depositStatus: DepositStatus;
+  depositType: string;
+  disbursementStatus: string;
   accountID: string;
   apartmentID: string;
+  teamMemberID: string | null;
   depositProfile: DepositProfile[];
+}
+
+export enum DepositStatus {
+  Pending = "Pending",
+  Accept = "Accept",
+  Reject = "Reject",
+  Disable = "Disable",
+  PaymentFailed = "PaymentFailed",
+  Paid = "Paid",
+  TradeRequested = "TradeRequested",
+  Exported = "Exported",
 }

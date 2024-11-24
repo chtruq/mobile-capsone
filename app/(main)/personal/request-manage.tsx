@@ -16,13 +16,11 @@ const RequestManage = () => {
   const { userInfo } = useAuth();
   const [data, setData] = useState([]);
 
-  console.log("userInfo:", userInfo?.id);
-
   const getListRequestDeposit = async () => {
     try {
       const res = await getDepositHistory(userInfo?.id);
-      console.log("API response:", res.data);
-      setData(res.data);
+      console.log("API response:", res);
+      setData(res);
     } catch (error) {
       console.error("Có lỗi xảy ra:", error);
       throw error;
@@ -44,37 +42,6 @@ const RequestManage = () => {
       getListAppointment();
     }
   }, []);
-
-  // const requests = [
-  //   {
-  //     id: "0912123",
-  //     status: "canceled",
-  //     requestType: "Yêu cầu tham quan",
-  //     createTime: "16/20/2024 - 15:50",
-  //     appointmentTime: "16/20/2024 - 15:50",
-  //   },
-  //   {
-  //     id: "0912124",
-  //     status: "processed",
-  //     requestType: "Yêu cầu tham quan",
-  //     createTime: "16/20/2024 - 15:50",
-  //     appointmentTime: "16/20/2024 - 15:50",
-  //   },
-  //   {
-  //     id: "0912125",
-  //     status: "pending",
-  //     requestType: "Yêu cầu tham quan",
-  //     createTime: "16/20/2024 - 15:50",
-  //     appointmentTime: "16/20/2024 - 15:50",
-  //   },
-  //   {
-  //     id: "0912126",
-  //     status: "canceled",
-  //     requestType: "Yêu cầu tham quan",
-  //     createTime: "16/20/2024 - 15:50",
-  //     appointmentTime: "16/20/2024 - 15:50",
-  //   },
-  // ];
 
   const EmptyRequestView = () => {
     return (
@@ -99,7 +66,7 @@ const RequestManage = () => {
       case 0:
         return (
           <View>
-            {data.length > 0 ? (
+            {data?.length > 0 ? (
               <FlatList
                 data={data}
                 keyExtractor={(item: Deposit) => item.depositID}
@@ -118,7 +85,7 @@ const RequestManage = () => {
 
         return (
           <View>
-            {pendingStatus.length > 0 ? (
+            {pendingStatus?.length > 0 ? (
               <FlatList
                 data={pendingStatus}
                 keyExtractor={(item: Deposit) => item.depositID}
@@ -136,7 +103,7 @@ const RequestManage = () => {
         const successStatus = filterData(1);
         return (
           <View>
-            {successStatus.length > 0 ? (
+            {successStatus?.length > 0 ? (
               <FlatList
                 data={successStatus}
                 keyExtractor={(item: Deposit) => item.depositID}
@@ -154,7 +121,7 @@ const RequestManage = () => {
         const cancelStatus = filterData(4);
         return (
           <View>
-            {cancelStatus.length > 0 ? (
+            {cancelStatus?.length > 0 ? (
               <FlatList
                 data={cancelStatus}
                 keyExtractor={(item: Deposit) => item.depositID}

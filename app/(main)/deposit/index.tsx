@@ -27,7 +27,6 @@ const DepositDeclare = () => {
   const prevStep = () => setStep(step - 1);
   const [apartmentInfo, setApartmentInfo] = useState<Apartment>();
   const { userInfo } = useAuth();
-
   const { id } = useLocalSearchParams();
 
   const getApartmentInfo = async () => {
@@ -60,18 +59,11 @@ const DepositDeclare = () => {
   }, [formData]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#ccc",
-        // marginBottom: 20,
-        paddingBottom: 100,
-      }}
-    >
+    <>
       {/* trang thai */}
       <ThemedView
         style={{
-          height: "15%",
+          height: 100,
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
@@ -83,10 +75,7 @@ const DepositDeclare = () => {
             alignItems: "center",
           }}
         >
-          {
-            // Show the active icon when the step is 0
-            step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />
-          }
+          {step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />}
 
           <ThemedText type="deposit">Khai báo thông tin</ThemedText>
         </View>
@@ -97,10 +86,7 @@ const DepositDeclare = () => {
           }}
         >
           {step === 0 && <ConfirmInactiveIcon />}
-          {
-            // Show the active icon when the step is 1
-            step === 1 && <ConfirmActiveIcon />
-          }
+          {step === 1 && <ConfirmActiveIcon />}
           {step === 2 && <TickGreenIcon />}
 
           <ThemedText type="deposit">Xác nhận thông tin </ThemedText>
@@ -111,15 +97,17 @@ const DepositDeclare = () => {
             alignItems: "center",
           }}
         >
-          {
-            // Show the active icon when the step is 2
-            step === 2 ? <StatusActiveIcon /> : <StatusInactiveIcon />
-          }
+          {step === 2 ? <StatusActiveIcon /> : <StatusInactiveIcon />}
 
           <ThemedText type="deposit">Trạng thái đơn hàng</ThemedText>
         </View>
       </ThemedView>
-      <View>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 5,
+        }}
+      >
         {step === 0 && (
           <DeclareInfoForm
             data={apartmentInfo}
@@ -138,79 +126,9 @@ const DepositDeclare = () => {
             onConfirm={() => nextStep()}
             prevStep={() => prevStep()}
           />
-          // <>
-          //   <View>
-          //     <Text>3</Text>
-          //   </View>
-          // </>
         )}
       </View>
-      {/* <ThemedView
-        style={{
-          position: "absolute",
-          width: "100%",
-          bottom: 0,
-          height: 95,
-          backgroundColor: "#fff",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {step === 0 ? (
-          <Button
-            width={"90%"}
-            title="Xác nhận thông tin"
-            handlePress={() => {
-              handleFormSubmit(formData);
-            }}
-          />
-        ) : step === 1 ? (
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "90%",
-            }}
-          >
-            <Button
-              width={"30%"}
-              title="Quay lại"
-              handlePress={() => prevStep()}
-              backgroundColor="#fff"
-              textColor="#000"
-              isBack
-            />
-            <Button
-              width={"60%"}
-              title="Xác nhận yêu cầu"
-              handlePress={() => nextStep()}
-            />
-          </View>
-        ) : (
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "90%",
-            }}
-          >
-            <Button
-              width={"30%"}
-              title="Quay lại"
-              handlePress={() => prevStep()}
-              backgroundColor="#fff"
-              textColor="#000"
-              isBack
-            />
-            <Button
-              width={"60%"}
-              title="Tiến hành chuyển khoản"
-              handlePress={() => nextStep()}
-            />
-          </View>
-        )}
-      </ThemedView> */}
-    </View>
+    </>
   );
 };
 

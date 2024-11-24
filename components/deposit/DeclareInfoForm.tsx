@@ -41,7 +41,6 @@ import { Apartment } from "@/model/apartments";
 import user from "@/app/accountsetup/user";
 import { OverlayQR } from "./input/CameraOverlay/OverlayQR";
 import { declareInfoValidationSchema } from "@/utils/validation/depositSchemas";
-import { createLog } from "@react-native-community/cli-platform-apple";
 import { Formik, useFormik } from "formik";
 import Button from "../button/Button";
 import { useAuth } from "@/context/AuthContext";
@@ -114,10 +113,6 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
       setScannedAddress(address);
       setScannedIssueDate(formatDateTime(issueDate));
     }
-    console.log("userInfo", userInfo);
-  }, [userInfo]);
-
-  useEffect(() => {
     if (scannedAddress) {
       const [str, ward, dis, pro] = scannedAddress.split(",");
       setProvince(pro);
@@ -125,7 +120,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
       setWard(ward);
       setStreet(str);
     }
-  }, [scannedAddress]);
+  }, [userInfo, scannedAddress]);
 
   if (!permission) {
     return <View />;
@@ -283,11 +278,11 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   };
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ScrollView
         style={{
           backgroundColor: "#fff",
-          marginBottom: 100,
+          // marginBottom: 100,
           marginTop: 5,
         }}
       >
@@ -534,18 +529,29 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 Xem hợp đồng đặt cọc mẫu
               </ThemedText>
             </View>
-            <View style={styles.checkBoxContainer}>
+
+            <Pressable
+              onPress={() => {
+                setChecked1(!isChecked1);
+              }}
+              style={styles.checkBoxContainer}
+            >
               <Checkbox
                 value={isChecked1}
-                onValueChange={setChecked1}
+                // onValueChange={setChecked1}
                 style={styles.checkbox}
                 color={isChecked1 ? "#000000" : undefined}
               />
               <ThemedText style={styles.checkBoxText}>
                 Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
               </ThemedText>
-            </View>
-            <View style={styles.checkBoxContainer}>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setChecked2(!isChecked2);
+              }}
+              style={styles.checkBoxContainer}
+            >
               <Checkbox
                 value={isChecked2}
                 onValueChange={setChecked2}
@@ -556,8 +562,13 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 Tôi cam kết các thông tin Bên đặt cọc được cung cấp tại đây là
                 hoàn toàn chính xác
               </ThemedText>
-            </View>
-            <View style={styles.checkBoxContainer}>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setChecked3(!isChecked3);
+              }}
+              style={styles.checkBoxContainer}
+            >
               <Checkbox
                 value={isChecked3}
                 onValueChange={setChecked3}
@@ -569,80 +580,18 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc trên
                 hệ thống Luxuer
               </ThemedText>
-            </View>
+            </Pressable>
           </View>
-
-          {/* camera */}
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              closeCamera();
-            }}
-            style={styles.CameraContainer}
-          >
-            <CameraView
-              onBarcodeScanned={async (data) => {
-                // Xử lý khi phát hiện mã QR cho mặt trước
-                if (data && isFrontImage) {
-                  console.log(data.data);
-                  const userData = data.data;
-                  setUserInfo(userData);
-                }
-              }}
-              ref={cameraRef}
-              style={styles.camera}
-              facing={facing}
-            >
-              <View style={styles.buttonContainer}>
-                {!userInfo && (
-                  <Text style={styles.text}>
-                    Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét
-                    thông tin
-                  </Text>
-                )}
-                {userInfo && (
-                  <Text style={styles.text}>
-                    Vui lòng đưa cccd vào khung bên dưới và chụp
-                  </Text>
-                )}
-
-                {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
-              </View>
-              {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
-              <View style={styles.footerCamera}>
-                <Pressable style={styles.button} onPress={takePicture}>
-                  {userInfo && <Text style={styles.text}> Chụp </Text>}
-                </Pressable>
-
-                <Pressable
-                  style={styles.button}
-                  onPress={() => {
-                    if (userInfo && !selectedFrontImage) {
-                      setUserInfo("");
-                    }
-                    closeCamera();
-                  }}
-                >
-                  <Text style={styles.text}> Đóng </Text>
-                </Pressable>
-              </View>
-              {!userInfo ? <OverlayQR /> : <Overlay />}
-            </CameraView>
-          </Modal>
         </ThemedView>
       </ScrollView>
       <ThemedView
         style={{
-          position: "absolute",
           width: "100%",
           bottom: 0,
           height: 95,
-          backgroundColor: "#fff",
           justifyContent: "center",
           alignItems: "center",
+          paddingBottom: 10,
         }}
       >
         <Button
@@ -653,7 +602,68 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           }}
         />
       </ThemedView>
-    </>
+
+      {/* camera */}
+
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          closeCamera();
+        }}
+        style={styles.CameraContainer}
+      >
+        <CameraView
+          onBarcodeScanned={async (data) => {
+            // Xử lý khi phát hiện mã QR cho mặt trước
+            if (data && isFrontImage) {
+              console.log(data.data);
+              const userData = data.data;
+              setUserInfo(userData);
+            }
+          }}
+          ref={cameraRef}
+          style={styles.camera}
+          facing={facing}
+        >
+          <View style={styles.buttonContainer}>
+            {!userInfo && (
+              <Text style={styles.text}>
+                Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét thông
+                tin
+              </Text>
+            )}
+            {userInfo && (
+              <Text style={styles.text}>
+                Vui lòng đưa cccd vào khung bên dưới và chụp
+              </Text>
+            )}
+
+            {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
+          </View>
+          {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
+          <View style={styles.footerCamera}>
+            <Pressable style={styles.button} onPress={takePicture}>
+              {userInfo && <Text style={styles.text}> Chụp </Text>}
+            </Pressable>
+
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                if (userInfo && !selectedFrontImage) {
+                  setUserInfo("");
+                }
+                closeCamera();
+              }}
+            >
+              <Text style={styles.text}> Đóng </Text>
+            </Pressable>
+          </View>
+          {!userInfo ? <OverlayQR /> : <Overlay />}
+        </CameraView>
+      </Modal>
+    </View>
   );
 };
 
@@ -775,6 +785,25 @@ const styles = StyleSheet.create({
     left: 0,
     top: 10,
     paddingRight: 10,
+  },
+
+  customCheckbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: "#000",
+    position: "absolute",
+    left: 0,
+    top: 10,
+  },
+  customCheckboxChecked: {
+    backgroundColor: "#000",
+  },
+  checkmark: {
+    width: "80%",
+    height: "80%",
+    backgroundColor: "#fff",
+    margin: "10%",
   },
 });
 

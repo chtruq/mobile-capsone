@@ -14,33 +14,33 @@ const RequestItem: FC<RequestItemProps> = ({ data }) => {
   let statusText = "Chờ xử lý";
 
   switch (data.depositStatus) {
-    case 0:
-      statusStyle = styles.statusProcessed;
-      statusText = "Đã xử lý";
-      break;
     case 1:
-      statusStyle = styles.statusCanceled;
+      statusStyle = styles.statusProcessed;
       statusText = "Chờ xử lý";
       break;
     case 2:
-      statusStyle = styles.statusCanceled;
+      statusStyle = styles.statusPaymentWaiting;
       statusText = "Chờ thanh toán";
       break;
     case 3:
-      statusStyle = styles.statusProcessed;
-      statusText = "Đã huỷ";
+      statusStyle = styles.statusCanceled;
+      statusText = "Bị từ chối";
       break;
     case 4:
       statusStyle = styles.statusCanceled;
-      statusText = "Đã huỷ";
+      statusText = "Đã bị huỷ";
       break;
     case 5:
-      statusStyle = styles.statusProcessed;
+      statusStyle = styles.statusCanceled;
       statusText = "Thanh toán thất bại";
       break;
     case 6:
       statusStyle = styles.statusProcessed;
-      statusText = "Thanh toán thành công";
+      statusText = "Đã thanh toán";
+      break;
+    case 7:
+      statusStyle = styles.statusProcessed;
+      statusText = "Đã gửi yêu cầu trao đổi";
       break;
     default:
       statusStyle = styles.statusPending;
@@ -62,7 +62,7 @@ const RequestItem: FC<RequestItemProps> = ({ data }) => {
         <Text style={styles.statusText}>{statusText}</Text>
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositID}</Text>
+        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositCode}</Text>
         <Text style={styles.requestType}>{data?.description}</Text>
         <View style={styles.timeRow}>
           <View style={styles.timeInfo}>
@@ -153,6 +153,9 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     color: "#333333",
     fontSize: 12,
+  },
+  statusPaymentWaiting: {
+    backgroundColor: "#FFC107",
   },
 });
 
