@@ -78,11 +78,13 @@ export default function ListProviders() {
             }}
           >
             <Image
-              // source={{ uri: item.image }}
+              source={{ uri: item?.diagramUrl }}
               style={{
-                width: 60,
-                height: 60,
+                width: 100,
+                height: 100,
+                borderRadius: 100,
               }}
+              resizeMode="cover"
             />
           </View>
 

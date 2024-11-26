@@ -93,6 +93,22 @@ const PersonalLayout = () => {
           headerBackTitle: "Back",
         }}
       />
+      <Stack.Screen
+        name="history-apartment"
+        options={{
+          headerTitle: "Căn hộ đã xem",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="notitest"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

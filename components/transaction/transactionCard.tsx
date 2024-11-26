@@ -124,7 +124,7 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
         >
           <View>
             <Image
-              source={{ uri: apartmentDetail?.images[0].imageUrl }}
+              source={{ uri: apartmentDetail?.images[0]?.imageUrl }}
               style={{ width: 90, height: 90, borderRadius: 20 }}
             />
           </View>
@@ -149,7 +149,7 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
             >
               <ThemedText type="small">Số tiền đặt cọc:</ThemedText>
               <ThemedText type="defaultSemiBold">
-                {formatCurrency(data.depositAmount)}
+                {formatCurrency(data?.depositAmount)}
               </ThemedText>
             </View>
           </View>

@@ -292,22 +292,29 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     setIsLoading(true);
     const processedParams = processFormData({
       ...formParams,
-      pageIndex: pageNumber,
+      pageIndex: isLoadMore ? pageNumber + 1 : 1,
       pageSize: 10,
     });
     try {
       const response = await apartmentsSearch(processedParams);
+      const newData = response.data?.apartments || [];
+
       if (isLoadMore) {
-        setApartmentData((prev) => [...prev, ...response.data?.apartments]);
+        setApartmentData((prev) => [...prev, ...newData]);
       } else {
-        setApartmentData(response.data?.apartments);
+        setApartmentData(newData);
+        setPageNumber(1); // Reset page number khi load mới
       }
-      setHasMore(response.data?.apartments.length === 10); // Kiểm tra còn data không
-      setPageNumber(pageNumber);
+
+      setHasMore(newData.length === 10);
+      if (isLoadMore) {
+        setPageNumber((prev) => prev + 1);
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
+      setIsLoadMore(false);
     }
   };
 
@@ -347,7 +354,6 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const handleLoadMore = () => {
     if (!isLoading && hasMore) {
       setIsLoadMore(true);
-      setPageNumber((prev) => prev + 1);
       getApartmentData();
     }
   };
@@ -371,15 +377,15 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         }
         onScroll={({ nativeEvent }) => {
           const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const paddingToBottom = 20;
           const isCloseToBottom =
             layoutMeasurement.height + contentOffset.y >=
-            contentSize.height - 20;
-
-          if (isCloseToBottom) {
+            contentSize.height - paddingToBottom;
+          if (isCloseToBottom && !isLoading && hasMore) {
             handleLoadMore();
           }
         }}
-        scrollEventThrottle={400}
+        scrollEventThrottle={16}
       >
         {isLoading && (
           <View style={{ padding: 10 }}>

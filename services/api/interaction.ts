@@ -44,3 +44,14 @@ export const handleInteraction = async (
     console.log(error);
   }
 };
+
+export const getHistoryApartment = async (accountID: string) => {
+  try {
+    const res = await apiClient.get(
+      `/apartment-interactions/search?interactionType=2&accountID=${accountID}&pageIndex=1&pageSize=20`
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -326,16 +326,18 @@ export default function ProductDetails() {
             }}
           >
             <MaterialIcons name="location-on" size={16} color="#53587A" />
-            <ThemedText
-              type="default"
-              style={{
-                fontSize: 16,
-                color: "gray",
-                textDecorationLine: "underline",
-              }}
-            >
-              {data?.address}
-            </ThemedText>
+            <TouchableOpacity>
+              <ThemedText
+                type="default"
+                style={{
+                  fontSize: 16,
+                  color: "gray",
+                  textDecorationLine: "underline",
+                }}
+              >
+                {data?.address}
+              </ThemedText>
+            </TouchableOpacity>
           </View>
 
           {/* price/ Area */}

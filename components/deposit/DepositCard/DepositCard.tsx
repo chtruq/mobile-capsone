@@ -16,6 +16,11 @@ interface DepositCardProps {
 }
 
 const DepositCard: FC<DepositCardProps> = ({ data }) => {
+  const formatDepositAmount = (amount: number | undefined): string => {
+    if (!amount) return "0 VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+  };
+
   return (
     <View>
       <View
@@ -71,7 +76,7 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
           <View style={styles.flexRow}>
             <ThemedText type="default">Phí đặt cọc căn hộ</ThemedText>
             <ThemedText type="default">
-              {formatCurrency(data?.pricePerSquareMeter)}
+              {formatCurrency(data?.depositAmount)}
             </ThemedText>
           </View>
           <View style={styles.flexRow}>
@@ -89,7 +94,7 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
           <View style={styles.flexRow}>
             <ThemedText type="default">Tổng tiền tạm tính</ThemedText>
             <ThemedText type="default">
-              {formatCurrency(data?.pricePerSquareMeter)}
+              {formatCurrency(data?.depositAmount)}
             </ThemedText>
           </View>
           <View style={styles.flexRow}>
@@ -100,7 +105,9 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
 
         <View style={[styles.flexRow, styles.endRow]}>
           <ThemedText>Phải thanh toán</ThemedText>
-          <ThemedText type="price">{data?.pricePerSquareMeter} VND </ThemedText>
+          <ThemedText type="price">
+            {formatDepositAmount(data?.depositAmount)}
+          </ThemedText>
         </View>
       </View>
     </View>

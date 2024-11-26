@@ -2,6 +2,7 @@ import { View, Text, Modal } from "react-native";
 import React from "react";
 import WebView from "react-native-webview";
 import { Button } from "react-native";
+import { router } from "expo-router";
 
 interface PaymentModalProps {
   paymentModalVisible: boolean;
@@ -30,7 +31,13 @@ const PaymentModal = ({
             paddingBottom: 20,
           }}
         >
-          <Button title="Đóng" onPress={() => setPaymentModalVisible(false)} />
+          <Button
+            title="Đóng"
+            onPress={() => {
+              setPaymentModalVisible(false);
+              router.back();
+            }}
+          />
         </View>
       </Modal>
     </View>

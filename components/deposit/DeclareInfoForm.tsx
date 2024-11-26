@@ -60,7 +60,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   const [isFrontImage, setIsFrontImage] = useState(true);
 
   const [userInfo, setUserInfo] = useState<String>(
-    "0222222222221|283333386|Hồ Chí Trung|21092002|Nam|Ấp Chiến Thắng, Định An, Dầu Tiếng, Bình Dương|31052021"
+    // "0222222222221|283333386|Hồ Chí Trung|21092002|Nam|Ấp Chiến Thắng, Định An, Dầu Tiếng, Bình Dương|31052021"
+    ""
   );
   const [errMes, setErrMes] = useState<String>("");
 
@@ -80,8 +81,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   const [scannedGender, setScannedGender] = useState("");
   const [scannedAddress, setScannedAddress] = useState("");
   const [scannedIssueDate, setScannedIssueDate] = useState("");
-  const [email, setEmail] = useState("trunghc@gmail.com");
-  const [phone, setPhone] = useState<string>("0978214001");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState<string>("");
 
   // address
   const [province, setProvince] = useState("");

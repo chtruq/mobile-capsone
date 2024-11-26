@@ -122,7 +122,9 @@ export default function Profile() {
 
         <ProfileTabBtn
           title="Đã xem"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/(main)/personal/history-apartment");
+          }}
           icon={<ViewedIcon />}
         />
         <ProfileTabBtn
@@ -169,6 +171,14 @@ export default function Profile() {
           }}
           icon={<CalendarIcon />}
         />
+        <ProfileTabBtn
+          title="Test thong bao"
+          onPress={() => {
+            router.push("/(main)/personal/notitest");
+          }}
+          icon={<CalendarIcon />}
+        />
+
         <ThemedText
           style={{
             marginTop: 10,

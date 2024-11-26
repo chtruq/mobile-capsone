@@ -60,7 +60,10 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-web": "^0.19.13",
     "react-native-webview": "13.12.2",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-notifications": "~0.29.8",
+    "expo-device": "~7.0.1",
+    "expo-dev-client": "~5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
