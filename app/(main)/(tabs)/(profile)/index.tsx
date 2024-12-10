@@ -174,6 +174,7 @@ export default function Profile() {
         <ProfileTabBtn
           title="Test thong bao"
           onPress={() => {
+            // router.push("/(main)/personal/matterporttest");
             router.push("/(main)/personal/notitest");
           }}
           icon={<CalendarIcon />}

@@ -15,6 +15,7 @@ export class NotificationService {
   // Đăng ký nhận notification
   static async registerForPushNotificationsAsync() {
     let token;
+    console.log("Token: ", token);
 
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
