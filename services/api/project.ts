@@ -8,3 +8,34 @@ export const getProjects = async () => {
     console.error(error);
   }
 };
+
+export const getProjectsSearch = async (search?: string) => {
+  try {
+    const response = await apiClient.get(
+      `/projects/search?pageIndex=1&pageSize=10&search=${search}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getProjectDetail = async (id: string) => {
+  try {
+    const response = await apiClient.get(`/projects/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getProjectCart = async (id: string) => {
+  try {
+    const response = await apiClient.get(
+      `/projects/search?ApartmentProjectProviderID=${id}&pageIndex=1&pageSize=20`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

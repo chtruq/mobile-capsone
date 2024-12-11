@@ -18,7 +18,11 @@ const MainLayout = () => {
       <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
       <Stack.Screen
         name="provider-detail/[id]"
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          headerTitle: "Chủ đầu tư",
+          headerBackTitle: "Trở lại",
+        }}
       />
       <Stack.Screen
         name="deposit"
@@ -26,7 +30,6 @@ const MainLayout = () => {
           headerTitle: "Đặt căn hộ",
           headerTitleStyle: { fontSize: 24 },
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -38,6 +41,10 @@ const MainLayout = () => {
         }}
       />
       <Stack.Screen name="chat" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="project-detail/[id]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 };

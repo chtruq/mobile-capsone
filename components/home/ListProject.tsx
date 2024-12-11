@@ -18,6 +18,9 @@ import { Apartment } from "@/model/apartments";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import ApartmentCard from "../Search/Apartment/ApartmentCard";
+import { getProjectsSearch } from "@/services/api/project";
+import ProjectCard from "../Search/Project/ProjectCard";
+import { ProjectApartment } from "@/model/projects";
 
 export default function ListProject() {
   const [data, setData] = React.useState([]);
@@ -66,20 +69,18 @@ export default function ListProject() {
 
   const { userInfo } = useAuth();
   const colorScheme = useColorScheme();
-  const getApartments = async () => {
+  const getProjects = async () => {
     try {
-      const response = await apartmentsSearch({
-        accountId: userInfo?.id,
-      });
-      setData(response.data.apartments);
-      return response.data.apartments;
+      const response = await getProjectsSearch();
+      setData(response?.data?.projects);
+      return response?.data?.projects;
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    getApartments();
+    getProjects();
   }, [userInfo, apartmentsSearch]);
 
   //refresh when add or remove favorite
@@ -92,9 +93,9 @@ export default function ListProject() {
         backgroundColor: "#fff",
       }}
     >
-      {data.map((item: Apartment) => (
-        <View style={{ padding: 5, width: 300 }} key={item.apartmentID}>
-          <ApartmentCard data={item} />
+      {data.map((item: ProjectApartment) => (
+        <View style={{ padding: 5, width: 300 }} key={item.projectApartmentID}>
+          <ProjectCard data={item} />
         </View>
       ))}
     </ScrollView>

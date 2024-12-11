@@ -30,3 +30,15 @@ export const apartmentsDetail = async (
     throw error;
   }
 };
+
+export const getProjectCart = async (id: string | string[]) => {
+  try {
+    const response = await apiClient.get(
+      `/apartments/search?projectId=${id}&pageIndex=1&pageSize=20`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Apartments detail API error:", error);
+    throw error;
+  }
+};

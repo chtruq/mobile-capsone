@@ -1,8 +1,9 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import React, { FC } from "react";
 import { ProjectApartment } from "@/model/projects";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
+import LocationIcon from "@/assets/icon/details/location";
 
 interface ProjectCardProps {
   data: ProjectApartment;
@@ -17,12 +18,12 @@ const ProjectCard: FC<ProjectCardProps> = ({ data }) => {
         borderRadius: 8,
         marginBottom: 8,
       }}
-      // onPress={() => {
-      //   router.push({
-      //     pathname: "/details/[id]",
-      //     params: { id: data.apartmentID },
-      //   });
-      // }}
+      onPress={() => {
+        router.push({
+          pathname: "/(main)/project-detail/[id]",
+          params: { id: data.projectApartmentID },
+        });
+      }}
     >
       <View
         style={{
@@ -39,7 +40,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ data }) => {
           }}
         >
           <Image
-            source={{ uri: data?.projectImages[0]?.Imageurl }}
+            source={{ uri: data?.projectImages[0]?.url }}
             style={{ width: "100%", height: 200 }}
           />
         </View>
@@ -57,16 +58,29 @@ const ProjectCard: FC<ProjectCardProps> = ({ data }) => {
               padding: 8,
             }}
           >
-            {/* <ThemedText type="defaultSemiBold">{data?.apartmentName}</ThemedText>
-        <View style={styles.row}>
-          <LocationIcon width={16} height={16} />
-          <ThemedText> {data?.address}</ThemedText>
-        </View> */}
+            <ThemedText type="defaultSemiBold">
+              {data?.projectApartmentName}
+            </ThemedText>
+            <View style={styles.row}>
+              <LocationIcon width={16} height={16} />
+              <ThemedText
+                style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              >
+                {data?.address}
+              </ThemedText>
+            </View>
           </View>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});
 
 export default ProjectCard;

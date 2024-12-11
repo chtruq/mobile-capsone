@@ -8,29 +8,6 @@ import { ApartmentProjectProvider } from "@/model/projectProvider";
 export default function ListProviders() {
   const [data, setData] = React.useState([]);
 
-  // const data = [
-  //   {
-  //     id: 1,
-  //     providerName: "Vinhome",
-  //     image: require("@/assets/images/providerLogo/vinhome-logo.png"),
-  //   },
-  //   {
-  //     id: 2,
-  //     providerName: "Hưng Thịnh",
-  //     image: require("@/assets/images/providerLogo/vinhome-logo.png"),
-  //   },
-  //   {
-  //     id: 3,
-  //     providerName: "Novaland",
-  //     image: require("@/assets/images/providerLogo/vinhome-logo.png"),
-  //   },
-  //   {
-  //     id: 4,
-  //     providerName: "Hà ĐÔ Group",
-  //     image: require("@/assets/images/providerLogo/vinhome-logo.png"),
-  //   },
-  // ];
-
   const getProjectProvider = async () => {
     // call api get project provider
     try {

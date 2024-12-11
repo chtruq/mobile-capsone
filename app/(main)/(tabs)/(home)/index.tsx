@@ -149,7 +149,7 @@ export default function Home() {
                     marginBottom: 10,
                   }}
                 >
-                  Mua bán
+                  Danh sách dự án
                 </ThemedText>
                 <TouchableOpacity>
                   <ThemedText
