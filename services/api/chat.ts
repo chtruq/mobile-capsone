@@ -32,7 +32,7 @@ export const sendChatMessage = async (data: SendMessagePayload) => {
 
     // Nếu có image thì mới append
     if (data.image) {
-      formData.append("Image", data.image);
+      formData.append("ImageUrl", data.image);
     }
     console.log("FormData content:");
     for (let [key, value] of (formData as any)._parts) {
