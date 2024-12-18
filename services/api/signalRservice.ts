@@ -1,5 +1,4 @@
 import * as signalR from "@microsoft/signalr";
-import { Alert } from "react-native";
 import Toast from "react-native-toast-message";
 
 type NotificationCallback = (notification: {
@@ -10,171 +9,138 @@ type NotificationCallback = (notification: {
   referenceId: string;
 }) => void;
 
-type ChatCallback = (message: {
-  accountId: string;
+type ChatMessage = (message: {
+  id: string;
   sessionId: string;
-  message: string;
+  senderId: string;
+  receiverId?: string;
+  messageContent: string;
+  timestamp: string;
+  imageUrl?: string;
 }) => void;
 
 class SignalRService {
-  private notificationConnection: signalR.HubConnection | null = null;
-  private chatConnection: signalR.HubConnection | null = null;
-
+  private connection: signalR.HubConnection | null = null;
   private notificationCallback: NotificationCallback | null = null;
-  private chatCallback: ChatCallback | null = null;
+  private messageCallback: ChatMessage | null = null;
+
+  private registerHandlers() {
+    if (!this.connection) {
+      // console.warn("SignalR connection not set yet.");
+      return;
+    }
+
+    this.connection.on(
+      "ReceiveNotification",
+      (accountId, title, description, type, referenceId) => {
+        console.log("Notification received:", {
+          accountId,
+          title,
+          description,
+          type,
+          referenceId,
+        });
+        if (this.notificationCallback) {
+          this.notificationCallback({
+            accountId,
+            title,
+            description,
+            type,
+            referenceId,
+          });
+        }
+      }
+    );
+
+    this.connection.on(
+      "ReceiveChatMessage",
+      (
+        sessionId,
+        messageId,
+        senderId,
+        receiverId,
+        messageContent,
+        timestamp,
+        imageUrl
+      ) => {
+        if (this.messageCallback) {
+          this.messageCallback({
+            sessionId: sessionId,
+            id: messageId,
+            senderId: senderId,
+            receiverId: receiverId,
+            messageContent: messageContent,
+            timestamp: timestamp,
+            imageUrl: imageUrl,
+          });
+        }
+      }
+    );
+  }
 
   public setNotificationCallback(callback: NotificationCallback) {
     this.notificationCallback = callback;
   }
 
-  public setChatCallback(callback: ChatCallback) {
-    this.chatCallback = callback;
+  public setMessageCallback(callback: ChatMessage) {
+    this.messageCallback = callback;
   }
 
-  public async startConnections(token: string) {
-    const BASE_URL = process.env.EXPO_PUBLIC_SIGNALR_URL;
-
+  public async startConnection(token: string) {
     try {
-      // Notification Hub Connection
-      this.notificationConnection = new signalR.HubConnectionBuilder()
+      if (this.connection?.state === signalR.HubConnectionState.Connected) {
+        console.log("SignalR is already connected.");
+        return;
+      }
+
+      const BASE_URL =
+        process.env.EXPO_PUBLIC_SIGNALR_URL ??
+        "https://avrcapstone-gqeyatbhhwgreab9.southeastasia-01.azurewebsites.net";
+      console.log("Connecting to SignalR Hub at URL:", BASE_URL);
+
+      this.connection = new signalR.HubConnectionBuilder()
         .withUrl(`${BASE_URL}/notificationHub`, {
           accessTokenFactory: () => token,
         })
         .configureLogging(signalR.LogLevel.Information)
-        .withAutomaticReconnect()
+        .withAutomaticReconnect([0, 2000, 5000, 10000])
         .build();
 
-      this.notificationConnection.onreconnecting((error) => {
-        console.warn("Notification Hub reconnecting...", error);
+      this.connection.onclose((error) => {
+        // console.error("Connection closed. Attempting to reconnect...", error);
       });
 
-      this.notificationConnection.onreconnected(() => {
-        console.log("Notification Hub reconnected!");
+      this.connection.onreconnecting((error) => {
+        // console.warn("Reconnecting due to error...", error);
       });
 
-      this.notificationConnection.onclose((error) => {
-        console.error("Notification Hub connection closed:", error);
+      this.connection.onreconnected(() => {
+        console.log("Reconnected to SignalR Hub.");
+        this.registerHandlers(); // Đăng ký lại các sự kiện sau khi kết nối lại
       });
 
-      await this.notificationConnection.start();
-      console.log("Notification Hub Connected!");
-
-      this.notificationConnection.on(
-        "ReceiveNotification",
-        (
-          accountId: string,
-          title: string,
-          description: string,
-          type: string,
-          referenceId: string
-        ) => {
-          if (this.notificationCallback) {
-            this.notificationCallback({
-              accountId,
-              title,
-              description,
-              type,
-              referenceId,
-            });
-          }
-        }
-      );
-
-      // Chat Hub Connection
-      this.chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl(`${BASE_URL}/chatHub`, {
-          accessTokenFactory: () => token,
-        })
-        .configureLogging(signalR.LogLevel.Information)
-        .withAutomaticReconnect()
-        .build();
-
-      this.chatConnection.onreconnecting((error) => {
-        console.warn("Chat Hub reconnecting...", error);
-        Toast.show({
-          type: "info",
-          text1: "Reconnecting...",
-          text2: "Attempting to reconnect to the chat server.",
-        });
-      });
-
-      this.chatConnection.onreconnected(() => {
-        console.log("Chat Hub reconnected successfully.");
-        Toast.show({
-          type: "success",
-          text1: "Reconnected",
-          text2: "You are now reconnected to the chat server.",
-        });
-      });
-
-      this.chatConnection.onclose((error) => {
-        console.error("Chat Hub connection closed:", error);
-        Toast.show({
-          type: "error",
-          text1: "Connection Lost",
-          text2: "Unable to connect to the chat server.",
-        });
-      });
-
-      await this.chatConnection.start();
-      console.log("Chat Hub Connected!");
-
-      this.chatConnection.on(
-        "ReceiveChatMessage",
-        (sessionId, senderId, messageContent, timestamp) => {
-          console.log("Received data:", {
-            sessionId,
-            senderId,
-            messageContent,
-            timestamp,
-          });
-          if (this.chatCallback) {
-            this.chatCallback({
-              accountId: senderId,
-              sessionId,
-              message: messageContent,
-            });
-          }
-        }
-      );
+      await this.connection.start();
+      console.log("SignalR connected successfully!");
+      this.registerHandlers();
     } catch (err) {
-      console.error("SignalR Connection Error:", err);
-      Alert.alert("Connection Error", "Unable to connect to the server.");
+      // console.error("SignalR Connection Error: ", err);
+
       throw err;
     }
   }
 
-  public stopConnections() {
-    if (this.notificationConnection) {
-      this.notificationConnection.stop().catch((err) => {
-        console.error("Error stopping Notification Hub connection:", err);
-      });
-    }
-
-    if (this.chatConnection) {
-      this.chatConnection.stop().catch((err) => {
-        console.error("Error stopping Chat Hub connection:", err);
-      });
+  public stopConnection() {
+    if (this.connection) {
+      this.connection.stop();
     }
   }
 
-  public isConnectedToNotificationHub(): boolean {
-    return (
-      this.notificationConnection?.state ===
-      signalR.HubConnectionState.Connected
-    );
+  public getConnection(): signalR.HubConnection | null {
+    return this.connection;
   }
 
-  public isConnectedToChatHub(): boolean {
-    return this.chatConnection?.state === signalR.HubConnectionState.Connected;
-  }
-
-  public getNotificationConnection(): signalR.HubConnection | null {
-    return this.notificationConnection;
-  }
-
-  public getChatConnection(): signalR.HubConnection | null {
-    return this.chatConnection;
+  public isConnected(): boolean {
+    return this.connection?.state === signalR.HubConnectionState.Connected;
   }
 }
 

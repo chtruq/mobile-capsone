@@ -237,7 +237,7 @@ export default function ProductDetails() {
           <FlatList
             data={
               data?.images.map((image) => {
-                return { uri: image.imageUrl };
+                return { uri: image?.imageUrl };
               }) || []
             }
             horizontal

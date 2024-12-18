@@ -15,7 +15,10 @@ const MainLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="details/[id]"
+        options={{ headerShown: false, headerBackTitle: "Trở lại" }}
+      />
       <Stack.Screen
         name="provider-detail/[id]"
         options={{
@@ -30,6 +33,7 @@ const MainLayout = () => {
           headerTitle: "Đặt căn hộ",
           headerTitleStyle: { fontSize: 24 },
           headerTitleAlign: "center",
+          headerBackTitle: "Trở lại",
         }}
       />
       <Stack.Screen

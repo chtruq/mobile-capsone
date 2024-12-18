@@ -38,7 +38,7 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
             width: 100,
             height: 100,
           }}
-          source={{ uri: data?.images[0].imageUrl }}
+          source={{ uri: data?.images[0]?.imageUrl }}
         />
         <View
           style={{

@@ -23,13 +23,11 @@ const Notify = () => {
       try {
         console.log("Initializing SignalR...");
         setConnectionStatus("Connecting...");
-
         signalRService.setNotificationCallback((notification) => {
           console.log("Notification callback triggered:", notification);
           addNotification(notification);
         });
-
-        await signalRService.startConnections(userToken);
+        await signalRService.startConnection(userToken);
         setConnectionStatus("Connected");
       } catch (error) {
         console.error("SignalR initialization error:", error);
@@ -41,7 +39,7 @@ const Notify = () => {
 
     return () => {
       console.log("Cleaning up SignalR connection...");
-      signalRService.stopConnections();
+      signalRService.stopConnection();
     };
   }, [userToken]);
 
