@@ -1,40 +1,32 @@
 import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { getDepositDetail } from "@/services/api/deposit";
 
 const RequestDetail = () => {
   const { id } = useLocalSearchParams();
+  const [data, setData] = React.useState<any>();
+
+  const getRequestData = async () => {
+    try {
+      const res = await getDepositDetail(id?.toString());
+      console.log("API response:", res);
+      setData(res?.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getRequestData();
+  }, []);
 
   let statusStyle = styles.statusPending;
   let statusText = "Chờ xử lý";
   let statusNoti =
     "Yêu cầu tư vấn tham quan dự án của Quý Khách hàng đang chờ xử lý.";
-
-  const status = "processed";
-
-  switch (status) {
-    case "processed":
-      statusStyle = styles.statusProcessed;
-      statusText = "Đã xử lý";
-      statusNoti =
-        "Yêu cầu tư vấn tham quan dự án của Quý Khách hàng đã được xử lý.";
-      break;
-    case "canceled":
-      statusStyle = styles.statusCanceled;
-      statusText = "Đã hủy";
-      statusNoti =
-        "Yêu cầu tư vấn tham quan dự án của Quý Khách hàng đã bị hủy.";
-      break;
-    case "pending":
-    default:
-      statusStyle = styles.statusPending;
-      statusText = "Chờ xử lý";
-      statusNoti =
-        "Yêu cầu tư vấn tham quan dự án của Quý Khách hàng đang chờ xử lý.";
-      break;
-  }
 
   return (
     <ThemedView style={styles.container}>

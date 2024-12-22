@@ -77,80 +77,90 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
           paddingHorizontal: 20,
           borderBottomWidth: 1,
           borderBottomColor: "#ccc",
+          borderRadius: 5,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 10,
-          }}
-        >
-          <View style={getStatusStyle(data?.depositStatus)}>
-            <ThemedText
-              style={{
-                fontSize: 14,
-                paddingHorizontal: 5,
-              }}
-              type="defaultSemiBold"
-            >
-              {data?.depositStatus === "Pending"
-                ? "Đang chờ xác nhận"
-                : data?.depositStatus === "Accept"
-                ? "Đang chờ thanh toán"
-                : data?.depositStatus === "Reject"
-                ? "Đang chờ xử lý"
-                : data?.depositStatus === "Disable"
-                ? "Đã bị huỷ"
-                : data?.depositStatus === "PaymentFailed"
-                ? "Giao dịch đã bị huỷ"
-                : data?.depositStatus === "Paid"
-                ? "Đã thanh toán"
-                : data?.depositStatus === "TradeRequested"
-                ? "Đã gửi yêu cầu trao đổi"
-                : "Không xác định"}
-            </ThemedText>
-          </View>
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <View style={getStatusStyle(data?.depositStatus)}>
+              <ThemedText
+                style={{
+                  fontSize: 14,
+                  paddingHorizontal: 5,
+                }}
+                type="defaultSemiBold"
+              >
+                {data?.depositStatus === "Pending"
+                  ? "Đang chờ xác nhận"
+                  : data?.depositStatus === "Accept"
+                  ? "Đang chờ thanh toán"
+                  : data?.depositStatus === "Reject"
+                  ? "Đang chờ xử lý"
+                  : data?.depositStatus === "Disable"
+                  ? "Đã bị huỷ"
+                  : data?.depositStatus === "PaymentFailed"
+                  ? "Giao dịch đã bị huỷ"
+                  : data?.depositStatus === "Paid"
+                  ? "Đã thanh toán"
+                  : data?.depositStatus === "TradeRequested"
+                  ? "Đã gửi yêu cầu trao đổi"
+                  : "Không xác định"}
+              </ThemedText>
+            </View>
 
-          <ThemedText type="small">
-            Mã căn:
-            <ThemedText>{data?.depositCode}</ThemedText>
-          </ThemedText>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-          }}
-        >
-          <View>
-            <Image
-              source={{ uri: apartmentDetail?.images[0]?.imageUrl }}
-              style={{ width: 90, height: 90, borderRadius: 20 }}
-            />
+            <ThemedText type="small">
+              Mã căn:
+              <ThemedText>{data?.depositCode}</ThemedText>
+            </ThemedText>
           </View>
           <View
             style={{
-              marginLeft: 10,
-              flexDirection: "column",
-              justifyContent: "space-between",
+              flexDirection: "row",
             }}
           >
-            <ThemedText type="price">
-              {formatCurrency(apartmentDetail?.price)}
-            </ThemedText>
-            <ThemedText type="defaultSemiBold">
-              {apartmentDetail?.apartmentName}
-            </ThemedText>
+            <View>
+              <Image
+                source={{ uri: apartmentDetail?.images[0]?.imageUrl }}
+                style={{ width: 90, height: 90, borderRadius: 20 }}
+              />
+            </View>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                marginLeft: 10,
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              <ThemedText type="small">Số tiền đặt cọc:</ThemedText>
-              <ThemedText type="defaultSemiBold">
-                {formatCurrency(data?.depositAmount)}
+              <ThemedText type="price">
+                {formatCurrency(apartmentDetail?.price)}
               </ThemedText>
+              <ThemedText type="defaultSemiBold">
+                {apartmentDetail?.apartmentName}
+              </ThemedText>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText type="small">Số tiền đặt cọc:</ThemedText>
+                <ThemedText type="defaultSemiBold">
+                  {formatCurrency(data?.depositAmount)}
+                </ThemedText>
+              </View>
             </View>
           </View>
         </View>

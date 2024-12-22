@@ -65,7 +65,7 @@ export const depositRequest = async (data: ScannedInfo) => {
   }
 };
 
-export const getDepositHistory = async (id: any) => {
+export const getDepositHistory = async (id: string) => {
   try {
     const response = await apiClient.get(`/deposits/by-account/${id}`);
     console.log("Deposit history API response:", response.data.data);
@@ -101,4 +101,12 @@ export const getDepositDetail = async (id: any) => {
     console.error("Deposit detail API error:", error);
     throw error;
   }
+};
+
+export const getTradeList = async (userId: string) => {
+  const response = await apiClient.get(
+    `/deposits/search?accountId=${userId}&depositStatus=7`
+  );
+  console.log("Trade list API response:", response.data.data);
+  return response.data.data;
 };

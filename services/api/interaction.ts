@@ -8,16 +8,18 @@ export const handleFavorite = async (
   try {
     if (favorite) {
       // remove from fav
-      // const res = await apiClient.delete("/apartment-interactions", {
-      //   apartmentId: ApartmentID,
-      //   accountID: accountID,
-      // });
-
-      return "aaa";
+      const res = await apiClient.delete("/apartment-interactions", {
+        params: {
+          apartmentId: ApartmentID,
+          accountID: accountID,
+          interactionTypes: 1,
+        },
+      });
+      return res.data;
     } else {
       // add to fav
       const res = await apiClient.post("/apartment-interactions/create", {
-        apartmentID: ApartmentID,
+        apartmentId: ApartmentID,
         accountID: accountID,
         interactionTypes: 1,
       });
@@ -34,9 +36,11 @@ export const handleInteraction = async (
   accountID: string
 ) => {
   try {
+    console.log("apartmentID", apartmentID);
+    console.log("accountID", accountID);
     const res = await apiClient.post("/apartment-interactions/create", {
-      apartmentID,
-      accountID,
+      apartmentID: apartmentID,
+      accountID: accountID,
       interactionTypes: 2,
     });
     return res.data;

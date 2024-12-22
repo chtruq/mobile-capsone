@@ -1,7 +1,6 @@
-import { Property } from "@/model/property";
 import apiClient from "./apiClient";
 
-export const sendPropertyRequest = async (property: Property) => {
+export const sendPropertyRequest = async (property: object) => {
   try {
     const res = await apiClient.post(
       "/property-requests/create-property-request",
@@ -12,4 +11,11 @@ export const sendPropertyRequest = async (property: Property) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getPropertyList = async (accountId: string) => {
+  const res = await apiClient(
+    `/property-requests/search?ownerId=${accountId}&pageIndex=1&pageSize=20`
+  );
+  return res.data;
 };

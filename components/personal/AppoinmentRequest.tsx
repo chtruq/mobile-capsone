@@ -1,46 +1,30 @@
-import React, { FC } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { FC } from "react";
 import { router } from "expo-router";
-import { Deposit } from "@/model/deposit";
 
-interface RequestItemProps {
-  data: Deposit;
+interface AppoinmentRequestProps {
+  data: AppointmentRequest;
 }
 
-const RequestItem: FC<RequestItemProps> = ({ data }) => {
-  // Set status styles
+const AppoinmentRequest: FC<AppoinmentRequestProps> = ({ data }) => {
   let statusStyle = styles.statusPending;
   let statusText = "Chờ xử lý";
-
-  switch (data.depositStatus) {
+  switch (data.status) {
     case "Pending":
-      statusStyle = styles.statusProcessed;
+      statusStyle = styles.statusPending;
       statusText = "Chờ xử lý";
       break;
-    case "Accept":
-      statusStyle = styles.statusPaymentWaiting;
-      statusText = "Chờ thanh toán";
+    case "Accepted":
+      statusStyle = styles.statusProcessed;
+      statusText = "Đã xác nhận";
       break;
-    case "Reject":
-      statusStyle = styles.statusCanceled;
+    case "Completed":
+      statusStyle = styles.statusCompleted;
+      statusText = "Đã hoàn thành";
+      break;
+    case "Rejected":
+      statusStyle = styles.statusRejected;
       statusText = "Bị từ chối";
-      break;
-    case "Disable":
-      statusStyle = styles.statusCanceled;
-      statusText = "Đã bị huỷ";
-      break;
-    case "PaymentFailed":
-      statusStyle = styles.statusCanceled;
-      statusText = "Thanh toán thất bại";
-      break;
-    case "Paid":
-      statusStyle = styles.statusProcessed;
-      statusText = "Đã thanh toán";
-      break;
-    case "TradeRequested":
-      statusStyle = styles.statusProcessed;
-      statusText = "Đã gửi yêu cầu trao đổi";
       break;
     default:
       statusStyle = styles.statusPending;
@@ -53,8 +37,8 @@ const RequestItem: FC<RequestItemProps> = ({ data }) => {
       style={styles.itemContainer}
       onPress={() => {
         router.push({
-          pathname: "/(main)/personal/request-detail/[id]",
-          params: { id: data?.depositID },
+          pathname: "/(main)/personal/appoinment-request-detail/[id]",
+          params: { id: data?.requestID },
         });
       }}
     >
@@ -62,9 +46,11 @@ const RequestItem: FC<RequestItemProps> = ({ data }) => {
         <Text style={styles.statusText}>{statusText}</Text>
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositCode}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.requestId}>
+          Mã yêu cầu: {data?.appointmentRequestCode}
+        </Text>
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.requestType}>
-          {data?.description}
+          Mã căn hộ: {data?.apartmentCode}
         </Text>
         <View style={styles.timeRow}>
           <View style={styles.timeInfo}>
@@ -103,19 +89,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   statusProcessed: {
-    backgroundColor: "#8BC34A", // Green
+    backgroundColor: "#cacb32",
   },
   statusPending: {
-    backgroundColor: "#FFC107", // Orange
+    backgroundColor: "#FFB412",
   },
-  statusCanceled: {
-    backgroundColor: "#B0BEC5", // Grey
+  statusRejected: {
+    backgroundColor: "#B0BEC5",
   },
   statusFailed: {
-    backgroundColor: "#FF5722", // Red
+    backgroundColor: "#FF5722",
   },
-  statusSuccess: {
-    backgroundColor: "#4CAF50", // Green
+  statusCompleted: {
+    backgroundColor: "#8bc840",
   },
 
   statusText: {
@@ -160,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RequestItem;
+export default AppoinmentRequest;

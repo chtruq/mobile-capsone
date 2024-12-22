@@ -19,7 +19,6 @@ const PersonalLayout = () => {
           headerTitle: "Thông tin cá nhân",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -29,7 +28,6 @@ const PersonalLayout = () => {
           headerTitle: "Quản lí giao dịch",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -39,7 +37,6 @@ const PersonalLayout = () => {
           headerTitle: "Chi tiết giao dịch",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -49,7 +46,6 @@ const PersonalLayout = () => {
           headerTitle: "Quản lí yêu cầu",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -59,7 +55,6 @@ const PersonalLayout = () => {
           headerTitle: "Chi tiết yêu cầu",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -69,7 +64,6 @@ const PersonalLayout = () => {
           headerTitle: "Danh sách ký gửi",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -79,7 +73,6 @@ const PersonalLayout = () => {
           headerTitle: "Danh sách yêu thích",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -89,7 +82,6 @@ const PersonalLayout = () => {
           headerTitle: "Yêu cầu ký gửi",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -99,7 +91,6 @@ const PersonalLayout = () => {
           headerTitle: "Căn hộ đã xem",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitleVisible: false,
           headerBackTitle: "Back",
         }}
       />
@@ -107,6 +98,24 @@ const PersonalLayout = () => {
         name="notitest"
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="consignment-detail/[id]"
+        options={{
+          headerTitle: "Chi tiết yêu cầu ký gửi",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="appoinment-request-detail/[id]"
+        options={{
+          headerTitle: "Chi tiết yêu cầu tư vấn",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerBackTitle: "Back",
         }}
       />
     </Stack>

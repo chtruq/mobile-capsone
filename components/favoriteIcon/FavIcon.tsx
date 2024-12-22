@@ -18,26 +18,23 @@ const FavIcon: FC<FavIconProps> = ({
 }) => {
   const { userInfo } = useAuth();
   const [fav, setFav] = React.useState(isFav);
-  // console.log("fav", fav);
-  // console.log("aaa");
 
   const handleFav = async () => {
     try {
       if (ApartmentId && userInfo?.id) {
         const res = await handleFavorite(ApartmentId, isFav, userInfo?.id);
-
         console.log("res", res);
-        // if (isFav) {
-        //   Toast.show({
-        //     type: "success",
-        //     text2: "Đã xóa khỏi danh sách yêu thích",
-        //   });
-        // } else {
-        //   Toast.show({
-        //     type: "success",
-        //     text2: "Đã thêm vào danh sách yêu thích",
-        //   });
-        // }
+        if (isFav) {
+          Toast.show({
+            type: "success",
+            text2: "Đã xóa khỏi danh sách yêu thích",
+          });
+        } else {
+          Toast.show({
+            type: "success",
+            text2: "Đã thêm vào danh sách yêu thích",
+          });
+        }
         setFav(!isFav);
       }
     } catch (error) {
@@ -52,8 +49,7 @@ const FavIcon: FC<FavIconProps> = ({
   return (
     <TouchableOpacity
       onPress={() => {
-        handleFav;
-        // refreshData();
+        handleFav();
       }}
       style={style}
     >

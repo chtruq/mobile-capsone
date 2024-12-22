@@ -18,3 +18,15 @@ export const createAppointment = async (
   });
   return response.data;
 };
+
+export const getRequestAppointmentList = async (userId: string) => {
+  const response = await apiClient.get(
+    `/appointmentrequests/search?customerId=${userId}&pageIndex=1&pageSize=10`
+  );
+  return response.data;
+};
+
+export const getAppointmentRequestDetail = async (id: string) => {
+  const response = await apiClient.get(`/appointmentrequests/${id}`);
+  return response.data;
+};
