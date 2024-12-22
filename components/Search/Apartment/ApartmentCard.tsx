@@ -28,11 +28,11 @@ const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
         marginBottom: 8,
       }}
       onPress={async () => {
+        await handleInteraction(data.apartmentID, userInfo?.id);
         router.push({
           pathname: "/details/[id]",
           params: { id: data.apartmentID },
         });
-        await handleInteraction(data.apartmentID, userInfo?.id);
       }}
     >
       <View
@@ -54,7 +54,7 @@ const ApartmentCard: FC<ApartmentCardProps> = ({ data }) => {
             style={{ width: "100%", height: 200 }}
           />
           <FavIcon
-            isFav={data.userLiked}
+            isFav={data?.userLiked}
             ApartmentId={data.apartmentID}
             style={{ position: "absolute", top: 10, right: 10 }}
           />

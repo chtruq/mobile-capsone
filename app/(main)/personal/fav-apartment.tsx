@@ -17,6 +17,7 @@ const FavList = () => {
         accountID: userInfo.id,
         userLiked: true,
       });
+      console.log("API response:", res.data?.apartments);
       setFavList(res.data?.apartments);
       return res.data;
     } catch (error) {

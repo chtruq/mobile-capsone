@@ -162,7 +162,7 @@ export default function Home() {
                   </ThemedText>
                 </TouchableOpacity>
               </View>
-              {/* <ListProject /> */}
+              <ListProject />
             </ThemedViewSHKeyboard>
 
             <StatusBar

@@ -15,7 +15,6 @@ import Checkbox from "expo-checkbox";
 import DeclareInput from "@/components/deposit/input/DeclareInput";
 import Button from "@/components/button/Button";
 import { sendPropertyRequest } from "@/services/api/property";
-import { Property } from "@/model/property";
 import { useAuth } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
