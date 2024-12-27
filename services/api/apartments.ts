@@ -31,10 +31,17 @@ export const apartmentsDetail = async (
   }
 };
 
-export const getProjectCart = async (id: string | string[]) => {
+export const getProjectCart = async (
+  id: string | string[],
+  searchTerm?: string
+) => {
+  const searchTerms = searchTerm || "";
+  console.log("id", id);
+  console.log("searchTerm", searchTerms);
+
   try {
     const response = await apiClient.get(
-      `/apartments/search?projectId=${id}&pageIndex=1&pageSize=20`
+      `/apartments/search?projectId=${id}&apartmentName=${searchTerms}&apartmentStatuses=1&pageIndex=1&pageSize=20`
     );
     return response.data;
   } catch (error) {

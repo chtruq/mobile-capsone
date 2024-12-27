@@ -74,7 +74,7 @@ const DepositCard: FC<DepositCardProps> = ({ data }) => {
           }}
         >
           <View style={styles.flexRow}>
-            <ThemedText type="default">Phí đặt cọc căn hộ</ThemedText>
+            <ThemedText type="default">Phí đặt cọc giữ chỗ căn hộ</ThemedText>
             <ThemedText type="default">
               {formatCurrency(data?.depositAmount)}
             </ThemedText>

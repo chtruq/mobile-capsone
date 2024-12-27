@@ -6,6 +6,7 @@ import {
   Pressable,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -18,38 +19,13 @@ import { ProjectApartment } from "@/model/projects";
 import { getProjectCart } from "@/services/api/apartments";
 import ApartmentCard from "@/components/Search/Apartment/ApartmentCard";
 import { Apartment } from "@/model/apartments";
+import { ThemedView } from "@/components/ThemedView";
 
 const ProjectDetail = () => {
   const { id } = useLocalSearchParams();
   console.log(id);
   const [data, setData] = useState<ProjectApartment>();
   const [cartList, setCartList] = useState<Apartment[]>();
-  //   const data = {
-  //     name: "The Opus One",
-  //     investor: "Vingroup",
-  //     quantity: 166,
-  //     area: "3920",
-  //     buildNumber: "20",
-  //     address: "Tăng Nhơn Phú, Quận 9, TP Hồ Chí Minh",
-  //     description:
-  //       "Căn hộ cao cấp 2 phòng ngủ tại chung cư Sunrise City, Quận 7, TP. HCM, với diện tích 80m². Nằm trên tầng 20, căn hộ mang đến tầm nhìn toàn cảnh sông Sài Gòn tuyệt đẹp. Thiết kế hiện đại với không gian mở, sàn gỗ tự nhiên, và hệ thống cửa kính lớn giúp đón ánh sáng tự nhiên. Phòng khách rộng rãi, liên thông với khu vực bếp được trang bị đầy đủ nội thất cao cấp như bếp từ, máy hút mùi và tủ lạnh âm tường.Phòng ngủ chính có giường đôi, tủ âm tường và phòng tắm riêng với thiết bị vệ sinh cao cấp. Phòng ngủ phụ cũng có cửa sổ lớn, thích hợp làm phòng làm việc hoặc phòng cho trẻ em. Ban công rộng rãi, đủ chỗ để trồng cây hoặc đặt bàn uống cà phê buổi sáng.Cư dân tại đây sẽ được tận hưởng nhiều tiện ích đẳng cấp như hồ bơi tràn bờ, phòng gym hiện đại, khu vực BBQ, sân chơi trẻ em và bãi đậu xe rộng rãi. An ninh đảm bảo 24/7 với hệ thống bảo vệ và camera giám sát.Giá bán căn hộ là 4.2 tỷ VND, hoặc cho thuê với giá 15 triệu VND/tháng, đã bao gồm phí quản lý. Đây là lựa chọn lý tưởng cho những ai đang tìm kiếm không gian sống sang trọng và tiện nghi tại khu vực phát triển của thành phố.",
-  //     amenities: `Bãi đậu xe.
-  //   Sân chơi trẻ em.
-  //   Thang máy.
-  //   Trung tâm thương mại.
-  //   Bảo vệ 24/7.
-  //   Công viên.
-  //   Phòng sinh hoạt cộng đồng.
-  //   Ban công.
-  //   Bệnh viện.
-  //   Trường học…`,
-  //   };
-
-  //   const imageArr = [
-  //     require("@/assets/images/home/home.png"),
-  //     require("@/assets/images/home/home.png"),
-  //     require("@/assets/images/home/home.png"),
-  //   ];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleScroll = (event: any) => {
@@ -72,9 +48,9 @@ const ProjectDetail = () => {
 
   const getProjectCartList = async () => {
     try {
-      const res = await getProjectCart(id);
-      res.data && setCartList(res.data.apartments);
-      console.log("cartList", res.data);
+      const res = await getProjectCart(id, "");
+      res.data && setCartList(res?.data?.apartments);
+      console.log("cartList", res?.data?.apartments);
     } catch (error) {
       console.error(error);
     }
@@ -149,7 +125,7 @@ const ProjectDetail = () => {
           </Text>
         </View>
       </View>
-      <FavIcon
+      {/* <FavIcon
         isFav
         style={{
           position: "absolute",
@@ -157,7 +133,7 @@ const ProjectDetail = () => {
           right: 20,
           zIndex: 1,
         }}
-      />
+      /> */}
       <View
         style={{
           backgroundColor: "white",
@@ -267,21 +243,33 @@ const ProjectDetail = () => {
             >
               Giỏ hàng
             </ThemedText>
-            <ThemedText type="red">Xem tất cả</ThemedText>
+            {cartList && (
+              <TouchableOpacity>
+                <ThemedText type="red">Xem tất cả</ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
-          <ScrollView
+          <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
+            data={cartList}
+            keyExtractor={(item: Apartment) => item.apartmentID.toString()}
+            renderItem={({ item }) => (
+              <View style={{ padding: 5, width: 300 }}>
+                <ApartmentCard data={item} />
+              </View>
+            )}
             style={{
               backgroundColor: "#fff",
             }}
-          >
-            {cartList?.map((item: Apartment) => (
-              <View style={{ padding: 5, width: 300 }} key={item.apartmentID}>
-                <ApartmentCard data={item} key={item.apartmentID} />
-              </View>
-            ))}
-          </ScrollView>
+            ListEmptyComponent={
+              <ThemedView>
+                <ThemedText>
+                  Dự án này hiện tại không còn căn hộ trống nào
+                </ThemedText>
+              </ThemedView>
+            }
+          />
         </View>
       </View>
     </ThemedScrollView>

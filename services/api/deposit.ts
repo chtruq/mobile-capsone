@@ -110,3 +110,30 @@ export const getTradeList = async (userId: string) => {
   console.log("Trade list API response:", response.data.data);
   return response.data.data;
 };
+
+export const sendTradeRequest = async (
+  depositId: string | string[],
+  newApartmentCode: string
+) => {
+  try {
+    console.log(
+      "Trade request data:",
+      "depositId: ",
+      depositId,
+      "newApartmentCode: ",
+      newApartmentCode
+    );
+    const response = await apiClient.post(
+      `/deposits/trade-request/${depositId}`,
+      {
+        newApartmentCode: newApartmentCode,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    console.log("Trade request API response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Trade request API error:", error);
+    throw error;
+  }
+};

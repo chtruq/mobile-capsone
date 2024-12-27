@@ -21,7 +21,7 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
           height: "100%",
         }}
       >
-        <ThemedText type="heading">Trạng thái đặt cọc</ThemedText>
+        <ThemedText type="heading">Trạng thái đặt cọc giữ chỗ</ThemedText>
         <ThemedView
           style={{
             justifyContent: "center",
@@ -62,8 +62,8 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
               Đang chờ xác thực
             </ThemedText>
             <ThemedText type="default">
-              Yêu cầu đặt cọc căn hộ của bạn đang kiểm duyệt vui lòng chờ tới
-              trong 24 giờ.
+              Yêu cầu đặt cọc giữ chỗ căn hộ của bạn đang kiểm duyệt vui lòng
+              chờ tới trong 24 giờ.
             </ThemedText>
           </View>
         </ThemedView>
@@ -84,6 +84,7 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             width: "90%",
+            position: "absolute",
           }}
         >
           {/* <Button

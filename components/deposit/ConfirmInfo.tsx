@@ -32,7 +32,7 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
         console.error("Có lỗi xảy ra:", res);
         Alert.alert("Có lỗi xảy ra:", res);
       }
-      // onConfirm();
+      onConfirm();
     } catch (error) {
       console.error("Có lỗi xảy ra:", error);
       throw error;
@@ -183,7 +183,6 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
             title="Xác nhận yêu cầu"
             handlePress={() => {
               onSubmit();
-              // onConfirm();
             }}
           />
         </View>

@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   Modal,
   SafeAreaView,
+  Pressable,
 } from "react-native";
 import React, { FC, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
@@ -66,13 +67,13 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   const textContent = (() => {
     switch (status) {
       case DepositStatus.Pending:
-        return "Tạo yêu cầu thành công";
+        return "Đang chờ xác nhận";
       case DepositStatus.Accept:
-        return "Đã tạo yêu cầu giao dịch";
+        return "Đang chờ thanh toán";
       case DepositStatus.Reject:
         return "Giao dịch đã huỷ";
       case DepositStatus.Disable:
-        return "Giao dịch đã bị vô hiệu hóa";
+        return "Đã bị huỷ";
       case DepositStatus.PaymentFailed:
         return "Thanh toán thất bại";
       case DepositStatus.Paid:
@@ -183,7 +184,7 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
         />
         <ProcessItems
           currentStatus={DepositStatus.Paid}
-          title="Thoả thuận đặt cọc"
+          title="Thoả thuận đặt cọc giữ chỗ"
         />
         <ProcessItems
           currentStatus={DepositStatus.Accept}
@@ -199,7 +200,7 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
   return (
     <View style={{ padding: 20 }}>
       <ThemedText type="defaultSemiBold">
-        Theo dõi tiến trình đặt cọc
+        Theo dõi tiến trình đặt cọc giữ chỗ
       </ThemedText>
       <ProcessList />
     </View>
@@ -212,9 +213,11 @@ const TransactionDetail = () => {
   const [data, setData] = useState<Deposit>();
   const [paymentUrl, setPaymentUrl] = useState<string>();
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [tradeModalVisible, setTradeModalVisible] = useState(false);
   const fetchDepositDetail = async () => {
     try {
       const res = await getDepositDetail(id);
+      console.log("Get deposit detail", res);
       setData(res);
     } catch (error) {
       console.error("Get deposit detail API error:", error);
@@ -252,6 +255,16 @@ const TransactionDetail = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const onTradeRequest = () => {
+    router.push({
+      pathname: "/personal/pick-trade-apartment",
+      params: {
+        apartmentId: data?.apartmentID,
+        depositId: data?.depositID,
+      },
+    });
   };
 
   React.useEffect(() => {
@@ -316,7 +329,7 @@ const TransactionDetail = () => {
               <Line width={"100%"} />
 
               <View style={styles.transactionInfoCol}>
-                <ThemedText type="small">Số tiền cần phải đặt cọc</ThemedText>
+                <ThemedText type="small">Số tiền đặt cọc giữ chỗ</ThemedText>
                 <View
                   style={{
                     flexWrap: "wrap",
@@ -412,11 +425,93 @@ const TransactionDetail = () => {
           </ThemedView>
         </>
       )}
+
+      {data?.depositStatus === DepositStatus.Paid &&
+        data?.updateDate !== data?.createDate && (
+          // data?.disbursementStatus == "PendingDisbursement" &&
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingBottom: 30,
+              borderTopWidth: 1,
+              paddingTop: 20,
+            }}
+            onPress={() => {
+              setTradeModalVisible(true);
+            }}
+          >
+            <ThemedText type="defaultSemiBold">Có nhu cầu trao đổi?</ThemedText>
+          </TouchableOpacity>
+        )}
+
       <PaymentModal
         paymentModalVisible={paymentModalVisible}
         setPaymentModalVisible={setPaymentModalVisible}
         paymentUrl={paymentUrl || ""}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={tradeModalVisible}
+        onRequestClose={() => {
+          setTradeModalVisible(false);
+        }}
+        onPointerCancel={() => {
+          setTradeModalVisible(false);
+        }}
+      >
+        <ThemedView style={styles.tradeModalContainer}>
+          <ThemedView
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#fff",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ThemedText type="defaultSemiBold">
+              Gửi yêu cầu trao đổi căn hộ
+            </ThemedText>
+            <ThemedText style={styles.centerText}>
+              Bạn có muốn trao đổi lên căn hộ khác
+            </ThemedText>
+            <ThemedText style={styles.centerText}>
+              Lưu ý: Bạn chỉ có thể trao đổi căn hộ cùng giá trị hoặc cao hơn,
+              ngoài ra bạn sẽ phải chịu thêm một khoản phí cho việc trao đổi
+              này.
+            </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+                gap: 10,
+              }}
+            >
+              <Button
+                handlePress={() => {
+                  setTradeModalVisible(false);
+                }}
+                title="Hủy"
+                width={"45%"}
+                backgroundColor="#CCC"
+              />
+              <Button
+                handlePress={() => {
+                  onTradeRequest();
+                  setTradeModalVisible(false);
+                }}
+                title="Chọn căn hộ "
+                width={"45%"}
+              />
+            </View>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
     </ThemedView>
   );
 };
@@ -498,5 +593,11 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     width: "100%",
+  },
+  tradeModalContainer: {
+    marginTop: 20,
+    borderColor: "#ccc",
+    padding: 20,
+    borderRadius: 10,
   },
 });

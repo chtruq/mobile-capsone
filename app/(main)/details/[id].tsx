@@ -517,7 +517,7 @@ export default function ProductDetails() {
           }}
         >
           <Button
-            title="Đặt cọc"
+            title="Đặt cọc giữ chỗ"
             width={"90%"}
             handlePress={() => {
               router.push({

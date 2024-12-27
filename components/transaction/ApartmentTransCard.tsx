@@ -35,7 +35,7 @@ const ApartmentTransCard: FC<ApartmentTransCardProps> = ({ id }) => {
     >
       <Image
         source={{
-          uri: apartmentDetail?.images[0].imageUrl,
+          uri: apartmentDetail?.images[0]?.imageUrl,
         }}
         style={{
           width: 100,

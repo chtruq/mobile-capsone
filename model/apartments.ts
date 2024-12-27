@@ -23,6 +23,7 @@ export interface Apartment {
   apartmentType: string;
   possessionType: string;
   balconyDirection: string;
+  projectApartmentID: string;
   projectApartmentName: string;
   building: string;
   floor: number;
