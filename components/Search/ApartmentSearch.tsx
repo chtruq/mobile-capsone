@@ -305,7 +305,6 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         setApartmentData(newData);
         setPageNumber(1); // Reset page number khi load mới
       }
-
       setHasMore(newData.length === 10);
       if (isLoadMore) {
         setPageNumber((prev) => prev + 1);
@@ -364,7 +363,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         padding: 8,
       }}
     >
-      <ScrollView
+      {/* <ScrollView
         style={{
           marginBottom: 110,
         }}
@@ -450,7 +449,81 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
               <ApartmentCard key={item.apartmentID} data={item} />
             ))}
         </View>
-      </ScrollView>
+      </ScrollView> */}
+
+      <FlatList
+        data={ApartmentData}
+        keyExtractor={(item) => item.apartmentID.toString()}
+        renderItem={({ item }) => <ApartmentCard data={item} />}
+        ListHeaderComponent={
+          <>
+            <View style={styles.filter}>
+              <TouchableOpacity
+                onPress={() => {
+                  setFilterVisible(!filterVisible);
+                }}
+                style={styles.filterItem}
+              >
+                <FilterIcon />
+                <ThemedText type="defaultSemiBold">Bộ lọc</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterItem}>
+                <ThemedText type="defaultSemiBold">Loại hình</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterItem}>
+                <ThemedText type="defaultSemiBold">Khoảng giá</ThemedText>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <ThemedText type="small">
+                  {ApartmentData.length} căn hộ được tìm thấy
+                </ThemedText>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+                onPress={() => setVisible(true)}
+              >
+                <ThemedText type="small">
+                  {selectedSort ? selectedSort : "Mới nhất"}
+                </ThemedText>
+                <AntDesign name="down" size={16} color="#252B5C" />
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        ListEmptyComponent={<ThemedText>Không tìm thấy căn hộ nào</ThemedText>}
+        ListFooterComponent={
+          isLoading ? (
+            <View style={{ padding: 10 }}>
+              <ActivityIndicator size="small" color="#4630EB" />
+            </View>
+          ) : null
+        }
+        onEndReached={() => {
+          if (!isLoading && hasMore) {
+            handleLoadMore();
+          }
+        }}
+        onEndReachedThreshold={0.1}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#4630EB"]}
+          />
+        }
+        contentContainerStyle={{ paddingBottom: 110 }}
+      />
       {/* sortby */}
       <Modal
         transparent={true}

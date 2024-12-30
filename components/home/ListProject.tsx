@@ -21,6 +21,7 @@ import ApartmentCard from "../Search/Apartment/ApartmentCard";
 import { getProjectsSearch } from "@/services/api/project";
 import ProjectCard from "../Search/Project/ProjectCard";
 import { ProjectApartment } from "@/model/projects";
+import { FlatList } from "react-native";
 
 export default function ListProject() {
   const [data, setData] = React.useState([]);
@@ -86,18 +87,21 @@ export default function ListProject() {
   //refresh when add or remove favorite
 
   return (
-    <ScrollView
+    <FlatList
       horizontal={true}
       showsHorizontalScrollIndicator={false}
+      data={data}
+      keyExtractor={(item: ProjectApartment) =>
+        item.projectApartmentID.toString()
+      }
+      renderItem={({ item }) => (
+        <View style={{ padding: 5, width: 300 }}>
+          <ProjectCard data={item} />
+        </View>
+      )}
       style={{
         backgroundColor: "#fff",
       }}
-    >
-      {data.map((item: ProjectApartment) => (
-        <View style={{ padding: 5, width: 300 }} key={item.projectApartmentID}>
-          <ProjectCard data={item} />
-        </View>
-      ))}
-    </ScrollView>
+    />
   );
 }

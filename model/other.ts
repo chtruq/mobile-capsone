@@ -20,7 +20,7 @@ export function formatArea(value: number | undefined): string {
   return value + " m²";
 }
 
-export const numberToWords = (num) => {
+export const numberToWords = (num: number) => {
   const units = [
     "",
     "một",

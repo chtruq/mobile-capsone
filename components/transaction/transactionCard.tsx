@@ -108,11 +108,11 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
                   : data?.depositStatus === "Accept"
                   ? "Đang chờ thanh toán"
                   : data?.depositStatus === "Reject"
-                  ? "Đang chờ xử lý"
+                  ? "Đã bị huỷ"
                   : data?.depositStatus === "Disable"
                   ? "Đã bị huỷ"
                   : data?.depositStatus === "PaymentFailed"
-                  ? "Giao dịch đã bị huỷ"
+                  ? "Giao dịch thất bại"
                   : data?.depositStatus === "Paid"
                   ? "Đã thanh toán"
                   : data?.depositStatus === "TradeRequested"
@@ -156,7 +156,7 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
                   alignItems: "center",
                 }}
               >
-                <ThemedText type="small">Số tiền đặt cọc:</ThemedText>
+                <ThemedText type="small">Số tiền đặt cọc giữ chỗ:</ThemedText>
                 <ThemedText type="defaultSemiBold">
                   {formatCurrency(data?.depositAmount)}
                 </ThemedText>

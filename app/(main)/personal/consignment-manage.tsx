@@ -112,19 +112,19 @@ const ConsignmentList = () => {
                           : item.requestStatus == "Completed"
                           ? "green"
                           : item.requestStatus == "Rejected"
-                          ? "#ccc"
+                          ? "#ccc00"
                           : undefined,
                       backgroundColor:
                         item.requestStatus == "Pending"
                           ? "#fff"
                           : item.requestStatus == "InProgressing"
-                          ? "#ccc"
+                          ? "#blue"
                           : item.requestStatus == "Accepted"
-                          ? "#ccc"
+                          ? "#c0df9c"
                           : item.requestStatus == "Completed"
-                          ? "#ccc"
+                          ? "#green"
                           : item.requestStatus == "Rejected"
-                          ? "#ccc"
+                          ? "#fff"
                           : undefined,
                     }}
                   >
@@ -133,7 +133,7 @@ const ConsignmentList = () => {
                         "Đang tiến hành xác nhận") ||
                       (item.requestStatus == "Accepted" && "Đã xác nhận") ||
                       (item.requestStatus == "Completed" && "Đã hoàn thành") ||
-                      (item.requestStatus == "Rejected" && "Đã từ chối")}
+                      (item.requestStatus == "Rejected" && "Đã bị từ chối")}
                   </ThemedText>
                 </View>
                 <View

@@ -62,8 +62,8 @@ export interface Deposit {
   updateDate: string;
   expiryDate: string;
   depositStatus: DepositStatus;
-  depositType: string;
-  disbursementStatus: string;
+  depositType: DepositType;
+  disbursementStatus: DisbursementStatus;
   accountID: string;
   apartmentID: string;
   teamMemberID: string | null;
@@ -79,4 +79,16 @@ export enum DepositStatus {
   Paid = "Paid",
   TradeRequested = "TradeRequested",
   Exported = "Exported",
+}
+
+export enum DisbursementStatus {
+  Pendingdisbursement = "Pendingdisbursement",
+  ProcessingDisbursement = "ProcessingDisbursement",
+  DisbursementCompleted = "DisbursementCompleted",
+  DisbursementFailed = "DisbursementFailed",
+}
+
+export enum DepositType {
+  Deposit = "Deposit",
+  Trade = "Trade",
 }

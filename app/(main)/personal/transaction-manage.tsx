@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  FlatList,
 } from "react-native";
 import React, { useEffect } from "react";
 import { ThemedText } from "@/components/ThemedText";
@@ -65,27 +66,18 @@ const TransactionManage = () => {
       }}
     >
       {data ? (
-        <ScrollView
+        <FlatList
+          data={data}
+          renderItem={({ item }) => (
+            <TransactionCard key={item.depositID} data={item} />
+          )}
+          keyExtractor={(item: Deposit) => item.depositID.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.2}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          onScroll={({ nativeEvent }) => {
-            const { layoutMeasurement, contentOffset, contentSize } =
-              nativeEvent;
-            const isEndReached =
-              layoutMeasurement.height + contentOffset.y >=
-              contentSize.height - 20;
-
-            if (isEndReached) {
-              handleLoadMore();
-            }
-          }}
-          scrollEventThrottle={400}
-        >
-          {data?.map((item: Deposit) => (
-            <TransactionCard key={item.depositID} data={item} />
-          ))}
-        </ScrollView>
+        />
       ) : (
         <View
           style={{

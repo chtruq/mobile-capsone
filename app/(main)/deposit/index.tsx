@@ -22,7 +22,6 @@ import { ScannedInfo } from "@/model/deposit";
 const DepositDeclare = () => {
   const [step, setStep] = useState(0); // Track the current step
   const [formData, setFormData] = useState<ScannedInfo>(); // Store user-entered data
-  const [checkValidation, setCheckValidation] = useState(false);
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
   const [apartmentInfo, setApartmentInfo] = useState<Apartment>();
@@ -59,76 +58,85 @@ const DepositDeclare = () => {
   }, [formData]);
 
   return (
-    <>
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: "#f0f0f0",
+      }}
+    >
       {/* trang thai */}
-      <ThemedView
-        style={{
-          height: 100,
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "center",
-        }}
-      >
+      <View>
         <View
           style={{
-            flexDirection: "column",
+            flexDirection: "row",
+            justifyContent: "space-around",
             alignItems: "center",
+            position: "sticky",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1,
+            backgroundColor: "white",
+            borderBottomWidth: 1,
+            borderBottomColor: "#f0f0f0",
           }}
         >
-          {step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />}
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />}
 
-          <ThemedText type="deposit">Khai báo thông tin</ThemedText>
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          {step === 0 && <ConfirmInactiveIcon />}
-          {step === 1 && <ConfirmActiveIcon />}
-          {step === 2 && <TickGreenIcon />}
+            <ThemedText type="deposit">Khai báo thông tin</ThemedText>
+          </View>
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {step === 0 && <ConfirmInactiveIcon />}
+            {step === 1 && <ConfirmActiveIcon />}
+            {step === 2 && <TickGreenIcon />}
 
-          <ThemedText type="deposit">Xác nhận thông tin </ThemedText>
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          {step === 2 ? <StatusActiveIcon /> : <StatusInactiveIcon />}
+            <ThemedText type="deposit">Xác nhận thông tin </ThemedText>
+          </View>
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {step === 2 ? <StatusActiveIcon /> : <StatusInactiveIcon />}
 
-          <ThemedText type="deposit">Trạng thái đơn hàng</ThemedText>
+            <ThemedText type="deposit">Trạng thái đơn hàng</ThemedText>
+          </View>
         </View>
-      </ThemedView>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 5,
-        }}
-      >
-        {step === 0 && (
-          <DeclareInfoForm
-            data={apartmentInfo}
-            onSubmitInfo={handleFormSubmit}
-          />
-        )}
-        {step === 1 && (
-          <ConfirmInfo
-            data={formData as ScannedInfo}
-            onConfirm={() => nextStep()}
-            onBack={() => prevStep()}
-          />
-        )}
-        {step === 2 && (
-          <OrderStatus
-            onConfirm={() => nextStep()}
-            prevStep={() => prevStep()}
-          />
-        )}
+        <View>
+          {step === 0 && (
+            <DeclareInfoForm
+              data={apartmentInfo}
+              onSubmitInfo={handleFormSubmit}
+            />
+          )}
+          {step === 1 && (
+            <ConfirmInfo
+              data={formData as ScannedInfo}
+              onConfirm={() => nextStep()}
+              onBack={() => prevStep()}
+            />
+          )}
+          {step === 2 && (
+            <OrderStatus
+            // onConfirm={() => nextStep()}
+            // prevStep={() => prevStep()}
+            />
+          )}
+        </View>
       </View>
-    </>
+    </ScrollView>
   );
 };
 

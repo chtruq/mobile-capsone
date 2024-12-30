@@ -8,15 +8,21 @@ import {
   TouchableOpacity,
   Modal,
   SafeAreaView,
+  Pressable,
 } from "react-native";
 import React, { FC, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { getDepositDetail } from "@/services/api/deposit";
 import ApartmentTransCard from "@/components/transaction/ApartmentTransCard";
-import { Deposit, DepositStatus } from "@/model/deposit";
+import {
+  Deposit,
+  DepositStatus,
+  DepositType,
+  DisbursementStatus,
+} from "@/model/deposit";
 import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { formatCurrency, numberToWords } from "@/model/other";
@@ -28,6 +34,11 @@ import { WebView } from "react-native-webview";
 import PaymentModal from "@/components/payment/paymentModal/PaymentModal";
 interface TransactionStatusProps {
   status: DepositStatus;
+}
+
+interface TransactionProcessProps {
+  statusData: DepositStatus;
+  disbursementStatusData?: DisbursementStatus;
 }
 
 const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
@@ -66,13 +77,13 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   const textContent = (() => {
     switch (status) {
       case DepositStatus.Pending:
-        return "Tạo yêu cầu thành công";
+        return "Đang chờ xác nhận";
       case DepositStatus.Accept:
-        return "Đã tạo yêu cầu giao dịch";
+        return "Đang chờ thanh toán";
       case DepositStatus.Reject:
         return "Giao dịch đã huỷ";
       case DepositStatus.Disable:
-        return "Giao dịch đã bị vô hiệu hóa";
+        return "Đã bị huỷ";
       case DepositStatus.PaymentFailed:
         return "Thanh toán thất bại";
       case DepositStatus.Paid:
@@ -142,31 +153,71 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   );
 };
 
-const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
+const TransactionProcess: FC<TransactionProcessProps> = ({
+  statusData,
+  disbursementStatusData,
+}) => {
   //item
   const ProcessItems = ({
     title,
     currentStatus,
+    disbursementStatus,
+    stepIndex,
   }: {
     title: string;
     currentStatus: DepositStatus;
+    disbursementStatus?: DisbursementStatus;
+    stepIndex: number;
   }) => {
-    const isActive = status >= currentStatus;
-    const backgroundColor = isActive ? Colors.light.success : "#ccc";
+    const isCompleted = (() => {
+      if (stepIndex === 0) {
+        // Step 1: "Đã tạo yêu cầu giao dịch" is completed when depositStatus is Pending or beyond
+        return true;
+      } else if (stepIndex === 1) {
+        // Step 2: "Xác nhận giao dịch" is completed when depositStatus is Paid or PaymentFailed
+        return (
+          currentStatus === DepositStatus.Paid ||
+          currentStatus === DepositStatus.PaymentFailed
+        );
+      } else if (stepIndex === 2) {
+        // Step 3: "Thoả thuận đặt cọc giữ chỗ" is completed when disbursementStatus is ProcessingDisbursement
+        return (
+          disbursementStatus === DisbursementStatus.ProcessingDisbursement &&
+          currentStatus === DepositStatus.Paid
+        );
+      } else if (stepIndex === 3) {
+        // Step 4: "Thoả thuận đặt cọc" is completed when disbursementStatus is DisbursementCompleted
+        return (
+          disbursementStatus === DisbursementStatus.DisbursementCompleted &&
+          currentStatus === DepositStatus.Paid
+        );
+      }
+      return false;
+    })();
+
+    const backgroundColor = isCompleted ? Colors.light.success : "#ccc";
     const isCancelled =
-      status === DepositStatus.Reject ||
-      status === DepositStatus.Disable ||
-      status === DepositStatus.PaymentFailed;
+      currentStatus === DepositStatus.Reject ||
+      currentStatus === DepositStatus.Disable ||
+      currentStatus === DepositStatus.PaymentFailed;
+
+    const processIcon = (() => {
+      if (isCompleted) {
+        return "✓";
+      }
+      if (isCancelled) {
+        return "✕";
+      }
+      if (disbursementStatus === DisbursementStatus.ProcessingDisbursement) {
+        return "";
+      }
+      return "";
+    })();
 
     return (
       <View style={styles.processItem}>
         <View style={[styles.processIcon, { backgroundColor }]}>
-          {isActive && !isCancelled && (
-            <Text style={styles.processIconText}>✓</Text>
-          )}
-          {isCancelled && currentStatus === status && (
-            <Text style={styles.processIconText}>✕</Text>
-          )}
+          <Text style={styles.processIconText}>{processIcon}</Text>
         </View>
         <Text>{title}</Text>
       </View>
@@ -177,13 +228,24 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
   const ProcessList = () => {
     return (
       <View>
-        <ProcessItems
-          currentStatus={DepositStatus.Paid}
+        {/* <DisbursementProcess
           title="Hợp đồng mua bán"
+          currentDisbursementStatus="PendingDisbursement"
+        />
+        <DisbursementProcess
+          title="Thoả thuận đặt cọc giữ chỗ"
+          currentDisbursementStatus="PendingDisbursement"
+        /> */}
+
+        {/* <ProcessItems
+          currentStatus={DepositStatus.Paid}
+          title="Hợp đồng thanh toán"
+          disbursementStatus={DisbursementStatus.ProcessingDisbursement}
         />
         <ProcessItems
           currentStatus={DepositStatus.Paid}
-          title="Thoả thuận đặt cọc"
+          title="Thoả thuận đặt cọc giữ chỗ"
+          disbursementStatus={DisbursementStatus.Pendingdisbursement}
         />
         <ProcessItems
           currentStatus={DepositStatus.Accept}
@@ -192,6 +254,28 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
         <ProcessItems
           currentStatus={DepositStatus.Accept}
           title="Đã tạo yêu cầu giao dịch"
+        /> */}
+        <ProcessItems
+          disbursementStatus={disbursementStatusData}
+          currentStatus={statusData}
+          title="Thoả thuận đặt cọc"
+          stepIndex={3}
+        />
+        <ProcessItems
+          disbursementStatus={disbursementStatusData}
+          currentStatus={statusData}
+          title="Thoả thuận đặt cọc giữ chỗ"
+          stepIndex={2}
+        />
+        <ProcessItems
+          currentStatus={statusData}
+          title="Xác nhận giao dịch"
+          stepIndex={1}
+        />
+        <ProcessItems
+          currentStatus={statusData}
+          title="Đã tạo yêu cầu giao dịch"
+          stepIndex={0}
         />
       </View>
     );
@@ -199,7 +283,7 @@ const TransactionProcess: FC<TransactionStatusProps> = ({ status }) => {
   return (
     <View style={{ padding: 20 }}>
       <ThemedText type="defaultSemiBold">
-        Theo dõi tiến trình đặt cọc
+        Theo dõi tiến trình đặt cọc giữ chỗ
       </ThemedText>
       <ProcessList />
     </View>
@@ -212,9 +296,11 @@ const TransactionDetail = () => {
   const [data, setData] = useState<Deposit>();
   const [paymentUrl, setPaymentUrl] = useState<string>();
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [tradeModalVisible, setTradeModalVisible] = useState(false);
   const fetchDepositDetail = async () => {
     try {
       const res = await getDepositDetail(id);
+      console.log("Get deposit detail", res);
       setData(res);
     } catch (error) {
       console.error("Get deposit detail API error:", error);
@@ -254,6 +340,16 @@ const TransactionDetail = () => {
     }
   };
 
+  const onTradeRequest = () => {
+    router.push({
+      pathname: "/personal/pick-trade-apartment",
+      params: {
+        apartmentId: data?.apartmentID,
+        depositId: data?.depositID,
+      },
+    });
+  };
+
   React.useEffect(() => {
     if (data?.depositStatus === DepositStatus.Paid) {
       setPaymentModalVisible(false);
@@ -274,7 +370,10 @@ const TransactionDetail = () => {
         >
           <ThemedView>
             <TransactionStatus status={data?.depositStatus as DepositStatus} />
-            <TransactionProcess status={data?.depositStatus as DepositStatus} />
+            <TransactionProcess
+              statusData={data?.depositStatus as DepositStatus}
+              disbursementStatusData={data?.disbursementStatus}
+            />
           </ThemedView>
 
           <ThemedView
@@ -316,7 +415,7 @@ const TransactionDetail = () => {
               <Line width={"100%"} />
 
               <View style={styles.transactionInfoCol}>
-                <ThemedText type="small">Số tiền cần phải đặt cọc</ThemedText>
+                <ThemedText type="small">Số tiền đặt cọc giữ chỗ</ThemedText>
                 <View
                   style={{
                     flexWrap: "wrap",
@@ -324,16 +423,48 @@ const TransactionDetail = () => {
                   }}
                 >
                   <ThemedText type="price">
-                    {formatCurrency(data?.depositAmount)}
-                  </ThemedText>
-                  <ThemedText
-                    style={styles.transactionInfoTitle}
-                    type="default"
-                  >
-                    ({numberToWords(data?.depositAmount)})
+                    {formatCurrency(data?.paymentAmount)}
                   </ThemedText>
                 </View>
               </View>
+
+              <ThemedText
+                style={[
+                  styles.transactionInfoTitle,
+                  {
+                    width: "100%",
+                    flexWrap: "wrap",
+                    textAlign: "right",
+                  },
+                ]}
+                type="default"
+              >
+                ({numberToWords(data?.paymentAmount as number)})
+              </ThemedText>
+              {data?.depositType === DepositType.Trade &&
+                data?.depositStatus === DepositStatus.Accept && (
+                  <View>
+                    <ThemedText
+                      type="default"
+                      style={[
+                        styles.transactionInfoTitle,
+                        {
+                          width: "100%",
+                          flexWrap: "wrap",
+                          textAlign: "right",
+                        },
+                      ]}
+                    >
+                      *(Đã bao gồm{" "}
+                      <ThemedText type="defaultSemiBold">
+                        {formatCurrency(data?.tradeFee as number)}
+                      </ThemedText>{" "}
+                      tiền phí trao đổi và trừ đi khoản tiền mà bạn đã thanh
+                      toán trước đó)
+                    </ThemedText>
+                  </View>
+                )}
+
               <Line width={"100%"} />
               <View style={styles.transactionInfoCol}>
                 <ThemedText type="small">Mã giao dịch</ThemedText>
@@ -377,15 +508,26 @@ const TransactionDetail = () => {
               paddingBottom: 30,
             }}
           >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <ThemedText>Uỷ nhiệm chi & Giấy tờ tuỳ thân</ThemedText>
-              <AntDesign name="right" size={20} color="#000" />
+            <TouchableOpacity style={{ backgroundColor: "#", padding: 10 }}>
+              <Link
+                href="/personal/personal-identify"
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#ececec",
+                }}
+              >
+                <ThemedText>Uỷ nhiệm chi & Giấy tờ tuỳ thân</ThemedText>
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <AntDesign name="right" size={20} color="#000" />
+                </View>
+              </Link>
             </TouchableOpacity>
           </ThemedView>
         </View>
@@ -412,11 +554,93 @@ const TransactionDetail = () => {
           </ThemedView>
         </>
       )}
+
+      {data?.depositStatus === DepositStatus.Paid &&
+        data?.updateDate !== data?.createDate && (
+          // data?.disbursementStatus == "PendingDisbursement" &&
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingBottom: 30,
+              borderTopWidth: 1,
+              paddingTop: 20,
+            }}
+            onPress={() => {
+              setTradeModalVisible(true);
+            }}
+          >
+            <ThemedText type="defaultSemiBold">Có nhu cầu trao đổi?</ThemedText>
+          </TouchableOpacity>
+        )}
+
       <PaymentModal
         paymentModalVisible={paymentModalVisible}
         setPaymentModalVisible={setPaymentModalVisible}
         paymentUrl={paymentUrl || ""}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={tradeModalVisible}
+        onRequestClose={() => {
+          setTradeModalVisible(false);
+        }}
+        onPointerCancel={() => {
+          setTradeModalVisible(false);
+        }}
+      >
+        <ThemedView style={styles.tradeModalContainer}>
+          <ThemedView
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#fff",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ThemedText type="defaultSemiBold">
+              Gửi yêu cầu trao đổi căn hộ
+            </ThemedText>
+            <ThemedText style={styles.centerText}>
+              Bạn có muốn trao đổi lên căn hộ khác
+            </ThemedText>
+            <ThemedText style={styles.centerText}>
+              Lưu ý: Bạn chỉ có thể trao đổi căn hộ cùng giá trị hoặc cao hơn,
+              ngoài ra bạn sẽ phải chịu thêm một khoản phí cho việc trao đổi
+              này.
+            </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+                gap: 10,
+              }}
+            >
+              <Button
+                handlePress={() => {
+                  setTradeModalVisible(false);
+                }}
+                title="Hủy"
+                width={"45%"}
+                backgroundColor="#CCC"
+              />
+              <Button
+                handlePress={() => {
+                  onTradeRequest();
+                  setTradeModalVisible(false);
+                }}
+                title="Chọn căn hộ "
+                width={"45%"}
+              />
+            </View>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
     </ThemedView>
   );
 };
@@ -498,5 +722,11 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     width: "100%",
+  },
+  tradeModalContainer: {
+    marginTop: 20,
+    borderColor: "#ccc",
+    padding: 20,
+    borderRadius: 10,
   },
 });

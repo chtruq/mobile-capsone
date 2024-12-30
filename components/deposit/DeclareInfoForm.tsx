@@ -22,7 +22,6 @@ import { ThemedText } from "../ThemedText";
 import UploadIcon from "@/assets/icon/deposit/upload";
 import DeclareInput from "./input/DeclareInput";
 import * as ImagePicker from "expo-image-picker";
-import TextRecognition from "react-native-text-recognition";
 import * as FileSystem from "expo-file-system";
 import axios from "axios";
 import {
@@ -67,7 +66,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
 
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef<typeof Camera | null>(null);
+  const cameraRef = useRef<CameraView | null>(null);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [isInFrame, setIsInFrame] = useState(false);
   const [isChecked1, setChecked1] = useState(false);
@@ -157,13 +156,17 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
             // console.log("err", errMes);
             return;
           } else {
-            setSelectedFrontImage(photo.uri);
+            if (photo) {
+              setSelectedFrontImage(photo.uri);
+            }
             closeCamera();
             return;
           }
         }
         if (!isFrontImage) {
-          setSelectedBackImage(photo.uri);
+          if (photo) {
+            setSelectedBackImage(photo.uri);
+          }
           closeCamera();
           return;
         }
@@ -254,7 +257,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
       return false;
     }
     if (!isChecked3) {
-      Alert.alert("Vui lòng xác nhận đồng ý với Hợp đồng đặt cọc");
+      Alert.alert("Vui lòng xác nhận đồng ý với Hợp đồng đặt cọc giữ chỗ");
       return false;
     }
     return true;
@@ -279,15 +282,14 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
+    <>
+      <ThemedView
         style={{
-          backgroundColor: "#fff",
-          // marginBottom: 100,
           marginTop: 5,
+          borderRadius: 10,
         }}
       >
-        <ThemedView
+        <View
           style={{
             margin: 5,
             borderRadius: 10,
@@ -295,8 +297,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           }}
         >
           <DepositCard data={data} />
-        </ThemedView>
-        <ThemedView
+        </View>
+        <View
           style={{
             margin: 5,
             borderRadius: 10,
@@ -305,7 +307,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
         >
           <ThemedText type="defaultSemiBold">
             Quý khách vui lòng điền đầy dủ và chính xác các thông tin dưới đây
-            để tiến hành đặt cọc
+            để tiến hành đặt cọc giữ chỗ
           </ThemedText>
           <ThemedText type="heading">Thông tin khách hàng</ThemedText>
 
@@ -319,13 +321,9 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                   <View style={styles.radioButtonSelected} />
                 )}
               </View>
-              <ThemedText
-                style={{
-                  width: "90%",
-                }}
-                type="default"
-              >
-                Tôi là Cá nhân đặt cọc căn hộ và đứng tên Hợp đồng đặt cọc
+              <ThemedText numberOfLines={2} type="default">
+                Tôi là Cá nhân đặt cọc giữ chỗ căn hộ và đứng tên Hợp đồng đặt
+                cọc giữ chỗ
               </ThemedText>
             </TouchableOpacity>
 
@@ -343,7 +341,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                   width: "90%",
                 }}
               >
-                Tôi đặt cọc hộ người khác
+                Tôi đặt cọc giữ chỗ hộ người khác
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -491,7 +489,6 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 onChangeText={(text) => {
                   setEmail(text);
                 }}
-                // onBlur={handleBlur("email")}
               />
 
               <DeclareInput
@@ -501,107 +498,110 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 onChangeText={(text) => {
                   setPhone(text);
                 }}
-                // onBlur={handleBlur("phone")}
                 isNumber
               />
             </View>
           )}
 
           <View>
-            <ThemedText type="heading">Xem hợp đồng đặt cọc mẫu</ThemedText>
-            <ThemedText type="default">
-              Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc dưới đây. Hợp
-              đồng đặt cọc chính thức có giá trị pháp lý khi khách hàng xác nhận
-              chuyển cọc trên hệ thống.
-            </ThemedText>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <ContractIcon />
-              <ThemedText
+            <View>
+              <TouchableOpacity>
+                <ThemedText type="heading">
+                  Xem hợp đồng đặt cọc giữ chỗ mẫu
+                </ThemedText>
+              </TouchableOpacity>
+              <ThemedText type="default">
+                Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc giữ chỗ dưới
+                đây. Hợp đồng chính thức có giá trị pháp lý khi khách hàng xác
+                nhận chuyển cọc trên hệ thống.
+              </ThemedText>
+              <View
                 style={{
-                  textDecorationLine: "underline",
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
-                type="defaultSemiBold"
               >
-                Xem hợp đồng đặt cọc mẫu
-              </ThemedText>
-            </View>
+                <ContractIcon />
+                <ThemedText
+                  style={{
+                    textDecorationLine: "underline",
+                  }}
+                  type="defaultSemiBold"
+                >
+                  Xem hợp đồng mẫu
+                </ThemedText>
+              </View>
 
-            <Pressable
-              onPress={() => {
-                setChecked1(!isChecked1);
-              }}
-              style={styles.checkBoxContainer}
-            >
-              <Checkbox
-                value={isChecked1}
-                // onValueChange={setChecked1}
-                style={styles.checkbox}
-                color={isChecked1 ? "#000000" : undefined}
-              />
-              <ThemedText style={styles.checkBoxText}>
-                Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setChecked2(!isChecked2);
-              }}
-              style={styles.checkBoxContainer}
-            >
-              <Checkbox
-                value={isChecked2}
-                onValueChange={setChecked2}
-                style={styles.checkbox}
-                color={isChecked2 ? "#000000" : undefined}
-              />
-              <ThemedText style={styles.checkBoxText}>
-                Tôi cam kết các thông tin Bên đặt cọc được cung cấp tại đây là
-                hoàn toàn chính xác
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setChecked3(!isChecked3);
-              }}
-              style={styles.checkBoxContainer}
-            >
-              <Checkbox
-                value={isChecked3}
-                onValueChange={setChecked3}
-                style={styles.checkbox}
-                color={isChecked3 ? "#000000" : undefined}
-              />
-              <ThemedText style={styles.checkBoxText}>
-                Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung Hợp
-                đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc trên
-                hệ thống Luxuer
-              </ThemedText>
-            </Pressable>
+              <Pressable
+                onPress={() => {
+                  setChecked1(!isChecked1);
+                }}
+                style={styles.checkBoxContainer}
+              >
+                <Checkbox
+                  value={isChecked1}
+                  style={styles.checkbox}
+                  color={isChecked1 ? "#000000" : undefined}
+                />
+                <ThemedText style={styles.checkBoxText}>
+                  Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setChecked2(!isChecked2);
+                }}
+                style={styles.checkBoxContainer}
+              >
+                <Checkbox
+                  value={isChecked2}
+                  onValueChange={setChecked2}
+                  style={styles.checkbox}
+                  color={isChecked2 ? "#000000" : undefined}
+                />
+                <ThemedText style={styles.checkBoxText}>
+                  Tôi cam kết các thông tin bên đặt cọc giữ chỗ được cung cấp
+                  tại đây là hoàn toàn chính xác
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setChecked3(!isChecked3);
+                }}
+                style={styles.checkBoxContainer}
+              >
+                <Checkbox
+                  value={isChecked3}
+                  onValueChange={setChecked3}
+                  style={styles.checkbox}
+                  color={isChecked3 ? "#000000" : undefined}
+                />
+                <ThemedText style={styles.checkBoxText}>
+                  Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung
+                  Hợp đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc
+                  giữ chỗ trên hệ thống Luxuer
+                </ThemedText>
+              </Pressable>
+            </View>
           </View>
-        </ThemedView>
-      </ScrollView>
-      <ThemedView
-        style={{
-          width: "100%",
-          bottom: 0,
-          height: 95,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: 10,
-        }}
-      >
-        <Button
-          width={"90%"}
-          title="Xác nhận thông tin"
-          handlePress={() => {
-            handleSubmit();
-          }}
-        />
+
+          <View
+            style={{
+              width: "100%",
+              height: 95,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              width={"90%"}
+              title="Xác nhận thông tin"
+              handlePress={() => {
+                handleSubmit();
+              }}
+            />
+          </View>
+        </View>
       </ThemedView>
 
       {/* camera */}
@@ -664,7 +664,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           {!userInfo ? <OverlayQR /> : <Overlay />}
         </CameraView>
       </Modal>
-    </View>
+    </>
   );
 };
 
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#f4c144", // Custom border color as in the image
+    borderColor: "#f4c144",
     borderRadius: 8,
   },
   optionContainer: {
@@ -714,23 +714,7 @@ const styles = StyleSheet.create({
     width: 300,
     alignItems: "center",
   },
-  modalButton: {
-    padding: 10,
-    width: "100%",
-    alignItems: "center",
-    marginVertical: 5,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-  },
-  buttonClose: {
-    backgroundColor: "#f44336",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    position: "absolute",
-    bottom: 30,
-    left: "40%",
-  },
+
   qrInfo: {
     padding: 20,
     alignItems: "center",
@@ -763,7 +747,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    // backgroundColor: "#f4c144",
     padding: 10,
     zIndex: 100,
     position: "absolute",
@@ -799,12 +782,6 @@ const styles = StyleSheet.create({
   },
   customCheckboxChecked: {
     backgroundColor: "#000",
-  },
-  checkmark: {
-    width: "80%",
-    height: "80%",
-    backgroundColor: "#fff",
-    margin: "10%",
   },
 });
 

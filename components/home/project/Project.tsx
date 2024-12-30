@@ -50,6 +50,7 @@ const Project = ({ refreshData }: { refreshData: () => void }) => {
     try {
       const response = await apartmentsSearch({
         accountId: userInfo?.id,
+        apartmentStatuses: 1,
       });
       setData(response.data.apartments);
       return response.data;

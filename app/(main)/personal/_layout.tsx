@@ -19,7 +19,7 @@ const PersonalLayout = () => {
           headerTitle: "Thông tin cá nhân",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -28,7 +28,7 @@ const PersonalLayout = () => {
           headerTitle: "Quản lí giao dịch",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -37,7 +37,7 @@ const PersonalLayout = () => {
           headerTitle: "Chi tiết giao dịch",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -46,7 +46,7 @@ const PersonalLayout = () => {
           headerTitle: "Quản lí yêu cầu",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -55,7 +55,7 @@ const PersonalLayout = () => {
           headerTitle: "Chi tiết yêu cầu",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -64,7 +64,7 @@ const PersonalLayout = () => {
           headerTitle: "Danh sách ký gửi",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -73,7 +73,7 @@ const PersonalLayout = () => {
           headerTitle: "Danh sách yêu thích",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -82,7 +82,7 @@ const PersonalLayout = () => {
           headerTitle: "Yêu cầu ký gửi",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -91,7 +91,7 @@ const PersonalLayout = () => {
           headerTitle: "Căn hộ đã xem",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
         }}
       />
       <Stack.Screen
@@ -115,7 +115,32 @@ const PersonalLayout = () => {
           headerTitle: "Chi tiết yêu cầu tư vấn",
           headerShown: true,
           headerTitleAlign: "center",
-          headerBackTitle: "Back",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="pick-trade-apartment"
+        options={{
+          headerShown: true,
+          headerTitle: "Chọn căn hộ",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="trade-request-success"
+        options={{
+          headerShown: true,
+          headerTitle: "Yêu cầu trao đổi",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="personal-identify"
+        options={{
+          headerShown: true,
+          headerTitle: "Uỷ nhiệm chi & giấy tờ tuỳ thân",
+          headerBackTitle: "Trở về",
+          presentation: "modal",
         }}
       />
     </Stack>
