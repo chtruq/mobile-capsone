@@ -6,21 +6,19 @@ import { Colors } from "@/constants/Colors";
 import Button from "../button/Button";
 import { router } from "expo-router";
 
-interface Props {
-  onConfirm: () => void;
-  prevStep: () => void;
-}
+// interface Props {
+//   onConfirm: () => void;
+//   prevStep: () => void;
+// }
 
-const OrderStatus: FC<Props> = ({ prevStep }) => {
+const OrderStatus = () => {
   return (
-    <>
-      <ThemedView
-        style={{
-          // justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
+    <ThemedView
+      style={{
+        flex: 1,
+      }}
+    >
+      <View>
         <ThemedText type="heading">Trạng thái đặt cọc giữ chỗ</ThemedText>
         <ThemedView
           style={{
@@ -67,12 +65,9 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
             </ThemedText>
           </View>
         </ThemedView>
-      </ThemedView>
+      </View>
       <ThemedView
         style={{
-          position: "absolute",
-          width: "100%",
-          bottom: 0,
           height: 95,
           backgroundColor: "#fff",
           justifyContent: "center",
@@ -109,7 +104,7 @@ const OrderStatus: FC<Props> = ({ prevStep }) => {
           />
         </View>
       </ThemedView>
-    </>
+    </ThemedView>
   );
 };
 

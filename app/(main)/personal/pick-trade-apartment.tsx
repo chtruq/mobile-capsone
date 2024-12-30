@@ -58,7 +58,8 @@ const PickTradeApartment = () => {
     if (projectId) {
       try {
         const res = await getProjectCart(projectId, search);
-        // console.log("projectApartments", res?.data?.apartments);
+
+        console.log("projectApartments", res?.data?.apartments);
         const projectApartmentsList: Apartment[] = res?.data?.apartments || [];
         //i want to compare the price of this list with the price of the apartmentDetails (if the price of project is equal or more than the apartmentDetails then save it to the projectApartments) then save it to the projectApartments
         const filteredApartments = projectApartmentsList.filter(
@@ -67,8 +68,10 @@ const PickTradeApartment = () => {
             apartment.price >= apartmentDetails.price &&
             apartment.apartmentID !== apartmentDetails.apartmentID
         );
+        // console.log("filteredApartments", filteredApartments);
 
         setProjectApartments(filteredApartments);
+        console.log("projectApartments", projectApartments);
       } catch (error) {
         console.log(error);
         Alert.alert("Lỗi", "Không thể lấy danh sách căn hộ");
@@ -231,7 +234,7 @@ const PickTradeApartment = () => {
                   return (
                     <TouchableOpacity
                       onPress={() => {
-                        setSelectedApartment(item.apartmentID);
+                        setSelectedApartment(item.apartmentCode);
                         console.log("selectedApartment", selectedApartment);
                       }}
                       style={{
@@ -242,11 +245,11 @@ const PickTradeApartment = () => {
                         borderWidth: 1,
                         borderRadius: 10,
                         borderColor:
-                          selectedApartment === item.apartmentID
+                          selectedApartment === item.apartmentCode
                             ? "#00f"
                             : "#000", // Change border color when selected
                         backgroundColor:
-                          selectedApartment === item.apartmentID
+                          selectedApartment === item.apartmentCode
                             ? "#e0e0e0"
                             : "#fff", // Change background color when selected
                         margin: 10,
@@ -403,7 +406,6 @@ const PickTradeApartment = () => {
               <TouchableOpacity
                 onPress={() => {
                   setOpenModal(false);
-                  // setSelectedApartment(undefined);
                 }}
               >
                 <ThemedText
@@ -419,7 +421,7 @@ const PickTradeApartment = () => {
                 onPress={() => {
                   handleTradeRequest(
                     depositId as string,
-                    apartmentDetails?.apartmentCode as string
+                    selectedApartment as string
                   );
                 }}
                 style={{

@@ -134,6 +134,15 @@ const PersonalLayout = () => {
           headerBackTitle: "Trở về",
         }}
       />
+      <Stack.Screen
+        name="personal-identify"
+        options={{
+          headerShown: true,
+          headerTitle: "Uỷ nhiệm chi & giấy tờ tuỳ thân",
+          headerBackTitle: "Trở về",
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 };

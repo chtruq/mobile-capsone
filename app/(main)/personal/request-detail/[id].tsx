@@ -4,15 +4,16 @@ import { useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { getDepositDetail } from "@/services/api/deposit";
+import { Deposit } from "@/model/deposit";
 
 const RequestDetail = () => {
   const { id } = useLocalSearchParams();
-  const [data, setData] = React.useState<any>();
+  const [data, setData] = React.useState<Deposit>();
 
   const getRequestData = async () => {
     try {
       const res = await getDepositDetail(id?.toString());
-      console.log("API response:", res);
+      console.log("API detailsss:", res);
       setData(res?.data);
     } catch (error) {
       console.error(error);
@@ -39,7 +40,7 @@ const RequestDetail = () => {
         </View>
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.requestId}>Mã yêu cầu: {id}</Text>
+        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositCode}</Text>
         <Text style={styles.requestType}>Yêu cầu tham quan</Text>
         <View style={styles.timeRow}>
           <View style={styles.timeInfo}>

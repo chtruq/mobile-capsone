@@ -82,7 +82,7 @@ export const getDepositHistoryByAccount = async (
 ) => {
   try {
     const response = await apiClient.get(
-      `/deposits/search?accountId=${id}&pageIndex=${pageNumber}&pageSize=5`
+      `/deposits/search?accountId=${id}&pageIndex=${pageNumber}&pageSize=20`
     );
     console.log("Deposit history API response:", response.data.data);
     return response.data.data;
@@ -105,7 +105,7 @@ export const getDepositDetail = async (id: any) => {
 
 export const getTradeList = async (userId: string) => {
   const response = await apiClient.get(
-    `/deposits/search?accountId=${userId}&depositStatus=7`
+    `/deposits/search?accountId=${userId}&depositType=2&pageIndex=1&pageSize=20`
   );
   console.log("Trade list API response:", response.data.data);
   return response.data.data;
@@ -116,19 +116,18 @@ export const sendTradeRequest = async (
   newApartmentCode: string
 ) => {
   try {
-    console.log(
-      "Trade request data:",
-      "depositId: ",
-      depositId,
-      "newApartmentCode: ",
-      newApartmentCode
-    );
+    const formData = new FormData();
+    formData.append("newApartmentCode", newApartmentCode);
+
+    console.log("Trade request data:", depositId, newApartmentCode);
     const response = await apiClient.post(
       `/deposits/trade-request/${depositId}`,
+      formData,
       {
-        newApartmentCode: newApartmentCode,
-      },
-      { headers: { "Content-Type": "application/json" } }
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     console.log("Trade request API response:", response.data);
     return response.data;

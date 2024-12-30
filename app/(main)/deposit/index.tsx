@@ -130,8 +130,8 @@ const DepositDeclare = () => {
           )}
           {step === 2 && (
             <OrderStatus
-              onConfirm={() => nextStep()}
-              prevStep={() => prevStep()}
+            // onConfirm={() => nextStep()}
+            // prevStep={() => prevStep()}
             />
           )}
         </View>

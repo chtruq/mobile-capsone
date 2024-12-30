@@ -46,7 +46,7 @@ export default function ProductDetails() {
   const [data, setData] = useState<Apartment>();
   const [userName, setUserName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-
+  const [note, setNote] = useState("");
   const colorScheme = useColorScheme();
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -728,6 +728,16 @@ export default function ProductDetails() {
                     value={phoneNumber}
                     onChangeText={setPhoneNumber}
                     keyboardType="number-pad"
+                    onFocus={handleFocus}
+                  />
+                  <TextInput
+                    style={{
+                      width: "100%",
+                      padding: 15,
+                    }}
+                    placeholder="Ghi chú"
+                    value={note}
+                    onChangeText={setNote}
                     onFocus={handleFocus}
                   />
                 </View>

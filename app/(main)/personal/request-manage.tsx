@@ -35,8 +35,8 @@ const RequestManage = () => {
   const getListTradeDeposit = async () => {
     try {
       const res = await getTradeList(userInfo?.id);
-      console.log("API response:", res);
-      setExchangeData(res);
+      console.log("traderes", res?.deposits);
+      setExchangeData(res?.deposits);
     } catch (error) {
       console.error("Có lỗi xảy ra:", error);
       throw error;

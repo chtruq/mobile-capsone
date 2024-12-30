@@ -41,7 +41,9 @@ export const getProjectCart = async (
 
   try {
     const response = await apiClient.get(
-      `/apartments/search?projectId=${id}&apartmentName=${searchTerms}&apartmentStatuses=1&pageIndex=1&pageSize=20`
+      `/apartments/search?projectId=${id}&apartmentName=${
+        searchTerms ? searchTerms : ""
+      }&apartmentStatuses=1&apartmentStatuses=1&pageIndex=1&pageSize=20`
     );
     return response.data;
   } catch (error) {
