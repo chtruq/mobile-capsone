@@ -30,7 +30,7 @@ export interface Apartment {
   roomNumber: number;
   images: ApartmentImage[];
   userLiked: boolean;
-  vrVideoUrl: string;
+  vrVideoUrls: Array<string>;
   depositAmount: number;
 }
 export interface ApartmentSearchParams {

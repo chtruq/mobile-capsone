@@ -15,7 +15,7 @@ import {
   Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { StatusBar } from "expo-status-bar";
@@ -370,18 +370,35 @@ export default function ProductDetails() {
                 </ThemedText>
               </View>
             </View>
-            <View
-              style={{
-                borderRadius: 100,
-                backgroundColor: "#F4F4F4",
-                width: 60,
-                height: 60,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View360 height={40} width={40} />
-            </View>
+            {Array.isArray(data?.vrVideoUrls) &&
+            data?.vrVideoUrls.length > 0 ? (
+              <TouchableOpacity
+                style={{
+                  borderRadius: 100,
+                  backgroundColor: "#F4F4F4",
+                  width: 60,
+                  height: 60,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  router.push({
+                    pathname: "/(main)/vr/vrview",
+                    params: {
+                      id: data?.apartmentID,
+                    },
+                  });
+                }}
+              >
+                {/* <Link href="/(main)/vr/vrview"> */}
+                <View360 height={40} width={40} />
+                {/* </Link> */}
+              </TouchableOpacity>
+            ) : (
+              <View>
+                <ThemedText type="default">Không có ảnh 360</ThemedText>
+              </View>
+            )}
           </View>
 
           <View style={{ marginVertical: 10 }}>
