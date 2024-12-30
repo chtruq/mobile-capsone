@@ -49,6 +49,10 @@ const MainLayout = () => {
         name="project-detail/[id]"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="vr"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
     </Stack>
   );
 };
