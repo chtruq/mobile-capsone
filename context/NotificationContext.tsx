@@ -1,4 +1,6 @@
+import { getUserNotifications } from "@/services/api/notification";
 import React, { createContext, useContext, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 type Notification = {
   accountId: string;
@@ -6,6 +8,7 @@ type Notification = {
   description: string;
   type: string;
   referenceId: string;
+  // created: string;
 };
 
 type NotificationContextType = {
@@ -24,6 +27,24 @@ export const NotificationProvider = ({
   children: React.ReactNode;
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { userInfo } = useAuth();
+  const fetchUserNotifications = async () => {
+    try {
+      if (!userInfo?.id) {
+        console.log("No user ID available");
+        return;
+      }
+      const res = await getUserNotifications(userInfo?.id);
+      console.log("Notifications fetched:", res?.data?.results);
+      setNotifications(res?.data?.results);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchUserNotifications();
+  }, [userInfo]);
 
   const addNotification = (notification: Notification) => {
     setNotifications((prev) => [notification, ...prev]);

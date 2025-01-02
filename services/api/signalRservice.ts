@@ -93,10 +93,7 @@ class SignalRService {
         return;
       }
 
-      const BASE_URL =
-        process.env.EXPO_PUBLIC_SIGNALR_URL ??
-        "https://avrcapstone-gqeyatbhhwgreab9.southeastasia-01.azurewebsites.net";
-      console.log("Connecting to SignalR Hub at URL:", BASE_URL);
+      const BASE_URL = process.env.EXPO_PUBLIC_SIGNALR_URL;
 
       this.connection = new signalR.HubConnectionBuilder()
         .withUrl(`${BASE_URL}/notificationHub`, {

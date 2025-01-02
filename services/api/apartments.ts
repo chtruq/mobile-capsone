@@ -6,7 +6,6 @@ export const apartmentsSearch = async (params?: ApartmentSearchParams | {}) => {
     const response = await apiClient.get(
       `/apartments/search?${qs.stringify(params)}`
     );
-    console.log("response", response.data);
     return response.data;
   } catch (error) {
     console.error("Apartments search API error:", error);

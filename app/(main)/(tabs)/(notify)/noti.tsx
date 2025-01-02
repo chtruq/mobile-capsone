@@ -1,4 +1,4 @@
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import * as SignalR from "@microsoft/signalr";
 import { ThemedView } from "@/components/ThemedView";
@@ -6,9 +6,10 @@ import { useNotifications } from "@/context/NotificationContext";
 import { ThemedText } from "@/components/ThemedText";
 import { signalRService } from "@/services/api/signalRservice";
 import { useAuth } from "@/context/AuthContext";
+import { getUserNotifications } from "@/services/api/notification";
 
 const Notify = () => {
-  const { userToken } = useAuth();
+  const { userToken, userInfo } = useAuth();
   const { notifications, addNotification } = useNotifications();
   const [connectionStatus, setConnectionStatus] =
     useState<string>("Disconnected");
@@ -19,7 +20,6 @@ const Notify = () => {
         console.log("No user token available");
         return;
       }
-
       try {
         console.log("Initializing SignalR...");
         setConnectionStatus("Connecting...");
@@ -47,9 +47,9 @@ const Notify = () => {
     <ThemedView style={{ flex: 1, padding: 16 }}>
       {/* Debug Info */}
       <View style={{ marginBottom: 20 }}>
-        <ThemedText>Connection Status: {connectionStatus}</ThemedText>
+        {/* <ThemedText>Connection Status: {connectionStatus}</ThemedText>
         <ThemedText>User Token: {userToken ? "Present" : "Missing"}</ThemedText>
-        <ThemedText>Total Notifications: {notifications.length}</ThemedText>
+        <ThemedText>Total Notifications: {notifications.length}</ThemedText> */}
       </View>
 
       {/* Notifications List */}
@@ -74,8 +74,11 @@ const Notify = () => {
             >
               <ThemedText type="defaultSemiBold">{item.title}</ThemedText>
               <ThemedText>{item.description}</ThemedText>
+              {/* <ThemedText type="small" style={{ marginTop: 4 }}>
+                Loại: {item.type ? item.type : "Không xác định"}
+              </ThemedText> */}
               <ThemedText type="small" style={{ marginTop: 4 }}>
-                Type: {item.type}
+                Thời gian: {new Date(item.created).toLocaleString()}
               </ThemedText>
             </View>
           )}
