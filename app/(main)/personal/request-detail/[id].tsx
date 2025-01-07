@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { getDepositDetail } from "@/services/api/deposit";
-import { Deposit } from "@/model/deposit";
+import { Deposit, DepositStatus } from "@/model/deposit";
 
 const RequestDetail = () => {
   const { id } = useLocalSearchParams();
@@ -14,7 +14,7 @@ const RequestDetail = () => {
     try {
       const res = await getDepositDetail(id?.toString());
       console.log("API detailsss:", res);
-      setData(res?.data);
+      setData(res);
     } catch (error) {
       console.error(error);
     }
@@ -24,39 +24,73 @@ const RequestDetail = () => {
     getRequestData();
   }, []);
 
-  let statusStyle = styles.statusPending;
-  let statusText = "Chờ xử lý";
-  let statusNoti =
-    "Yêu cầu tư vấn tham quan dự án của Quý Khách hàng đang chờ xử lý.";
+  const getStatusStyle = (status: DepositStatus) => {
+    switch (status) {
+      case DepositStatus.Pending:
+        return { backgroundColor: "#FFF3CD", borderColor: "#FFC107" }; // Yellow
+      case DepositStatus.Accept:
+        return { backgroundColor: "#D4EDDA", borderColor: "#28A745" }; // Green
+      case DepositStatus.Reject:
+        return { backgroundColor: "#F8D7DA", borderColor: "#DC3545" }; // Red
+      case DepositStatus.Disable:
+        return { backgroundColor: "#E2E3E5", borderColor: "#6C757D" }; // Gray
+      case DepositStatus.PaymentFailed:
+        return { backgroundColor: "#F8D7DA", borderColor: "#FF0000" }; // Dark Red
+      case DepositStatus.Paid:
+        return { backgroundColor: "#D1ECF1", borderColor: "#17A2B8" }; // Blue
+      case DepositStatus.TradeRequested:
+        return { backgroundColor: "#FFD447", borderColor: "#123ADA" }; // Light Blue
+      case DepositStatus.Exported:
+        return { backgroundColor: "#E8F5E9", borderColor: "#1B5E20" }; // Green Shade
+      default:
+        return { backgroundColor: "#FFFFFF", borderColor: "#000000" }; // Default white
+    }
+  };
+
+  const getStatusText = (status: DepositStatus) => {
+    switch (status) {
+      case DepositStatus.Pending:
+        return "Đang chờ xử lý";
+      case DepositStatus.Accept:
+        return "Đã chấp nhận";
+      case DepositStatus.Reject:
+        return "Bị từ chối";
+      case DepositStatus.Disable:
+        return "Đã vô hiệu";
+      case DepositStatus.PaymentFailed:
+        return "Thanh toán thất bại";
+      case DepositStatus.Paid:
+        return "Đã thanh toán";
+      case DepositStatus.TradeRequested:
+        return "Yêu cầu trao đổi";
+      case DepositStatus.Exported:
+        return "Đã xuất";
+      default:
+        return "Unknown";
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
-      <View style={[styles.statusIndicator, statusStyle]}>
+      {data ? (
         <View>
-          <ThemedText type="heading" style={styles.statusText}>
-            {statusText}
-          </ThemedText>
-          <ThemedText style={styles.statusText}>{statusNoti}</ThemedText>
-        </View>
-      </View>
-      <View style={styles.contentContainer}>
-        <Text style={styles.requestId}>Mã yêu cầu: {data?.depositCode}</Text>
-        <Text style={styles.requestType}>Yêu cầu tham quan</Text>
-        <View style={styles.timeRow}>
-          <View style={styles.timeInfo}>
-            <View>
-              <Text style={styles.timeText}>Thời gian tạo</Text>
-              <Text style={styles.timeValue}>16/20/2024 - 15:50</Text>
-            </View>
+          <View
+            style={{
+              ...styles.detailContainer,
+              ...getStatusStyle(data.depositStatus),
+            }}
+          >
+            <ThemedText type="defaultSemiBold">
+              {getStatusText(data.depositStatus)}
+            </ThemedText>
+            <ThemedText>{data.note}</ThemedText>
           </View>
-          <View style={styles.timeInfo}>
-            <View>
-              <Text style={styles.timeText}>Thời gian hẹn</Text>
-              <Text style={styles.timeValue}>16/20/2024 - 15:50</Text>
-            </View>
-          </View>
+          <ThemedText type="heading">{data.depositCode}</ThemedText>
+          <ThemedText>Mã căn hộ: {data.apartmentCode}</ThemedText>
         </View>
-      </View>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </ThemedView>
   );
 };
@@ -65,46 +99,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  statusPending: {
-    backgroundColor: "#FFB412",
+  detailContainer: {
+    padding: 20,
+    borderWidth: 1,
   },
-  statusProcessed: {
-    backgroundColor: "#8BC840",
-  },
-  statusCanceled: {
-    backgroundColor: "#5C6085",
-  },
-  statusIndicator: {
-    paddingHorizontal: 30,
-    paddingVertical: 30,
-    justifyContent: "center",
-    // alignItems: "center",
-  },
-  statusText: {
-    color: "#FFFFFF",
-  },
-  contentContainer: {
-    padding: 10,
-  },
-  requestId: {
-    fontSize: 16,
+  title: {
+    fontSize: 20,
     fontWeight: "bold",
-  },
-  requestType: {
-    fontSize: 16,
-  },
-  timeRow: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  timeInfo: {
-    flex: 1,
-  },
-  timeText: {
-    color: "#999999",
-  },
-  timeValue: {
-    color: "#333333",
+    marginBottom: 10,
   },
 });
 

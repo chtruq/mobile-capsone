@@ -60,14 +60,14 @@ export interface Deposit {
   description: string;
   createDate: string;
   updateDate: string;
-  expiryDate: string;
+  expiryDate: Date;
   depositStatus: DepositStatus;
   depositType: DepositType;
   disbursementStatus: DisbursementStatus;
   accountID: string;
   apartmentID: string;
   teamMemberID: string | null;
-  depositProfile: DepositProfile[];
+  depositProfile: [DepositProfile];
 }
 
 export enum DepositStatus {

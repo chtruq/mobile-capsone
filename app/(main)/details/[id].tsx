@@ -40,6 +40,9 @@ import { Apartment } from "@/model/apartments";
 import { formatArea, formatCurrency } from "@/model/other";
 import { useAuth } from "@/context/AuthContext";
 import { createAppointment } from "@/services/api/appointment";
+import ProjectCard from "@/components/Search/Project/ProjectCard";
+import { getProjectDetail } from "@/services/api/project";
+import { ProjectApartment } from "@/model/projects";
 
 export default function ProductDetails() {
   const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
@@ -49,6 +52,7 @@ export default function ProductDetails() {
   const [note, setNote] = useState("");
   const colorScheme = useColorScheme();
   const scrollViewRef = useRef<ScrollView>(null);
+  const [projectData, setProjectData] = useState<ProjectApartment>();
 
   // Thêm function để handle focus
   const handleFocus = () => {
@@ -59,6 +63,7 @@ export default function ProductDetails() {
   const getApartment = async () => {
     try {
       const response = await apartmentsDetail(id, userInfo?.id);
+      console.log("response", response.data);
       return response.data;
     } catch (error) {
       console.error("Get apartment API error:", error);
@@ -74,9 +79,24 @@ export default function ProductDetails() {
     fetchData();
   }, [id]);
 
-  // useEffect(() => {
-  //   console.log(id);
-  // }, []);
+  const getProject = async () => {
+    if (!data?.projectApartmentID) {
+      return;
+    }
+
+    try {
+      const response = await getProjectDetail(data?.projectApartmentID || "");
+      setProjectData(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Get project API error:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getProject();
+  }, [data]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -202,7 +222,8 @@ export default function ProductDetails() {
         preferredDate,
         preferredTime,
         userName,
-        phoneNumber
+        phoneNumber,
+        note
       );
       console.log("response", response);
       toggleSheet();
@@ -469,6 +490,24 @@ export default function ProductDetails() {
           </View>
           <View>
             <ThemedText type="heading">Thông tin dự án</ThemedText>
+            <View
+              style={{
+                borderBottomColor: "#000",
+                borderBottomWidth: 1,
+                width: "120%",
+              }}
+            >
+              {projectData ? (
+                <View
+                  style={{
+                    padding: 10,
+                    width: "80%",
+                  }}
+                >
+                  <ProjectCard data={projectData} />
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
 
@@ -747,6 +786,18 @@ export default function ProductDetails() {
                     keyboardType="number-pad"
                     onFocus={handleFocus}
                   />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    marginVertical: 10,
+                  }}
+                >
                   <TextInput
                     style={{
                       width: "100%",

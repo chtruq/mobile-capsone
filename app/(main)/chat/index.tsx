@@ -28,6 +28,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { signalRService } from "@/services/api/signalRservice";
 import { useSignalR } from "@/hooks/useSignalR";
 import Toast from "react-native-toast-message";
+import { Colors } from "@/constants/Colors";
 interface MessageData {
   sessionId: string;
   senderId: string;
@@ -251,7 +252,7 @@ const ChatScreen = () => {
                 alignItems: "center",
               }}
             >
-              <ActivityIndicator size="large" color="#0000ff" />
+              <ActivityIndicator size="large" color={Colors.light.primary} />
             </View>
           )}
           {/* <Text>

@@ -3,8 +3,9 @@ import apiClient from "./apiClient";
 import qs from "qs";
 export const apartmentsSearch = async (params?: ApartmentSearchParams | {}) => {
   try {
+    console.log("data", qs.stringify(params));
     const response = await apiClient.get(
-      `/apartments/search?${qs.stringify(params)}`
+      `/apartments/search?${qs.stringify(params)}&apartmentStatuses=1`
     );
     return response.data;
   } catch (error) {

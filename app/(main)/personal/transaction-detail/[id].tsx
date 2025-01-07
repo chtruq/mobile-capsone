@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   Pressable,
 } from "react-native";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
@@ -32,6 +32,7 @@ import Button from "@/components/button/Button";
 import { createPayment } from "@/services/api/payment";
 import { WebView } from "react-native-webview";
 import PaymentModal from "@/components/payment/paymentModal/PaymentModal";
+import ContentLoader, { Rect, Circle } from "react-content-loader/native";
 interface TransactionStatusProps {
   status: DepositStatus;
 }
@@ -57,19 +58,31 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   const statusIcon = (() => {
     switch (status) {
       case DepositStatus.Pending:
-        return "🔍";
+        // return "🔍";
+        return;
       case DepositStatus.Accept:
-        return "✅";
+        // return "✅";
+        return;
+
       case DepositStatus.Reject:
-        return "❌";
+        return;
+      // return "❌";
       case DepositStatus.Disable:
-        return "❌";
+        // return "❌";
+        return;
+
       case DepositStatus.PaymentFailed:
-        return "❌";
+        // return "❌";
+        return;
+
       case DepositStatus.Paid:
-        return "✅";
+        return;
+      // return "✅";
+
       case DepositStatus.TradeRequested:
-        return "🔄";
+        return;
+      // return "🔄";
+
       default:
         return "❔";
     }
@@ -135,8 +148,8 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
 
       <View
         style={{
-          borderColor: "#FF4040",
-          borderWidth: 1,
+          // borderColor: "#FF4040",
+          // borderWidth: 1,
           width: 40,
           height: 40,
           borderRadius: 100,
@@ -228,33 +241,6 @@ const TransactionProcess: FC<TransactionProcessProps> = ({
   const ProcessList = () => {
     return (
       <View>
-        {/* <DisbursementProcess
-          title="Hợp đồng mua bán"
-          currentDisbursementStatus="PendingDisbursement"
-        />
-        <DisbursementProcess
-          title="Thoả thuận đặt cọc giữ chỗ"
-          currentDisbursementStatus="PendingDisbursement"
-        /> */}
-
-        {/* <ProcessItems
-          currentStatus={DepositStatus.Paid}
-          title="Hợp đồng thanh toán"
-          disbursementStatus={DisbursementStatus.ProcessingDisbursement}
-        />
-        <ProcessItems
-          currentStatus={DepositStatus.Paid}
-          title="Thoả thuận đặt cọc giữ chỗ"
-          disbursementStatus={DisbursementStatus.Pendingdisbursement}
-        />
-        <ProcessItems
-          currentStatus={DepositStatus.Accept}
-          title="Xác nhận giao dịch"
-        />
-        <ProcessItems
-          currentStatus={DepositStatus.Accept}
-          title="Đã tạo yêu cầu giao dịch"
-        /> */}
         <ProcessItems
           disbursementStatus={disbursementStatusData}
           currentStatus={statusData}
@@ -311,6 +297,42 @@ const TransactionDetail = () => {
   React.useEffect(() => {
     fetchDepositDetail();
   }, []);
+
+  const calculateTimeLeft = () => {
+    type TimeLeft = {
+      hours: number;
+      minutes: number;
+      seconds: number;
+    };
+    const difference = data?.expiryDate
+      ? new Date(data.expiryDate).getTime() - Date.now()
+      : 0;
+    let timeLeft: TimeLeft = {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+
+    if (difference > 0) {
+      timeLeft = {
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [data?.expiryDate]);
 
   const apartmentID = data?.apartmentID;
   const getApartmentDetail = async () => {
@@ -374,6 +396,87 @@ const TransactionDetail = () => {
               statusData={data?.depositStatus as DepositStatus}
               disbursementStatusData={data?.disbursementStatus}
             />
+            <ThemedView
+              style={{
+                padding: 20,
+              }}
+            >
+              <ThemedText type="default">
+                Bạn cần phải thanh toán trong:{" "}
+              </ThemedText>
+              {(data?.depositStatus === DepositStatus.Accept &&
+                data?.updateDate !== data?.createDate &&
+                timeLeft &&
+                timeLeft.hours != 0) ||
+              timeLeft.minutes != 0 ||
+              timeLeft.seconds != 0 ? (
+                <View
+                  style={{
+                    width: "100%",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <ThemedText
+                    style={{
+                      fontSize: 18,
+                      textAlign: "right",
+                      borderWidth: 1,
+                      borderColor: "red",
+                      borderRadius: 5,
+                      padding: 5,
+                    }}
+                    type="price"
+                  >
+                    {timeLeft.hours} tiếng {timeLeft.minutes} phút{" "}
+                    {timeLeft.seconds} giây
+                  </ThemedText>
+                </View>
+              ) : (
+                <>
+                  <View style={{ width: "100%", alignItems: "flex-end" }}>
+                    <ContentLoader
+                      speed={2}
+                      width="100%"
+                      height={40}
+                      viewBox="0 0 400 40"
+                      backgroundColor="#f3f3f3"
+                      foregroundColor="#ecebeb"
+                      style={{ alignSelf: "flex-end" }}
+                    >
+                      <Rect
+                        x="0"
+                        y="10"
+                        rx="4"
+                        ry="4"
+                        width="200"
+                        height="10"
+                      />
+                      <Rect
+                        x="0"
+                        y="30"
+                        rx="4"
+                        ry="4"
+                        width="250"
+                        height="10"
+                      />
+                    </ContentLoader>
+                  </View>
+                </>
+              )}
+
+              {data &&
+                new Date(data?.expiryDate).getTime() - Date.now() < 0 && (
+                  <ThemedText
+                    style={{
+                      textAlign: "right",
+                      marginTop: 10,
+                    }}
+                    type="red"
+                  >
+                    Đã hết hạn thanh toán
+                  </ThemedText>
+                )}
+            </ThemedView>
           </ThemedView>
 
           <ThemedView
@@ -508,52 +611,58 @@ const TransactionDetail = () => {
               paddingBottom: 30,
             }}
           >
-            <TouchableOpacity style={{ backgroundColor: "#", padding: 10 }}>
-              <Link
-                href="/personal/personal-identify"
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/personal/personal-identify",
+                  params: {
+                    depositId: data?.depositID,
+                  },
+                });
+              }}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <ThemedText type="defaultSemiBold" style={{ padding: 10 }}>
+                Uỷ nhiệm chi & Giấy tờ tuỳ thân
+              </ThemedText>
+              <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: "#ececec",
                 }}
               >
-                <ThemedText>Uỷ nhiệm chi & Giấy tờ tuỳ thân</ThemedText>
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <AntDesign name="right" size={20} color="#000" />
-                </View>
-              </Link>
+                <AntDesign name="right" size={20} color="#000" />
+              </View>
             </TouchableOpacity>
           </ThemedView>
         </View>
       </ScrollView>
 
-      {data?.depositStatus === DepositStatus.Accept && (
-        <>
-          <Line width={"100%"} />
-          <ThemedView
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingBottom: 20,
-            }}
-          >
-            <Button
-              handlePress={() => {
-                onPayment();
+      {data?.depositStatus === DepositStatus.Accept &&
+        new Date(data.expiryDate).getTime() - Date.now() > 0 && (
+          <>
+            <Line width={"100%"} />
+            <ThemedView
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingBottom: 20,
               }}
-              title="Thanh toán tiền cọc"
-              width={"90%"}
-            />
-          </ThemedView>
-        </>
-      )}
+            >
+              <Button
+                handlePress={() => {
+                  onPayment();
+                }}
+                title="Thanh toán tiền cọc"
+                width={"90%"}
+              />
+            </ThemedView>
+          </>
+        )}
 
       {data?.depositStatus === DepositStatus.Paid &&
         data?.updateDate !== data?.createDate && (

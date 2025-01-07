@@ -40,13 +40,7 @@ const Search = () => {
     setSearchType(type);
   };
 
-  const handleSearch = () => {
-    if (searchType === "Dự án") {
-      // call api project
-    } else {
-      // call api apartment
-    }
-  };
+  console.log("search", search);
 
   return (
     <ThemedView style={styles.container}>
@@ -63,23 +57,12 @@ const Search = () => {
               value={search}
               isOpen={isOpen1}
               toggleSheet={toggleSheet1}
-              onChangeText={() => {
-                setSearch(search);
-              }}
+              onChangeText={setSearch}
               searchType={searchType}
             />
-            {/* {searchType === "" && (
-              <View>
-                <TouchableOpacity onPress={toggleSheet1}>
-                  <Text>Chọn loại tìm kiếm</Text>
-                </TouchableOpacity>
-              </View>
-            )} */}
 
             {searchType === "Dự án" ? (
-              <ProjectSearch
-              // data={ProjectData}
-              />
+              <ProjectSearch searchQuery={search} />
             ) : (
               <ApartmentSearch searchQuery={search} data={ApartmentData} />
             )}

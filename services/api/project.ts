@@ -39,3 +39,14 @@ export const getProjectCart = async (id: string) => {
     console.error(error);
   }
 };
+
+export const projectsSearch = async (projectName: string, page: number) => {
+  try {
+    const response = await apiClient.get(
+      `/projects/search?keyword=${projectName}&pageIndex=${page}&pageSize=5`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

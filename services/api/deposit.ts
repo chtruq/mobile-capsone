@@ -13,6 +13,7 @@ export const depositRequest = async (data: ScannedInfo) => {
     formData.append("DepositProfile.DateOfIssue", data.scannedIssueDate);
     formData.append("DepositProfile.DateOfBirth", data.scannedBirthDate);
     formData.append("DepositProfile.Email", data.email);
+    formData.append("DepositProfile.Gender", data.scannedGender);
     formData.append("DepositProfile.PhoneNumber", data.phone);
     formData.append("DepositProfile.Nationality", "Vietnam");
     formData.append("DepositProfile.Address", data.scannedAddress);

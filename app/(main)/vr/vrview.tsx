@@ -13,6 +13,7 @@ import { useLocalSearchParams } from "expo-router";
 import { apartmentsDetail } from "@/services/api/apartments";
 import { Apartment } from "@/model/apartments";
 import { AntDesign } from "@expo/vector-icons";
+import { ThemedText } from "@/components/ThemedText";
 
 const VRModal = () => {
   const { id } = useLocalSearchParams();
@@ -95,6 +96,7 @@ const VRModal = () => {
         source={{ uri: item }}
         style={{ width: 100, height: 100, borderRadius: 5 }}
       />
+      <ThemedText style={styles.imageButtonText}>Ảnh {}</ThemedText>
     </TouchableOpacity>
   );
 
