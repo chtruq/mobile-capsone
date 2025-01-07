@@ -1,18 +1,11 @@
 import {
   View,
   Text,
-  ScrollView,
-  ImageSourcePropType,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   Pressable,
   Modal,
   Image,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   Alert,
 } from "react-native";
 import React, { FC, useEffect, useRef, useState } from "react";
@@ -21,9 +14,6 @@ import DepositCard from "./DepositCard/DepositCard";
 import { ThemedText } from "../ThemedText";
 import UploadIcon from "@/assets/icon/deposit/upload";
 import DeclareInput from "./input/DeclareInput";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import axios from "axios";
 import {
   CameraView,
   CameraType,
@@ -31,18 +21,11 @@ import {
   Camera,
 } from "expo-camera";
 import { Overlay } from "./input/CameraOverlay/Overlay";
-import QrImageReader from "react-native-qr-image-reader";
-import ThemedViewSHKeyboard from "../ThemedViewSHKeyboard";
 import ContractIcon from "@/assets/icon/deposit/contract";
-import { center } from "@shopify/react-native-skia";
 import Checkbox from "expo-checkbox";
 import { Apartment } from "@/model/apartments";
-import user from "@/app/accountsetup/user";
 import { OverlayQR } from "./input/CameraOverlay/OverlayQR";
-import { declareInfoValidationSchema } from "@/utils/validation/depositSchemas";
-import { Formik, useFormik } from "formik";
 import Button from "../button/Button";
-import { useAuth } from "@/context/AuthContext";
 
 interface DeclareInfoFormProps {
   onSubmitInfo: (data: any) => void;
@@ -287,8 +270,11 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
         style={{
           marginTop: 5,
           borderRadius: 10,
+          position: "relative",
+          paddingBottom: 200,
         }}
       >
+        {/* deposit profile */}
         <View
           style={{
             margin: 5,
@@ -303,10 +289,11 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
             margin: 5,
             borderRadius: 10,
             padding: 10,
+            position: "relative",
           }}
         >
           <ThemedText type="defaultSemiBold">
-            Quý khách vui lòng điền đầy dủ và chính xác các thông tin dưới đây
+            Quý khách vui lòng điền đầy đủ và chính xác các thông tin dưới đây
             để tiến hành đặt cọc giữ chỗ
           </ThemedText>
           <ThemedText type="heading">Thông tin khách hàng</ThemedText>
@@ -504,106 +491,103 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           )}
 
           <View>
-            <View>
-              <TouchableOpacity>
-                <ThemedText type="heading">
-                  Xem hợp đồng đặt cọc giữ chỗ mẫu
-                </ThemedText>
-              </TouchableOpacity>
-              <ThemedText type="default">
-                Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc giữ chỗ dưới
-                đây. Hợp đồng chính thức có giá trị pháp lý khi khách hàng xác
-                nhận chuyển cọc trên hệ thống.
+            <TouchableOpacity>
+              <ThemedText type="heading">
+                Xem hợp đồng đặt cọc giữ chỗ mẫu
               </ThemedText>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <ContractIcon />
-                <ThemedText
-                  style={{
-                    textDecorationLine: "underline",
-                  }}
-                  type="defaultSemiBold"
-                >
-                  Xem hợp đồng mẫu
-                </ThemedText>
-              </View>
-
-              <Pressable
-                onPress={() => {
-                  setChecked1(!isChecked1);
-                }}
-                style={styles.checkBoxContainer}
-              >
-                <Checkbox
-                  value={isChecked1}
-                  style={styles.checkbox}
-                  color={isChecked1 ? "#000000" : undefined}
-                />
-                <ThemedText style={styles.checkBoxText}>
-                  Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setChecked2(!isChecked2);
-                }}
-                style={styles.checkBoxContainer}
-              >
-                <Checkbox
-                  value={isChecked2}
-                  onValueChange={setChecked2}
-                  style={styles.checkbox}
-                  color={isChecked2 ? "#000000" : undefined}
-                />
-                <ThemedText style={styles.checkBoxText}>
-                  Tôi cam kết các thông tin bên đặt cọc giữ chỗ được cung cấp
-                  tại đây là hoàn toàn chính xác
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setChecked3(!isChecked3);
-                }}
-                style={styles.checkBoxContainer}
-              >
-                <Checkbox
-                  value={isChecked3}
-                  onValueChange={setChecked3}
-                  style={styles.checkbox}
-                  color={isChecked3 ? "#000000" : undefined}
-                />
-                <ThemedText style={styles.checkBoxText}>
-                  Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung
-                  Hợp đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc
-                  giữ chỗ trên hệ thống Luxuer
-                </ThemedText>
-              </Pressable>
-            </View>
-          </View>
-
-          <View
-            style={{
-              width: "100%",
-              height: 95,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              width={"90%"}
-              title="Xác nhận thông tin"
-              handlePress={() => {
-                handleSubmit();
+            </TouchableOpacity>
+            <ThemedText type="default">
+              Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc giữ chỗ dưới
+              đây. Hợp đồng chính thức có giá trị pháp lý khi khách hàng xác
+              nhận chuyển cọc trên hệ thống.
+            </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
               }}
-            />
+            >
+              <ContractIcon />
+              <ThemedText
+                style={{
+                  textDecorationLine: "underline",
+                }}
+                type="defaultSemiBold"
+              >
+                Xem hợp đồng mẫu
+              </ThemedText>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                setChecked1(!isChecked1);
+              }}
+              style={styles.checkBoxContainer}
+            >
+              <Checkbox
+                value={isChecked1}
+                style={styles.checkbox}
+                color={isChecked1 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi đồng ý với các Điều kiện & Điều khoản của Luxuer
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setChecked2(!isChecked2);
+              }}
+              style={styles.checkBoxContainer}
+            >
+              <Checkbox
+                value={isChecked2}
+                style={styles.checkbox}
+                color={isChecked2 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi cam kết các thông tin bên đặt cọc giữ chỗ được cung cấp tại
+                đây là hoàn toàn chính xác
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setChecked3(!isChecked3);
+              }}
+              style={styles.checkBoxContainer}
+            >
+              <Checkbox
+                value={isChecked3}
+                style={styles.checkbox}
+                color={isChecked3 ? "#000000" : undefined}
+              />
+              <ThemedText style={styles.checkBoxText}>
+                Tôi đã đọc, hiểu rõ và xác nhận đồng ý với toàn bộ nội dung Hợp
+                đồng đặt ọc trên ấp dụng tại thời điểm thanh toán đặt cọc giữ
+                chỗ trên hệ thống Luxuer
+              </ThemedText>
+            </TouchableOpacity>
           </View>
         </View>
       </ThemedView>
-
+      <ThemedView
+        style={{
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          right: 0,
+          bottom: 100,
+          padding: 10,
+        }}
+      >
+        <Button
+          width={"90%"}
+          title="Xác nhận thông tin"
+          handlePress={() => {
+            handleSubmit();
+          }}
+        />
+      </ThemedView>
       {/* camera */}
 
       <Modal
@@ -701,12 +685,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
+
   modalContent: {
     backgroundColor: "#fff",
     padding: 20,

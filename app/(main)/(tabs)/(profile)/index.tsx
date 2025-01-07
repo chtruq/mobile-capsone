@@ -165,7 +165,7 @@ export default function Profile() {
           title="Danh sách lịch hẹn"
           onPress={() => {
             router.push({
-              pathname: "/(main)/personal/request-manage",
+              pathname: "/(main)/personal/appointment",
               params: { status: 1 },
             });
           }}

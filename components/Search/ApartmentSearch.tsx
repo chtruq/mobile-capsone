@@ -28,9 +28,10 @@ import ApartmentDirection from "./filter/ApartmentDirection";
 import { apartmentsSearch } from "@/services/api/apartments";
 import ApartmentCard from "./Apartment/ApartmentCard";
 import { useAuth } from "@/context/AuthContext";
+import { Colors } from "@/constants/Colors";
 interface ApartmentSearchProps {
-  data: any;
   searchQuery: string;
+  data: any;
 }
 
 interface ItemCheckboxProps {
@@ -66,7 +67,7 @@ const ItemCheckbox: FC<ItemCheckboxProps> = ({
   );
 };
 
-const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
+const ApartmentSearch: FC<ApartmentSearchProps> = ({ searchQuery, data }) => {
   const [selectedSort, setSelectedSort] = React.useState("");
 
   const [ApartmentData, setApartmentData] = React.useState<Apartment[]>([]);
@@ -87,6 +88,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadMore, setIsLoadMore] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [formParams, setFormParams] = useState({
     apartmentName: searchQuery,
     district: "",
@@ -106,11 +108,46 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   const handleSelect = (item: any) => {
     setSelectedSort(item.label);
     setVisible(false);
+    if (item.value === "") return;
+    if (item.value === "ascprice") {
+      setFormParams((prevParams) => ({
+        ...prevParams,
+        minPrice: 0,
+      }));
+    }
+
+    if (item.value === "desprice") {
+      setFormParams((prevParams) => ({
+        ...prevParams,
+        maxPrice: 100000000000,
+      }));
+    }
+
+    setFormParams((prevParams) => ({
+      ...prevParams,
+    }));
   };
 
-  const handleSelectFilter = (item: any) => {
-    setFilterVisible(false);
-  };
+  useEffect(() => {
+    getApartmentData();
+  }, [selectedSort]);
+
+  useEffect(() => {
+    setFormParams((prevParams) => ({
+      ...prevParams,
+      district: selectedDistrict ? districtMapping[selectedDistrict] : "",
+    }));
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    setFormParams((prevParams) => ({
+      ...prevParams,
+      ward:
+        selectedWard && selectedDistrict
+          ? wardMapping[selectedDistrict][selectedWard]
+          : "",
+    }));
+  }, [selectedWard, selectedDistrict]);
 
   const districtMapping = Object.values(HCMCData["quan-huyen"]).reduce(
     (acc: any, district: any) => {
@@ -233,15 +270,13 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     });
   };
 
-  // useEffect(() => {
-  //   console.log("formParams", formParams);
-  // }, [formParams]);
+  useEffect(() => {
+    console.log("formParams", formParams);
+  }, [formParams]);
 
   const processFormData = (formParams: any) => {
-    // Example: Remove empty or null values
     const processedParams = { ...formParams };
 
-    // Remove empty or null values
     Object.keys(processedParams).forEach((key) => {
       if (
         processedParams[key] === null ||
@@ -282,7 +317,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     if (processedParams.maxArea === 0) {
       delete processedParams.maxArea;
     }
-
+    console.log("processedParams after", processedParams);
     return processedParams;
   };
 
@@ -290,36 +325,49 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
     if (isLoading || (!hasMore && isLoadMore)) return;
 
     setIsLoading(true);
+
     const processedParams = processFormData({
       ...formParams,
-      pageIndex: isLoadMore ? pageNumber + 1 : 1,
+      pageIndex: pageNumber, // Use the current pageNumber for pagination
       pageSize: 10,
     });
+
     try {
       const response = await apartmentsSearch(processedParams);
       const newData = response.data?.apartments || [];
+      setTotalItems(response.data?.totalItems || 0);
 
       if (isLoadMore) {
         setApartmentData((prev) => [...prev, ...newData]);
       } else {
         setApartmentData(newData);
-        setPageNumber(1); // Reset page number khi load mới
       }
+
       setHasMore(newData.length === 10);
-      if (isLoadMore) {
-        setPageNumber((prev) => prev + 1);
-      }
     } catch (error) {
-      console.error(error);
+      console.error("Error loading apartments:", error);
     } finally {
       setIsLoading(false);
       setIsLoadMore(false);
     }
   };
-
   useEffect(() => {
     getApartmentData();
-  }, []);
+  }, [formParams]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFormParams((prevParams) => ({
+        ...prevParams,
+        apartmentName: searchQuery,
+      }));
+    } else {
+      setFormParams((prevParams) => ({
+        ...prevParams,
+        apartmentName: "",
+      }));
+    }
+  }, [searchQuery]);
 
   const clearAllFilters = () => {
     setFormParams({
@@ -351,11 +399,17 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
   }, []);
 
   const handleLoadMore = () => {
-    if (!isLoading && hasMore) {
+    if (hasMore && !isLoading) {
       setIsLoadMore(true);
-      getApartmentData();
+      setPageNumber((prevPage) => prevPage + 1);
     }
   };
+
+  useEffect(() => {
+    if (pageNumber > 1) {
+      getApartmentData();
+    }
+  }, [pageNumber]);
 
   return (
     <ThemedView
@@ -363,94 +417,6 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
         padding: 8,
       }}
     >
-      {/* <ScrollView
-        style={{
-          marginBottom: 110,
-        }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#4630EB"]}
-          />
-        }
-        onScroll={({ nativeEvent }) => {
-          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          const paddingToBottom = 20;
-          const isCloseToBottom =
-            layoutMeasurement.height + contentOffset.y >=
-            contentSize.height - paddingToBottom;
-          if (isCloseToBottom && !isLoading && hasMore) {
-            handleLoadMore();
-          }
-        }}
-        scrollEventThrottle={16}
-      >
-        {isLoading && (
-          <View style={{ padding: 10 }}>
-            <ActivityIndicator size="small" color="#4630EB" />
-          </View>
-        )}
-        <View style={styles.filter}>
-          <TouchableOpacity
-            onPress={() => {
-              setFilterVisible(!filterVisible);
-            }}
-            style={styles.filterItem}
-          >
-            <FilterIcon />
-            <ThemedText type="defaultSemiBold">Bộ lọc</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterItem}>
-            <ThemedText type="defaultSemiBold">Loại hình</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterItem}>
-            <ThemedText type="defaultSemiBold">Khoảng giá</ThemedText>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <ThemedText type="small">
-              {ApartmentData.length} căn hộ được tìm thấy
-            </ThemedText>
-          </View>
-
-          <TouchableOpacity
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-            onPress={() => setVisible(true)}
-          >
-            <ThemedText type="small">
-              {selectedSort ? selectedSort : "Mới nhất"}
-            </ThemedText>
-            <AntDesign name="down" size={16} color="#252B5C" />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
-          {ApartmentData.length === 0 && (
-            <ThemedText>Không tìm thấy căn hộ nào</ThemedText>
-          )}
-          {ApartmentData?.length > 0 &&
-            ApartmentData.map((item: Apartment) => (
-              <ApartmentCard key={item.apartmentID} data={item} />
-            ))}
-        </View>
-      </ScrollView> */}
-
       <FlatList
         data={ApartmentData}
         keyExtractor={(item) => item.apartmentID.toString()}
@@ -482,7 +448,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
             >
               <View>
                 <ThemedText type="small">
-                  {ApartmentData.length} căn hộ được tìm thấy
+                  {totalItems} căn hộ được tìm thấy
                 </ThemedText>
               </View>
               <TouchableOpacity
@@ -501,19 +467,15 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
             </View>
           </>
         }
-        ListEmptyComponent={<ThemedText>Không tìm thấy căn hộ nào</ThemedText>}
+        // ListEmptyComponent={<ThemedText>Không tìm thấy căn hộ nào</ThemedText>}
         ListFooterComponent={
           isLoading ? (
             <View style={{ padding: 10 }}>
-              <ActivityIndicator size="small" color="#4630EB" />
+              <ActivityIndicator size="small" color={Colors.light.primary} />
             </View>
           ) : null
         }
-        onEndReached={() => {
-          if (!isLoading && hasMore) {
-            handleLoadMore();
-          }
-        }}
+        onEndReached={() => handleLoadMore()}
         onEndReachedThreshold={0.1}
         refreshControl={
           <RefreshControl
@@ -528,7 +490,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
       <Modal
         transparent={true}
         visible={visible}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setVisible(false)}
       >
         <View style={styles.modalBackground}>
@@ -539,7 +501,9 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.option}
-                  onPress={() => handleSelect(item)}
+                  onPress={() => {
+                    handleSelect(item);
+                  }}
                 >
                   <Text style={styles.optionText}>{item.label}</Text>
                 </TouchableOpacity>
@@ -788,7 +752,10 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ data, searchQuery }) => {
               <Button
                 width={"100%"}
                 title="Áp dụng"
-                handlePress={getApartmentData}
+                handlePress={() => {
+                  getApartmentData();
+                  setFilterVisible(false);
+                }}
               />
             </View>
           </View>

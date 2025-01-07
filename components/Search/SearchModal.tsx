@@ -20,6 +20,12 @@ const SearchModal: FC<SearchModalProps> = ({
   toggleSheet,
   searchType,
 }) => {
+  // const [search, setSearch] = React.useState("");
+
+  // const handleSearch = () => {
+  //   onChangeText(search);
+  // };
+
   return (
     <View
       style={{
@@ -74,12 +80,12 @@ const SearchModal: FC<SearchModalProps> = ({
           style={{
             height: 40,
             marginLeft: 10,
-            padding: 20,
             fontSize: 16,
             color: "#000",
           }}
           value={value}
           onChangeText={onChangeText}
+          // onSubmitEditing={() => handleSearch()}
         />
       </View>
     </View>

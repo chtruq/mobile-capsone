@@ -1,4 +1,10 @@
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
@@ -58,27 +64,29 @@ const DepositDeclare = () => {
   }, [formData]);
 
   return (
-    <ScrollView
+    <ThemedView
       style={{
+        backgroundColor: "white",
         flex: 1,
-        backgroundColor: "#f0f0f0",
       }}
     >
       {/* trang thai */}
-      <View>
-        <View
+      <View
+        style={{
+          position: "absolute",
+          width: "100%",
+          zIndex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <ThemedView
           style={{
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "center",
-            position: "sticky",
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1,
-            backgroundColor: "white",
             borderBottomWidth: 1,
             borderBottomColor: "#f0f0f0",
+            height: 100,
+            alignItems: "center",
           }}
         >
           <View
@@ -88,9 +96,9 @@ const DepositDeclare = () => {
             }}
           >
             {step === 0 ? <DeclareActiveIcon /> : <TickGreenIcon />}
-
             <ThemedText type="deposit">Khai báo thông tin</ThemedText>
           </View>
+          {/* confirm */}
           <View
             style={{
               flexDirection: "column",
@@ -100,9 +108,9 @@ const DepositDeclare = () => {
             {step === 0 && <ConfirmInactiveIcon />}
             {step === 1 && <ConfirmActiveIcon />}
             {step === 2 && <TickGreenIcon />}
-
             <ThemedText type="deposit">Xác nhận thông tin </ThemedText>
           </View>
+          {/* status */}
           <View
             style={{
               flexDirection: "column",
@@ -113,8 +121,17 @@ const DepositDeclare = () => {
 
             <ThemedText type="deposit">Trạng thái đơn hàng</ThemedText>
           </View>
-        </View>
-        <View>
+        </ThemedView>
+      </View>
+
+      <ScrollView>
+        <Pressable
+          style={{
+            marginTop: 100,
+            backgroundColor: "white",
+            flex: 1,
+          }}
+        >
           {step === 0 && (
             <DeclareInfoForm
               data={apartmentInfo}
@@ -134,9 +151,9 @@ const DepositDeclare = () => {
             // prevStep={() => prevStep()}
             />
           )}
-        </View>
-      </View>
-    </ScrollView>
+        </Pressable>
+      </ScrollView>
+    </ThemedView>
   );
 };
 

@@ -143,6 +143,22 @@ const PersonalLayout = () => {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="appointment"
+        options={{
+          headerShown: true,
+          headerTitle: "Danh sách lịch hẹn",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="appointment-detail/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: "Chi tiết lịch hẹn",
+          headerBackTitle: "Trở về",
+        }}
+      />
     </Stack>
   );
 };

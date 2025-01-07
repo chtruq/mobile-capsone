@@ -7,18 +7,22 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { ThemedView } from "../ThemedView";
 import FilterIcon from "@/assets/icon/search/FilterIcon";
 import { ThemedText } from "../ThemedText";
 import { Feather } from "@expo/vector-icons";
 import HCMCData from "../../utils/address/HCMC_tree.json";
 import { Picker } from "@react-native-picker/picker";
-import { getProjects } from "@/services/api/project";
+import { getProjects, projectsSearch } from "@/services/api/project";
 import ProjectCard from "./Project/ProjectCard";
 import { ProjectApartment } from "@/model/projects";
 
-const ProjectSearch = () => {
+interface ProjectSearchProps {
+  searchQuery?: string;
+}
+
+const ProjectSearch: FC<ProjectSearchProps> = ({ searchQuery }) => {
   const [filterVisible, setFilterVisible] = React.useState(false);
   const [selectedSort, setSelectedSort] = React.useState("Mới nhất");
   const options = [
@@ -28,12 +32,12 @@ const ProjectSearch = () => {
   ];
   const [visible, setVisible] = React.useState(false);
   const [selected, setSelected] = React.useState(options[0]);
-  const handleSelect = (item: any) => {
-    setSelectedSort(item.label);
-    setVisible(false);
-  };
-
-  const [projectsData, setProjectsData] = React.useState([]);
+  const [amount, setAmount] = React.useState(0);
+  const [page, setPage] = React.useState(1);
+  const [projectsData, setProjectsData] = React.useState<ProjectApartment[]>(
+    []
+  );
+  const [loading, setLoading] = React.useState(false);
 
   const [selectedDistrict, setSelectedDistrict] = React.useState(null);
   const [selectedWard, setSelectedWard] = React.useState(null);
@@ -103,25 +107,47 @@ const ProjectSearch = () => {
     });
   };
 
-  const getProjectData = async () => {
+  const getProjectData = async (page: number) => {
     try {
-      const response = await getProjects();
-      setProjectsData(response.data);
+      setLoading(true);
+      const response = await projectsSearch(searchQuery || "", page);
+      setProjectsData((prevData) => [...prevData, ...response?.data?.projects]);
+      setAmount(response?.data?.totalItems);
+      setLoading(false);
       return response.data;
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getProjectData();
-  }, []);
+    setProjectsData([]);
+    setPage(1);
+    getProjectData(1);
+  }, [searchQuery]);
+
+  const handleLoadMore = () => {
+    if (!loading) {
+      setPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        getProjectData(nextPage);
+        return nextPage;
+      });
+    }
+  };
+
+  const handleSelect = (item: { label: string; value: string }) => {
+    setSelectedSort(item.label);
+    setVisible(false);
+  };
 
   return (
     <ThemedView
       style={{
         justifyContent: "center",
         marginHorizontal: 10,
+        paddingBottom: 100,
       }}
     >
       <View style={styles.filerout}>
@@ -137,7 +163,7 @@ const ProjectSearch = () => {
       </View>
 
       <View style={styles.row}>
-        <ThemedText type="small">{} dự án được tìm thấy</ThemedText>
+        <ThemedText type="small">{amount} dự án được tìm thấy</ThemedText>
         <TouchableOpacity
           style={styles.row}
           onPress={() => {
@@ -148,31 +174,20 @@ const ProjectSearch = () => {
           <Feather name="chevron-down" size={20} color="black" />
         </TouchableOpacity>
       </View>
-      <ScrollView>
-        {/* <FlatList
-          data={options}
-          keyExtractor={(item) => item.value}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleSelect(item)}
-            >
-              <Text style={styles.optionText}>{item.label}</Text>
-            </TouchableOpacity>
-          )}
-        /> */}
-        {projectsData?.length === 0 && <Text>Không có dự án nào</Text>}
-
-        {projectsData?.length > 0 &&
-          projectsData.map((project: ProjectApartment) => (
-            <ProjectCard data={project} key={project.projectApartmentID} />
-          ))}
-      </ScrollView>
+      <FlatList
+        data={projectsData}
+        keyExtractor={(item) => item.projectApartmentID.toString()}
+        renderItem={({ item }) => <ProjectCard data={item} />}
+        ListEmptyComponent={<Text>Không có dự án nào</Text>}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={loading ? <Text>Loading...</Text> : null}
+      />
 
       <Modal
         transparent={true}
         visible={visible}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setVisible(false)}
       >
         <View style={styles.modalBackground}>
@@ -221,9 +236,7 @@ const ProjectSearch = () => {
               </TouchableOpacity>
               <ThemedText type="heading">Bộ lọc</ThemedText>
               <TouchableOpacity
-                // onPress={
-                //   {}
-                // }
+                // onPress={clearFilter}
                 style={styles.filter}
               >
                 <ThemedText

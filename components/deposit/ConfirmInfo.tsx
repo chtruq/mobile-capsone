@@ -9,11 +9,11 @@ import {
 import React, { FC } from "react";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
-import Checkbox from "expo-checkbox";
 import { Colors } from "@/constants/Colors";
 import Button from "../button/Button";
 import { ScannedInfo } from "@/model/deposit";
 import { depositRequest } from "@/services/api/deposit";
+import LoadingModal from "../loading/LoadingModal";
 
 interface Props {
   onConfirm: () => void;
@@ -23,7 +23,9 @@ interface Props {
 
 const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
   const [isChecked, setChecked] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const onSubmit = async () => {
+    setLoading(true);
     try {
       const res = await depositRequest(data);
       if (res) {
@@ -34,14 +36,17 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
       }
       onConfirm();
     } catch (error) {
-      console.error("Có lỗi xảy ra:", error);
-      throw error;
+      Alert.alert("Có lỗi xảy ra trong quá trình xác nhận yêu cầu");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <ScrollView
+      <LoadingModal visible={loading} message="" />
+
+      <ThemedView
         style={{
           backgroundColor: "#fff",
           marginBottom: 100,
@@ -143,49 +148,46 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
             >
               <ThemedText type="subtitle">.</ThemedText>
               <ThemedText type="small">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Deleniti illum saepe, accusamus, facilis, ex omnis ad tenetur in
-                vitae culpa nihil aspernatur ducimus cum obcaecati et dolor ut
-                minima exercitationem.
+                Khi bạn xác nhận yêu cầu, yêu cầu đặt cọc giữ chỗ căn hộ sẽ được
+                gủi đến hệ thống của chúng tôi. Bạn sẽ nhận được thông báo xác
+                nhận qua email.
               </ThemedText>
             </View>
           </View>
         </ThemedView>
-      </ScrollView>
-      <ThemedView
-        style={{
-          position: "absolute",
-          width: "100%",
-          bottom: 0,
-          height: 95,
-          backgroundColor: "#fff",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View
+        <ThemedView
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "90%",
+            width: "100%",
+            height: 95,
+            backgroundColor: "#fff",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <Button
-            width={"30%"}
-            title="Quay lại"
-            handlePress={onBack}
-            backgroundColor="#fff"
-            textColor="#000"
-            isBack
-          />
-          <Button
-            width={"60%"}
-            title="Xác nhận yêu cầu"
-            handlePress={() => {
-              onSubmit();
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "90%",
             }}
-          />
-        </View>
+          >
+            <Button
+              width={"30%"}
+              title="Quay lại"
+              handlePress={onBack}
+              backgroundColor="#fff"
+              textColor="#000"
+              isBack
+            />
+            <Button
+              width={"60%"}
+              title="Xác nhận yêu cầu"
+              handlePress={() => {
+                onSubmit();
+              }}
+            />
+          </View>
+        </ThemedView>
       </ThemedView>
     </>
   );

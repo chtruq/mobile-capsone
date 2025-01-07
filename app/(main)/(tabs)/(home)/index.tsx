@@ -68,7 +68,7 @@ export default function Home() {
 
             <ThemedViewSHKeyboard>
               <CircleBg />
-              <SearchInput />
+              {/* <SearchInput /> */}
               {/* Home content */}
               {/* Du an noi bat */}
               <View
