@@ -7,7 +7,14 @@ type AuthContextType = {
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  userInfo: any;
+  userInfo: {
+    id: string;
+    email: string;
+    iat: number;
+    exp: number;
+    name: string;
+    phone: string;
+  } | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

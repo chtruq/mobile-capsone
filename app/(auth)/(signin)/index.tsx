@@ -28,8 +28,8 @@ export default function SignIn() {
   const backgroundColor =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
   const { login: loginUser } = useAuth();
-  const [email, setEmail] = useState("trunghcw@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { loading, error, request: loginRequest } = useApi(login);
   const [isLoading, setIsLoading] = useState(false);
 

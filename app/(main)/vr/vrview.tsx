@@ -104,7 +104,9 @@ const VRModal = () => {
       />
       <ThemedText style={styles.imageButtonText}>
         {" "}
-        {item.description ? item.description : "Ảnh" + " " + index}{" "}
+        {item.description
+          ? item.description.split(".")[0]
+          : "Ảnh" + " " + index}{" "}
       </ThemedText>
     </TouchableOpacity>
   );
@@ -202,6 +204,7 @@ const styles = StyleSheet.create({
   imageButtonText: {
     color: "white",
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

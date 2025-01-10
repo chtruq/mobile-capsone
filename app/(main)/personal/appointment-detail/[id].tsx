@@ -147,7 +147,7 @@ const AppointmentDetails = () => {
         </View>
         <View style={style.rowItem}>
           <Text>Số điện thoại:</Text>
-          <Text>{data?.sellerPhone}</Text>
+          <Text>{data?.sellerPhone ? data?.sellerPhone : "N/A"}</Text>
         </View>
       </View>
       <View></View>

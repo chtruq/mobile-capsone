@@ -64,6 +64,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ data }) => {
             <View style={styles.row}>
               <LocationIcon width={16} height={16} />
               <ThemedText
+                numberOfLines={1}
                 style={{ overflow: "hidden", textOverflow: "ellipsis" }}
               >
                 {data?.address}

@@ -47,7 +47,7 @@ const ChatScreen = () => {
   const [status, setStatus] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-
+  const [sessionId, setSessionId] = useState<string>("");
   const handlePress = (item: ChatMessage) => {
     setExpandedItemId(expandedItemId === item.id ? null : item.id);
   };
@@ -55,7 +55,7 @@ const ChatScreen = () => {
     setIsLoading(true);
     try {
       const createSession = await createChatSession(userInfo?.id || "");
-      const sessionId = createSession?.data?.id || messages[0]?.sessionId || "";
+      setSessionId(createSession?.data?.id);
 
       const fetchedMessages = await getMessages(sessionId);
       if (fetchedMessages?.data) {
@@ -194,7 +194,7 @@ const ChatScreen = () => {
       if (!newMessage && !selectedImage) return;
 
       const messageData: MessageData = {
-        sessionId: messages[0].sessionId,
+        sessionId: sessionId,
         senderId: customerId,
         messageContent: newMessage,
       };

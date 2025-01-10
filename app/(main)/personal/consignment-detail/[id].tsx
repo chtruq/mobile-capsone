@@ -88,10 +88,6 @@ const ConsignmentDetail = () => {
         <View style={styles.section}>
           <ThemedText type="heading">Thông tin căn hộ</ThemedText>
 
-          <View style={styles.row}>
-            <ThemedText>Loại lịch hẹn: </ThemedText>
-            <ThemedText style={styles.boldText}>Yêu cầu tư vấn</ThemedText>
-          </View>
           <View
             style={{
               flexDirection: "row",
@@ -124,9 +120,7 @@ const ConsignmentDetail = () => {
 
           <View style={styles.row}>
             <ThemedText>Mô tả: </ThemedText>
-            <ThemedText style={styles.boldText}>
-              {data?.description} m²
-            </ThemedText>
+            <ThemedText style={styles.boldText}>{data?.description}</ThemedText>
           </View>
         </View>
 
@@ -165,13 +159,6 @@ const ConsignmentDetail = () => {
           <View style={styles.row}>
             <ThemedText>Loại yêu cầu: </ThemedText>
             <ThemedText style={styles.boldText}>Yêu cầu ký gửi</ThemedText>
-          </View>
-
-          <View style={styles.row}>
-            <ThemedText>Trạng thái: </ThemedText>
-            <ThemedText style={styles.boldText}>
-              {data?.requestStatus === "Pending" && "Đang chờ xác nhận"}
-            </ThemedText>
           </View>
         </View>
       </ScrollView>

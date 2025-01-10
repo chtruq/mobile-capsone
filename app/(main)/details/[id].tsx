@@ -445,6 +445,20 @@ export default function ProductDetails() {
             )}
           </View>
 
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginVertical: 10,
+            }}
+          >
+            <ThemedText>Mã căn hộ:</ThemedText>
+            <ThemedText type="defaultSemiBold">
+              {data?.apartmentCode}
+            </ThemedText>
+          </View>
+
           <View style={{ marginVertical: 10 }}>
             <ThemedText type="heading">Mô tả</ThemedText>
             <ThemedText numberOfLines={showFullDescription ? undefined : 6}>

@@ -193,7 +193,6 @@ const ProjectSearch: FC<ProjectSearchProps> = ({ searchQuery, providerId }) => {
         ListEmptyComponent={<Text>Không có dự án nào</Text>}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loading ? <Text>Loading...</Text> : null}
       />
 
       <Modal

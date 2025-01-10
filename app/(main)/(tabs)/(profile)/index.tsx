@@ -250,12 +250,15 @@ export default function Profile() {
                 }}
                 type="default"
               >
-                market@fpt.vn
+                luxerapartment8386@gmail.com
               </ThemedText>
             </View>
           </View>
           <TouchableOpacity
-            style={{ position: "absolute", bottom: 20, right: 20 }}
+            style={{
+              alignItems: "flex-end",
+              padding: 10,
+            }}
             onPress={handleLogout}
           >
             <ThemedText

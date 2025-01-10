@@ -45,6 +45,7 @@ export default function Home() {
   };
 
   const fetchNotification = async () => {
+    if (!userInfo) return;
     try {
       const res = await getUserNotifications(userInfo?.id);
       setNoti(res?.data?.results);
@@ -55,7 +56,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchNotification();
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     setNotiCount(noti.filter((item: Notifications) => !item.isRead).length);
