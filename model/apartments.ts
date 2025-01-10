@@ -14,7 +14,7 @@ export interface Apartment {
   numberOfRooms: number;
   numberOfBathrooms: number;
   location: string;
-  direction: number;
+  direction: string;
   pricePerSquareMeter: number;
   price: number;
   effectiveStartDate: string;
@@ -30,8 +30,14 @@ export interface Apartment {
   roomNumber: number;
   images: ApartmentImage[];
   userLiked: boolean;
-  vrVideoUrls: Array<string>;
+  vrVideoUrls: VrVideoUrls[];
   depositAmount: number;
+}
+
+export interface VrVideoUrls {
+  vrExperienceID: string;
+  videoUrl: string;
+  description: string;
 }
 export interface ApartmentSearchParams {
   apartmentName?: string;

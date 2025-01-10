@@ -20,9 +20,11 @@ import { ProjectApartment } from "@/model/projects";
 
 interface ProjectSearchProps {
   searchQuery?: string;
+  providerId?: string;
 }
 
-const ProjectSearch: FC<ProjectSearchProps> = ({ searchQuery }) => {
+const ProjectSearch: FC<ProjectSearchProps> = ({ searchQuery, providerId }) => {
+  const [providerIdSearch, setProviderIdSearch] = React.useState("");
   const [filterVisible, setFilterVisible] = React.useState(false);
   const [selectedSort, setSelectedSort] = React.useState("Mới nhất");
   const options = [
@@ -107,10 +109,20 @@ const ProjectSearch: FC<ProjectSearchProps> = ({ searchQuery }) => {
     });
   };
 
+  // useEffect(() => {
+  //   if (providerId) {
+  //     setProviderIdSearch(providerId);
+  //   }
+  // }, [providerId]);
+
   const getProjectData = async (page: number) => {
     try {
       setLoading(true);
-      const response = await projectsSearch(searchQuery || "", page);
+      const response = await projectsSearch(
+        searchQuery || "",
+        page,
+        providerId ? providerId : ""
+      );
       setProjectsData((prevData) => [...prevData, ...response?.data?.projects]);
       setAmount(response?.data?.totalItems);
       setLoading(false);

@@ -40,10 +40,16 @@ export const getProjectCart = async (id: string) => {
   }
 };
 
-export const projectsSearch = async (projectName: string, page: number) => {
+export const projectsSearch = async (
+  projectName: string,
+  page: number,
+  providerId?: string
+) => {
   try {
     const response = await apiClient.get(
-      `/projects/search?keyword=${projectName}&pageIndex=${page}&pageSize=5`
+      `/projects/search?keyword=${projectName}&ApartmentProjectProviderID=${
+        providerId ? providerId : ""
+      }&pageIndex=${page}&pageSize=5`
     );
     return response.data;
   } catch (error) {

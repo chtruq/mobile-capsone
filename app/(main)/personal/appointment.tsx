@@ -50,7 +50,7 @@ const Appointment = () => {
       case "Confirmed":
         return "Đã xác nhận";
       case "InProcressing":
-        return "Đang xử lí";
+        return "Đang đang tiến hành";
       case "Done":
         return "Hoàn thành";
       case "Canceled":

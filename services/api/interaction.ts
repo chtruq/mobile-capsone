@@ -7,7 +7,6 @@ export const handleFavorite = async (
 ) => {
   try {
     if (favorite) {
-      // remove from fav
       const res = await apiClient.delete("/apartment-interactions", {
         params: {
           apartmentId: ApartmentID,
@@ -17,7 +16,6 @@ export const handleFavorite = async (
       });
       return res.data;
     } else {
-      // add to fav
       const res = await apiClient.post("/apartment-interactions/create", {
         apartmentId: ApartmentID,
         accountID: accountID,

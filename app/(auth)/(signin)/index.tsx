@@ -8,6 +8,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
@@ -20,6 +21,7 @@ import { router } from "expo-router";
 import { login } from "@/services/api/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/hooks/useApi";
+import LoadingModal from "@/components/loading/LoadingModal";
 
 export default function SignIn() {
   const colorScheme = useColorScheme();
@@ -29,13 +31,18 @@ export default function SignIn() {
   const [email, setEmail] = useState("trunghcw@gmail.com");
   const [password, setPassword] = useState("123456");
   const { loading, error, request: loginRequest } = useApi(login);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true);
       const data = await loginRequest(email, password);
       loginUser(data.data.token);
     } catch (error) {
       console.log("Login error:", error);
+      Alert.alert("Đăng nhập thất bại", "Email hoặc mật khẩu không đúng");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,6 +58,7 @@ export default function SignIn() {
           style={{ flex: 1 }}
         >
           {/* Hiển thị lỗi nếu có */}
+          <LoadingModal visible={isLoading} message="Vui lòng chờ" />
           <ThemedView>
             <Image
               source={require("../../../assets/images/signInImage/signinpic.png")}
@@ -157,7 +165,7 @@ export default function SignIn() {
                 width: "40%",
               }}
             ></ThemedView>
-            <ThemedView
+            {/* <ThemedView
               style={{
                 justifyContent: "center",
                 alignItems: "center",
@@ -180,10 +188,10 @@ export default function SignIn() {
                 borderWidth: 0.8,
                 width: "40%",
               }}
-            ></ThemedView>
+            ></ThemedView> */}
           </ThemedView>
 
-          <ThemedView
+          {/* <ThemedView
             style={{
               flexDirection: "row",
               justifyContent: "center",
@@ -218,7 +226,7 @@ export default function SignIn() {
                 style={{ width: 24, height: 24, marginLeft: 10 }}
               />
             </TouchableOpacity>
-          </ThemedView>
+          </ThemedView> */}
           <ThemedView
             style={{
               flexDirection: "row",

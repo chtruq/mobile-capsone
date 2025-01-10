@@ -13,6 +13,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
@@ -43,6 +45,7 @@ import { createAppointment } from "@/services/api/appointment";
 import ProjectCard from "@/components/Search/Project/ProjectCard";
 import { getProjectDetail } from "@/services/api/project";
 import { ProjectApartment } from "@/model/projects";
+import { formatDirection } from "@/utils/format/direction";
 
 export default function ProductDetails() {
   const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
@@ -99,10 +102,31 @@ export default function ProductDetails() {
   }, [data]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const handleScroll = (event: any) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / 360);
     setCurrentIndex(index);
+  };
+
+  const openImage = (index: number) => {
+    setCurrentIndex(index); // Cập nhật chỉ số ảnh được chọn
+    setIsModalVisible(true); // Hiển thị modal
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false); // Đóng modal
+  };
+
+  const goToPreviousImage = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const goToNextImage = () => {
+    if (data?.images && currentIndex < data.images.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -268,7 +292,7 @@ export default function ProductDetails() {
             decelerationRate="fast"
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable>
+              <Pressable onPress={() => openImage(0)}>
                 <Image
                   source={item}
                   style={{
@@ -276,7 +300,6 @@ export default function ProductDetails() {
                     height: 300,
                     marginHorizontal: 5,
                   }}
-                  // resizeMode="contain"
                   resizeMethod="auto"
                 />
               </Pressable>
@@ -477,12 +500,12 @@ export default function ProductDetails() {
                 title="Số phòng tắm"
               />
               <ApartmentDetails
-                data={data?.balconyDirection}
+                data={formatDirection(data?.direction ?? "")}
                 Icon={<HouseDirectionIcon width={20} height={20} />}
                 title="Hướng nhà"
               />
               <ApartmentDetails
-                data={data?.balconyDirection}
+                data={formatDirection(data?.balconyDirection ?? "")}
                 Icon={<BalconyDirectionIcon width={20} height={20} />}
                 title="Hướng ban công"
               />
@@ -960,3 +983,63 @@ export default function ProductDetails() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  thumbnail: {
+    width: 350,
+    height: 300,
+    marginHorizontal: 5,
+  },
+  listContent: {
+    height: 300,
+  },
+  list: {
+    width: "100%",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    width: "100%",
+    height: "100%",
+    // backgroundColor: "white",
+  },
+
+  modalBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  fullImage: {
+    width: "90%",
+    height: "90%",
+  },
+  leftButton: {
+    position: "absolute",
+    top: "50%",
+    left: 10,
+    transform: [{ translateY: -25 }],
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 20,
+  },
+  rightButton: {
+    position: "absolute",
+    top: "50%",
+    right: 10,
+    transform: [{ translateY: -25 }],
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});

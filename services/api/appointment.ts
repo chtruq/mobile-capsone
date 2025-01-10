@@ -28,6 +28,13 @@ export const getRequestAppointmentList = async (userId: string) => {
   return response.data;
 };
 
+export const cancelAppointmentRequest = async (id: string) => {
+  const response = await apiClient.put(
+    `/appointmentrequests/update-status/${id}?newStatus=4`
+  );
+  return response.data;
+};
+
 export const getAppointmentRequestDetail = async (id: string) => {
   const response = await apiClient.get(`/appointmentrequests/${id}`);
   return response.data;

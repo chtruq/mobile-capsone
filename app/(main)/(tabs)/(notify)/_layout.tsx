@@ -8,7 +8,7 @@ export default function NotifyLayout() {
       <Stack.Screen
         name="noti"
         options={{
-          headerTitle: "Notify",
+          headerTitle: "Thông báo",
           headerShown: true,
         }}
       />

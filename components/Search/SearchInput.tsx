@@ -1,8 +1,25 @@
 import { View, Text, TextInput, useColorScheme } from "react-native";
-import React from "react";
+import React, { FC, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-const SearchInput = () => {
-  const colorScheme = useColorScheme();
+import { router } from "expo-router";
+
+interface SearchInputProps {
+  search: string;
+  onChangeSearch: (search: string) => void;
+}
+
+const SearchInput: FC<SearchInputProps> = ({ search, onChangeSearch }) => {
+  const [value, setValue] = React.useState("");
+
+  const onSubmitEditing = () => {
+    onChangeSearch(value);
+    router.push({
+      pathname: "/(main)/(tabs)/(search)",
+      params: {
+        homeSearch: value,
+      },
+    });
+  };
 
   return (
     <View
@@ -25,15 +42,18 @@ const SearchInput = () => {
       </View>
 
       <TextInput
-        placeholder="Tìm kiếm dự án, căn hộ mà bạn mong muốn"
+        placeholder="Tìm kiếm căn hộ mà bạn mong muốn"
         style={{
           borderRadius: 10,
           padding: 10,
           margin: 10,
           fontSize: 16,
         }}
-        value=""
-        onChangeText={() => {}}
+        value={value}
+        onChangeText={setValue}
+        onSubmitEditing={() => {
+          onSubmitEditing();
+        }}
       />
     </View>
   );

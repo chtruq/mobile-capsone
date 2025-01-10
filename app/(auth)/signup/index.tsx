@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import React from "react";
 import { ThemedView } from "@/components/ThemedView";
@@ -51,6 +52,11 @@ export default function SignUp() {
       });
     } catch (error) {
       console.log("Register error:", error);
+      if ((error as any).response?.data?.message) {
+        Alert.alert("Đăng ký thất bại", (error as any).response.data.message);
+      } else {
+        Alert.alert("Đăng ký thất bại", "Vui lòng thử lại sau");
+      }
     }
   };
 

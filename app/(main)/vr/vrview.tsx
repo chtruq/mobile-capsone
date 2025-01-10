@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import WebView from "react-native-webview";
 import { useLocalSearchParams } from "expo-router";
 import { apartmentsDetail } from "@/services/api/apartments";
-import { Apartment } from "@/model/apartments";
+import { Apartment, VrVideoUrls } from "@/model/apartments";
 import { AntDesign } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 
@@ -28,7 +28,7 @@ const VRModal = () => {
       setData(res.data);
       // Mặc định chọn ảnh đầu tiên
       if (res.data?.vrVideoUrls && res.data.vrVideoUrls.length > 0) {
-        setSelectedImage(res.data.vrVideoUrls[0]);
+        setSelectedImage(res.data.vrVideoUrls[0].videoUrl);
       }
     } catch (error) {
       console.error("Error getting apartment details:", error);
@@ -84,19 +84,28 @@ const VRModal = () => {
   </html>
 `;
 
-  const renderImageItem = ({ item }: { item: string }) => (
+  const renderImageItem = ({
+    item,
+    index,
+  }: {
+    item: VrVideoUrls;
+    index: number;
+  }) => (
     <TouchableOpacity
       style={[
         styles.imageButton,
-        selectedImage === item && styles.selectedImageButton,
+        selectedImage === item.videoUrl && styles.selectedImageButton,
       ]}
-      onPress={() => setSelectedImage(item)}
+      onPress={() => setSelectedImage(item.videoUrl)}
     >
       <Image
-        source={{ uri: item }}
+        source={{ uri: item.videoUrl }}
         style={{ width: 100, height: 100, borderRadius: 5 }}
       />
-      <ThemedText style={styles.imageButtonText}>Ảnh {}</ThemedText>
+      <ThemedText style={styles.imageButtonText}>
+        {" "}
+        {item.description ? item.description : "Ảnh" + " " + index}{" "}
+      </ThemedText>
     </TouchableOpacity>
   );
 
@@ -131,9 +140,9 @@ const VRModal = () => {
         ]}
       >
         <FlatList
-          data={data?.vrVideoUrls || []}
+          data={data?.vrVideoUrls.map((item) => item) || []}
           renderItem={renderImageItem}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => `${item.vrExperienceID}-${index}`}
           horizontal
           showsHorizontalScrollIndicator={false}
         />
@@ -176,7 +185,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5,
     position: "absolute",
-    bottom: 0,
+    bottom: 20,
     width: "100%",
     height: 200,
   },

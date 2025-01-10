@@ -171,14 +171,6 @@ export default function Profile() {
           }}
           icon={<CalendarIcon />}
         />
-        <ProfileTabBtn
-          title="Test thong bao"
-          onPress={() => {
-            // router.push("/(main)/personal/matterporttest");
-            router.push("/(main)/personal/notitest");
-          }}
-          icon={<CalendarIcon />}
-        />
 
         <ThemedText
           style={{
