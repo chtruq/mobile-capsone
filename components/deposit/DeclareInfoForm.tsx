@@ -42,10 +42,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
   const [selectedBackImage, setSelectedBackImage] = useState<ImageType>(null);
   const [isFrontImage, setIsFrontImage] = useState(true);
 
-  const [userInfo, setUserInfo] = useState<String>(
-    // "0222222222221|283333386|Hồ Chí Trung|21092002|Nam|Ấp Chiến Thắng, Định An, Dầu Tiếng, Bình Dương|31052021"
-    ""
-  );
+  const [userInfo, setUserInfo] = useState<String>("");
   const [errMes, setErrMes] = useState<String>("");
 
   const [facing, setFacing] = useState<CameraType>("back");

@@ -90,39 +90,8 @@ const ProviderDetail = () => {
           marginHorizontal: 10,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            // justifyContent: "center",
-            width: "100%",
-            // height: 300,
-          }}
-        >
-          <ThemedText>Địa chỉ:</ThemedText>
-          <ThemedText type="defaultSemiBold">{data?.location}</ThemedText>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            // justifyContent: "center",
-            width: "100%",
-            // height: 300,
-          }}
-        >
-          <ThemedText>Thành lập năm:</ThemedText>
-          <ThemedText type="defaultSemiBold">{data?.location}</ThemedText>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            // justifyContent: "center",
-            width: "100%",
-            // height: 300,
-          }}
-        >
-          <ThemedText>Website:</ThemedText>
-          <ThemedText type="defaultSemiBold">{data?.location}</ThemedText>
-        </View>
+        <ThemedText>Địa chỉ:</ThemedText>
+        <ThemedText type="defaultSemiBold">{data?.location}</ThemedText>
       </View>
 
       <View
@@ -180,7 +149,7 @@ const ProviderDetail = () => {
                 marginLeft: 10,
               }}
             >
-              Dự án nổi bật
+              Dự án
             </ThemedText>
 
             <TouchableOpacity
@@ -198,6 +167,7 @@ const ProviderDetail = () => {
                 type="default"
                 style={{
                   fontSize: 16,
+                  marginRight: 10,
                 }}
               >
                 Xem thêm

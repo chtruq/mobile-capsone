@@ -132,12 +132,16 @@ const AppoinmentRequestDetail = () => {
               <ThemedText style={styles.boldText}>Yêu cầu tư vấn</ThemedText>
             </View>
             <View style={styles.row}></View>
-            <View style={styles.row}>
-              <ThemedText>Ghi chú: </ThemedText>
-              <ThemedText style={styles.italicText}>
-                {data?.note || "(Không có ghi chú)"}
-              </ThemedText>
-            </View>
+            <ThemedText
+              style={{
+                width: "30%",
+              }}
+            >
+              Ghi chú:{" "}
+            </ThemedText>
+            <ThemedText numberOfLines={4} style={styles.italicText}>
+              {data?.note || "(Không có ghi chú)"}
+            </ThemedText>
           </View>
         </View>
 

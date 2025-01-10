@@ -6,3 +6,10 @@ export const getUserNotifications = async (userId: string) => {
   );
   return res.data;
 };
+
+export const markNotificationAsRead = async (notificationId: string) => {
+  const res = await apiClient.put(
+    `/notifications/${notificationId}/mark-as-read`
+  );
+  return res.data;
+};

@@ -24,29 +24,31 @@ const Notify = (props: { notiCount: number }) => {
         alignItems: "center",
       }}
     >
-      {}
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          width: 20,
-          height: 20,
-          borderRadius: 50,
-          backgroundColor: "red",
-        }}
-      >
-        <ThemedText
-          type="defaultSemiBold"
+      {props.notiCount > 0 && (
+        <View
           style={{
-            color: "white",
-            fontSize: 10,
-            textAlign: "center",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: 20,
+            height: 20,
+            borderRadius: 50,
+            backgroundColor: "red",
           }}
         >
-          {props.notiCount}
-        </ThemedText>
-      </View>
+          <ThemedText
+            type="defaultSemiBold"
+            style={{
+              color: "white",
+              fontSize: 10,
+              textAlign: "center",
+            }}
+          >
+            {props.notiCount}
+          </ThemedText>
+        </View>
+      )}
+
       <Ionicons
         name="notifications-outline"
         size={26}

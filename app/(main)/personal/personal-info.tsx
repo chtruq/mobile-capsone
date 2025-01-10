@@ -8,17 +8,40 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { useAuth } from "@/context/AuthContext";
+import { getUserInfo } from "@/services/api/account";
 
 interface InputProps {
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
+}
+
+interface userInfomation {
+  id: string;
+  email: string;
+  name: string;
+  avatar: string;
+  phoneNumber: string;
 }
 
 const PersonalUpdateData = () => {
+  const { userInfo } = useAuth();
+  const [user, setUser] = useState<userInfomation>();
+  const fetchUserInfo = async () => {
+    try {
+      const res = await getUserInfo(userInfo?.id || "");
+      setUser(res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
   const PersonalInput: FC<InputProps> = ({ label, value, onChange }) => {
     return (
       <View
@@ -64,11 +87,7 @@ const PersonalUpdateData = () => {
             }}
           >
             <View style={styles.line}>
-              <PersonalInput
-                label="Họ và tên"
-                value=""
-                onChange={(value) => console.log(value)}
-              />
+              <PersonalInput label="Họ và tên" value={user?.name || ""} />
               <PersonalInput
                 label="Chọn ngày sinh"
                 value=""
@@ -91,7 +110,7 @@ const PersonalUpdateData = () => {
                   }}
                   type="defaultSemiBold"
                 >
-                  Email@gmail.com
+                  {user?.email || ""}
                 </ThemedText>
                 <ThemedText>
                   Địa chỉ email này dùng để đăng nhập và không thể thay đổi
@@ -124,7 +143,7 @@ const PersonalUpdateData = () => {
                     }}
                     type="defaultSemiBold"
                   >
-                    0123456789
+                    {user?.phoneNumber || ""}
                   </ThemedText>
                 </View>
                 <View>

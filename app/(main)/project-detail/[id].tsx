@@ -243,7 +243,7 @@ const ProjectDetail = () => {
             >
               Giỏ hàng
             </ThemedText>
-            {!cartList && (
+            {cartList && (
               <TouchableOpacity
                 onPress={() => {
                   router.push({
