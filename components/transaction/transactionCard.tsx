@@ -19,6 +19,8 @@ enum DepositStatus {
   Paid = "Paid",
   TradeRequested = "TradeRequested",
   Exported = "Exported",
+  RefundRequest = "RefundRequest",
+  Refund = "Refund",
 }
 
 const TransactionCard: FC<TransProps> = ({ data }) => {
@@ -57,6 +59,10 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
         return styles.statusPaid;
       case DepositStatus.TradeRequested:
         return styles.statusTradeRequested;
+      case DepositStatus.RefundRequest:
+        return styles.statusRefundRequest;
+      case DepositStatus.Refund:
+        return styles.statusRefund;
       default:
         return {};
     }
@@ -117,6 +123,10 @@ const TransactionCard: FC<TransProps> = ({ data }) => {
                   ? "Đã thanh toán"
                   : data?.depositStatus === "TradeRequested"
                   ? "Đã gửi yêu cầu trao đổi"
+                  : data?.depositStatus === "RefundRequest"
+                  ? "Yêu cầu hoàn tiền"
+                  : data?.depositStatus === "Refund"
+                  ? "Đã hoàn tiền"
                   : "Không xác định"}
               </ThemedText>
             </View>
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   statusAccept: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#ffe9b8",
     borderRadius: 10,
     paddingVertical: 5,
   },
@@ -202,13 +212,23 @@ const styles = StyleSheet.create({
   statusPaid: {
     borderRadius: 10,
     paddingVertical: 5,
-    backgroundColor: "#49cc90",
+    backgroundColor: "#c4e39f",
     color: "#fff",
   },
   statusTradeRequested: {
     borderRadius: 10,
     paddingVertical: 5,
     backgroundColor: "#fdff",
+  },
+  statusRefundRequest: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    backgroundColor: "#28aad1",
+  },
+  statusRefund: {
+    borderRadius: 10,
+    paddingVertical: 5,
+    backgroundColor: "#bfeddf",
   },
 });
 

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
 import { ThemedText } from "@/components/ThemedText";
@@ -189,7 +189,7 @@ const ProjectDetail = () => {
           </View>
           <View>
             <ThemedText type="default">Diện tích </ThemedText>
-            <ThemedText type="heading">{data?.projectArea} m2</ThemedText>
+            <ThemedText type="heading">{data?.projectArea} ha</ThemedText>
           </View>
           <View>
             <ThemedText>Số toà </ThemedText>
@@ -243,9 +243,26 @@ const ProjectDetail = () => {
             >
               Giỏ hàng
             </ThemedText>
-            {cartList && (
-              <TouchableOpacity>
-                <ThemedText type="red">Xem tất cả</ThemedText>
+            {!cartList && (
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/(main)/(tabs)/(search)",
+                    params: {
+                      homeSearchType: "Căn hộ",
+                      projectId: id,
+                    },
+                  });
+                }}
+              >
+                <ThemedText
+                  type="default"
+                  style={{
+                    fontSize: 16,
+                  }}
+                >
+                  Xem tất cả
+                </ThemedText>
               </TouchableOpacity>
             )}
           </View>

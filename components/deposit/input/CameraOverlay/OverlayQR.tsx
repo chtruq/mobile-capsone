@@ -3,7 +3,7 @@ import { Dimensions, Platform, StyleSheet } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-const qrCodeSize = 250;
+const qrCodeSize = 240;
 
 const outer = rrect(rect(0, 0, width, height), 0, 0);
 const inner = rrect(
@@ -13,7 +13,7 @@ const inner = rrect(
     qrCodeSize,
     qrCodeSize
   ),
-  20, // Corner radius
+  20,
   20
 );
 
@@ -21,10 +21,12 @@ export const OverlayQR = () => {
   return (
     <Canvas
       style={
-        Platform.OS === "android" ? { flex: 1 } : StyleSheet.absoluteFillObject
+        Platform.OS === "android"
+          ? { flex: 1, position: "absolute", width: width, height: height }
+          : StyleSheet.absoluteFillObject
       }
     >
-      <DiffRect inner={inner} outer={outer} color="black" opacity={0.5} />
+      <DiffRect inner={inner} outer={outer} color="black" opacity={0.6} />
     </Canvas>
   );
 };

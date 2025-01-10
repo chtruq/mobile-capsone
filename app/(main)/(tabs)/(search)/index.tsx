@@ -10,7 +10,7 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import BuyIcon from "@/assets/icon/search/BuyIcon";
 import SearchModal from "@/components/Search/SearchModal";
@@ -20,8 +20,13 @@ import AparmentIcon from "@/assets/icon/search/AparmentIcon";
 import { ThemedText } from "@/components/ThemedText";
 import ApartmentSearch from "@/components/Search/ApartmentSearch";
 import ProjectSearch from "@/components/Search/ProjectSearch";
+import { useLocalSearchParams } from "expo-router";
 
 const Search = () => {
+  const { homeSearch } = useLocalSearchParams();
+  const { homeSearchType } = useLocalSearchParams();
+  const { providerId } = useLocalSearchParams();
+  const { projectId } = useLocalSearchParams();
   const [search, setSearch] = React.useState("");
   const isOpen1 = useSharedValue(false);
   const isOpen2 = useSharedValue(false);
@@ -34,13 +39,27 @@ const Search = () => {
     isOpen2.value = !isOpen2.value;
   };
 
+  useEffect(() => {
+    if (homeSearch) {
+      setSearch(Array.isArray(homeSearch) ? homeSearch.join(", ") : homeSearch);
+    }
+  }, [homeSearch]);
+
   const [searchType, setSearchType] = React.useState<string>("");
+
+  useEffect(() => {
+    if (homeSearchType) {
+      setSearchType(
+        Array.isArray(homeSearchType)
+          ? homeSearchType.join(", ")
+          : homeSearchType
+      );
+    }
+  }, [homeSearchType]);
 
   const handleSearchType = (type: string) => {
     setSearchType(type);
   };
-
-  console.log("search", search);
 
   return (
     <ThemedView style={styles.container}>
@@ -49,24 +68,33 @@ const Search = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <SafeAreaView>
-            <SearchModal
-              placeholder={
-                searchType === "Dự án" ? "Tìm kiếm dự án" : `Tìm kiếm căn hộ `
-              }
-              value={search}
-              isOpen={isOpen1}
-              toggleSheet={toggleSheet1}
-              onChangeText={setSearch}
-              searchType={searchType}
-            />
+          <SearchModal
+            placeholder={
+              searchType === "Dự án" ? "Tìm kiếm dự án" : `Tìm kiếm căn hộ `
+            }
+            value={search}
+            isOpen={isOpen1}
+            toggleSheet={toggleSheet1}
+            onChangeText={setSearch}
+            searchType={searchType}
+          />
 
-            {searchType === "Dự án" ? (
-              <ProjectSearch searchQuery={search} />
-            ) : (
-              <ApartmentSearch searchQuery={search} data={ApartmentData} />
-            )}
-          </SafeAreaView>
+          {searchType === "Dự án" ? (
+            <ProjectSearch
+              searchQuery={search}
+              providerId={
+                Array.isArray(providerId) ? providerId.join(", ") : providerId
+              }
+            />
+          ) : (
+            <ApartmentSearch
+              searchQuery={search}
+              data={ApartmentData}
+              projectId={
+                Array.isArray(projectId) ? projectId.join(", ") : projectId
+              }
+            />
+          )}
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
@@ -111,6 +139,7 @@ const Search = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 34,
   },
   modalSearchType: {
     flexDirection: "row",

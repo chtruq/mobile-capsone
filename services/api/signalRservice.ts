@@ -99,7 +99,7 @@ class SignalRService {
         .withUrl(`${BASE_URL}/notificationHub`, {
           accessTokenFactory: () => token,
         })
-        .configureLogging(signalR.LogLevel.Information)
+        .configureLogging(signalR.LogLevel.None)
         .withAutomaticReconnect([0, 2000, 5000, 10000])
         .build();
 

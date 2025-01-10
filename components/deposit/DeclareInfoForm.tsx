@@ -7,6 +7,7 @@ import {
   Modal,
   Image,
   Alert,
+  Linking,
 } from "react-native";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { ThemedView } from "../ThemedView";
@@ -264,6 +265,18 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
     });
   };
 
+  const handleOpenLink = async () => {
+    const url =
+      "https://drive.google.com/file/d/1hXUsStK3fKfYxsyP1wVwKF_kBGvrzh32/view?usp=sharing";
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      console.log("Opening the link");
+      await Linking.openURL(url);
+    } else {
+      alert("Không thể mở liên kết này!");
+    }
+  };
+
   return (
     <>
       <ThemedView
@@ -491,15 +504,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           )}
 
           <View>
-            <TouchableOpacity>
-              <ThemedText type="heading">
-                Xem hợp đồng đặt cọc giữ chỗ mẫu
-              </ThemedText>
-            </TouchableOpacity>
-            <ThemedText type="default">
-              Quý khách tham khảo các điều khoản Hợp Đồng đặt cọc giữ chỗ dưới
-              đây. Hợp đồng chính thức có giá trị pháp lý khi khách hàng xác
-              nhận chuyển cọc trên hệ thống.
+            <ThemedText type="heading">
+              Xem quy chế hoạt động của hệ thống
             </ThemedText>
             <View
               style={{
@@ -508,14 +514,16 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
               }}
             >
               <ContractIcon />
-              <ThemedText
-                style={{
-                  textDecorationLine: "underline",
-                }}
-                type="defaultSemiBold"
-              >
-                Xem hợp đồng mẫu
-              </ThemedText>
+              <TouchableOpacity onPress={handleOpenLink}>
+                <ThemedText
+                  style={{
+                    textDecorationLine: "underline",
+                  }}
+                  type="defaultSemiBold"
+                >
+                  Quy chế hoạt động của hệ thống
+                </ThemedText>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
@@ -612,40 +620,43 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
           style={styles.camera}
           facing={facing}
         >
-          <View style={styles.buttonContainer}>
-            {!userInfo && (
-              <Text style={styles.text}>
-                Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét thông
-                tin
-              </Text>
-            )}
-            {userInfo && (
-              <Text style={styles.text}>
-                Vui lòng đưa cccd vào khung bên dưới và chụp
-              </Text>
-            )}
+          <View style={styles.cameraContainer}>
+            <View style={styles.buttonContainer}>
+              {!userInfo && (
+                <Text style={styles.text}>
+                  Đưa camera lại gần mã QR trên góc phải của CCCD, Để quét thông
+                  tin
+                </Text>
+              )}
+              {userInfo && (
+                <Text style={styles.text}>
+                  Vui lòng đưa cccd vào khung bên dưới và chụp
+                </Text>
+              )}
 
-            {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
-          </View>
-          {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
-          <View style={styles.footerCamera}>
-            <Pressable style={styles.button} onPress={takePicture}>
-              {userInfo && <Text style={styles.text}> Chụp </Text>}
-            </Pressable>
+              {!userInfo && <ThemedText type="red">{errMes}</ThemedText>}
+            </View>
+            {/* nếu quét nhưng chưa chụp thì xoá hết dữ liệu đã quét */}
 
-            <Pressable
-              style={styles.button}
-              onPress={() => {
-                if (userInfo && !selectedFrontImage) {
-                  setUserInfo("");
-                }
-                closeCamera();
-              }}
-            >
-              <Text style={styles.text}> Đóng </Text>
-            </Pressable>
+            <View style={styles.footerCamera}>
+              <Pressable style={styles.button} onPress={takePicture}>
+                {userInfo && <Text style={styles.text}> Chụp </Text>}
+              </Pressable>
+
+              <Pressable
+                style={styles.button}
+                onPress={() => {
+                  if (userInfo && !selectedFrontImage) {
+                    setUserInfo("");
+                  }
+                  closeCamera();
+                }}
+              >
+                <Text style={styles.text}> Đóng </Text>
+              </Pressable>
+            </View>
+            {!userInfo ? <OverlayQR /> : <Overlay />}
           </View>
-          {!userInfo ? <OverlayQR /> : <Overlay />}
         </CameraView>
       </Modal>
     </>
@@ -706,10 +717,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
     backgroundColor: "transparent",
-    margin: 64,
+    // backgroundColor: "rgba(0,0,0,0.5)",
+    margin: 32,
     zIndex: 100,
+    top: 0,
   },
   button: {},
   text: {
@@ -719,7 +731,6 @@ const styles = StyleSheet.create({
   },
 
   CameraContainer: {
-    flex: 1,
     justifyContent: "center",
   },
   footerCamera: {
@@ -733,6 +744,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     width: "100%",
   },
+  cameraContainer: {
+    // padding: 10,
+    zIndex: 100,
+    paddingBottom: 20,
+    width: "100%",
+    flex: 1,
+    backgroundColor: "transparent",
+    // opacity: 0.6,
+  },
+
   checkBoxContainer: {
     flexDirection: "row",
     alignItems: "center",

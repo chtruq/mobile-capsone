@@ -1,15 +1,25 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Touchable,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import React, { useEffect } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/button/Button";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { getConsignmentDetail } from "@/services/api/consignment";
+import { formatCurrency, formatCurrency3Zero } from "@/model/other";
 
 const ConsignmentDetail = () => {
   const { id } = useLocalSearchParams();
   const [data, setData] = React.useState<Property>();
   const [requestStatus, setRequestStatus] = React.useState<string>("");
+  const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const getPropertyDetail = async () => {
     try {
       const res = await getConsignmentDetail(id?.toString());
@@ -31,8 +41,18 @@ const ConsignmentDetail = () => {
         return { label: "Đang xử lý", color: "#000", background: "#ffe9b8" };
       case "Rejected":
         return { label: "Đã hủy", color: "#FF5252", background: "#FFEBEE" };
-      case "Completed":
-        return { label: "Hoàn thành", color: "#66BB6A", background: "#E8F5E9" };
+      case "Accepted":
+        return {
+          label: "Đã được xác nhận",
+          color: "#66BB6A",
+          background: "#E8F5E9",
+        };
+      case "Expirated":
+        return {
+          label: "Hết thời gian xác nhận",
+          color: "#66BB6A",
+          background: "#E8F5E9",
+        };
       default:
         return {
           label: "Không xác định",
@@ -58,36 +78,215 @@ const ConsignmentDetail = () => {
             {requestStatus === "Pending" &&
               "Yêu cầu ký gửi của bạn đang chờ xử lý."}
             {requestStatus === "Rejected" && "Yêu cầu đã bị từ chối."}
-            {requestStatus === "Completed" && "Yêu cầu đã được hoàn thành."}
+            {requestStatus === "Accepted" &&
+              "Yêu cầu của bạn đã được xác nhận."}
+            {requestStatus === "Expirated" && "Yêu cầu của bạn đã hết hạn."}
           </Text>
         </View>
 
         {/* Thông tin căn hộ */}
         <View style={styles.section}>
           <ThemedText type="heading">Thông tin căn hộ</ThemedText>
-          <Text style={styles.infoText}>
-            Giá mong muốn: {data?.expectedPrice} VND
-          </Text>
-          <Text style={styles.infoText}>Địa chỉ: {data?.address}</Text>
-          <Text style={styles.infoText}>Mô tả: {data?.description}</Text>
+
+          <View style={styles.row}>
+            <ThemedText>Loại lịch hẹn: </ThemedText>
+            <ThemedText style={styles.boldText}>Yêu cầu tư vấn</ThemedText>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <ThemedText
+              style={{
+                width: "50%",
+              }}
+            >
+              Giá mong muốn:{" "}
+            </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {formatCurrency3Zero(data?.expectedPrice ?? 0)} VND
+            </ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Tên căn hộ: </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {data?.propertyName}
+            </ThemedText>
+          </View>
+          <View style={styles.row}>
+            <ThemedText>Địa chỉ: </ThemedText>
+            <ThemedText style={styles.boldText}>{data?.address}</ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Mô tả: </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {data?.description} m²
+            </ThemedText>
+          </View>
         </View>
 
         {/* Thông tin liên hệ */}
         <View style={styles.section}>
           <ThemedText type="heading">Thông tin liên hệ</ThemedText>
-          <Text style={styles.infoText}>Tên liên hệ: {data?.userName}</Text>
-          <Text style={styles.infoText}>
-            Số điện thoại: {data?.phoneNumber}
-          </Text>
-          <Text style={styles.infoText}>
-            Ngày tạo: {new Date(data?.requestDate ?? "").toLocaleString()}
-          </Text>
-          <Text style={styles.infoText}>
-            Mã yêu cầu: {data?.propertyRequestCode || "Không có"}
-          </Text>
-          <Text style={styles.infoText}>Loại yêu cầu: Yêu cầu ký gửi</Text>
+          <View style={styles.row}>
+            <ThemedText>Họ và tên: </ThemedText>
+            <ThemedText style={styles.boldText}>{data?.userName}</ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Email: </ThemedText>
+            <ThemedText style={styles.boldText}>{data?.email}</ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Số điện thoại: </ThemedText>
+            <ThemedText style={styles.boldText}>{data?.phoneNumber}</ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Ngày tạo: </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {new Date(data?.requestDate ?? "").toLocaleString()}
+            </ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Mã yêu cầu: </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {data?.propertyRequestCode || "Không có"}
+            </ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Loại yêu cầu: </ThemedText>
+            <ThemedText style={styles.boldText}>Yêu cầu ký gửi</ThemedText>
+          </View>
+
+          <View style={styles.row}>
+            <ThemedText>Trạng thái: </ThemedText>
+            <ThemedText style={styles.boldText}>
+              {data?.requestStatus === "Pending" && "Đang chờ xác nhận"}
+            </ThemedText>
+          </View>
         </View>
       </ScrollView>
+      {requestStatus === "Pending" && (
+        <View
+          style={{
+            alignItems: "center",
+            marginTop: 20,
+            position: "absolute",
+            bottom: 20,
+            width: "100%",
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              padding: 20,
+              alignItems: "center",
+              backgroundColor: "#ffc6c6",
+              borderRadius: 8,
+              width: "80%",
+            }}
+            onPress={() => {
+              setModalVisible(true);
+            }}
+          >
+            <ThemedText type="red">Hủy yêu cầu</ThemedText>
+          </TouchableOpacity>
+        </View>
+      )}
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              width: "100%",
+              padding: 20,
+              borderRadius: 10,
+              height: 200,
+              position: "absolute",
+              bottom: 0,
+            }}
+          >
+            <ThemedText type="heading" style={{ padding: 20 }}>
+              Bạn có chắc chắn muốn huỷ yêu cầu này không?
+            </ThemedText>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  router.back();
+                }}
+                style={{
+                  borderWidth: 2,
+                  borderColor: "#ffd4d4",
+                  borderRadius: 5,
+                  width: "40%",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText
+                  style={{
+                    fontSize: 20,
+                    padding: 10,
+                    fontWeight: "bold",
+                  }}
+                  type="red"
+                >
+                  Xác nhận
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                }}
+                style={{
+                  backgroundColor: "#",
+                  borderRadius: 5,
+                  width: "40%",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText
+                  style={{
+                    fontSize: 20,
+                    padding: 10,
+                  }}
+                  type="default"
+                >
+                  Huỷ
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ThemedView>
   );
 };
@@ -125,6 +324,16 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 20,
     backgroundColor: "#FFF",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  boldText: {
+    fontWeight: "600",
+    color: "#000",
   },
 });
 

@@ -137,3 +137,19 @@ export const sendTradeRequest = async (
     throw error;
   }
 };
+
+export const sendRequestRefundDeposit = async (
+  depositId: string,
+  note: string
+) => {
+  try {
+    const response = await apiClient.post(
+      `/deposits/refund-request/${depositId}?note=${note}`
+    );
+    console.log("Refund request API response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Refund request API error:", error);
+    throw error;
+  }
+};

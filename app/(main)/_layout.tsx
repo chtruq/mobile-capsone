@@ -8,7 +8,7 @@ const MainLayout = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       // Nếu người dùng chưa xác thực, điều hướng đến (auth)
-      router.replace("/(auth)");
+      router.replace("/(auth)/(signin)");
     }
   }, [isAuthenticated]);
 
@@ -23,8 +23,9 @@ const MainLayout = () => {
         name="provider-detail/[id]"
         options={{
           headerShown: true,
-          headerTitle: "Chủ đầu tư",
+          headerTitle: "Nhà cung cấp",
           headerBackTitle: "Trở lại",
+          headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
@@ -52,6 +53,14 @@ const MainLayout = () => {
       <Stack.Screen
         name="vr"
         options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="providerlist"
+        options={{
+          headerShown: true,
+          headerTitle: "Danh sách nhà cung cấp",
+          headerBackTitle: "Trở lại",
+        }}
       />
     </Stack>
   );

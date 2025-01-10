@@ -24,13 +24,13 @@ const ConsignmentRequest = () => {
 
   const [form, setForm] = React.useState({
     ownerID: userInfo.id,
-    propertyName: "Can ho cao cap",
-    expectedPrice: 1000000000,
-    description: "can ho cao cap loai 1",
-    address: "Thu Duc, Ho Chi Minh",
-    userName: "Chi Trung",
-    phoneNumber: "0123456789",
-    email: "trunghcw@gmail.com",
+    propertyName: "",
+    expectedPrice: 0,
+    description: "",
+    address: "",
+    userName: "",
+    phoneNumber: "",
+    email: "",
   });
 
   //validate and alert
@@ -109,18 +109,22 @@ const ConsignmentRequest = () => {
       }}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1.5 }}
+        behavior={Platform.OS === "ios" ? "padding" : `height`}
+        style={{ flex: 1 }}
       >
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{ flexGrow: 1.5 }}
-          automaticallyAdjustKeyboardInsets={true}
-        >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            style={{
+              flex: 1,
+            }}
+            contentContainerStyle={{ flexGrow: 1.5 }}
+            automaticallyAdjustKeyboardInsets={true}
+          >
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
               <ThemedText type="defaultSemiBold">Thông tin căn hộ</ThemedText>
               <ThemedText type="default">Tỉnh/Thành phố</ThemedText>
               <View
@@ -202,8 +206,8 @@ const ConsignmentRequest = () => {
                 onChangeText={(text) => setForm({ ...form, email: text })}
               />
             </View>
-          </TouchableWithoutFeedback>
-        </ScrollView>
+          </ScrollView>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
       <View
         style={{

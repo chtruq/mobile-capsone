@@ -9,13 +9,20 @@ import {
   Modal,
   SafeAreaView,
   Pressable,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
 } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { getDepositDetail } from "@/services/api/deposit";
+import {
+  getDepositDetail,
+  sendRequestRefundDeposit,
+} from "@/services/api/deposit";
 import ApartmentTransCard from "@/components/transaction/ApartmentTransCard";
 import {
   Deposit,
@@ -44,14 +51,16 @@ interface TransactionProcessProps {
 
 const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
   const statusColors: { [key in DepositStatus]: string } = {
-    [DepositStatus.Pending]: "#FFD700",
-    [DepositStatus.Accept]: "#32CD32",
-    [DepositStatus.Reject]: "#FF4040",
-    [DepositStatus.Disable]: "#ccc",
-    [DepositStatus.PaymentFailed]: "#FF4040",
+    [DepositStatus.Pending]: "#ccc",
+    [DepositStatus.Accept]: "#ffe9b8",
+    [DepositStatus.Reject]: "#ccc",
+    [DepositStatus.Disable]: "#ffc6c6",
+    [DepositStatus.PaymentFailed]: "#ffc6c6",
     [DepositStatus.Paid]: "#32CD32",
-    [DepositStatus.TradeRequested]: "#FFD700",
+    [DepositStatus.TradeRequested]: "#c4e39f",
     [DepositStatus.Exported]: "#0000FF",
+    [DepositStatus.RefundRequest]: "#28aad1",
+    [DepositStatus.Refund]: "#bfeddf",
   };
 
   const backgroundColor = statusColors[status] || Colors.light.background;
@@ -82,7 +91,11 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
       case DepositStatus.TradeRequested:
         return;
       // return "🔄";
+      case DepositStatus.RefundRequest:
+        return;
 
+      case DepositStatus.Refund:
+        return;
       default:
         return "❔";
     }
@@ -103,6 +116,10 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
         return "Đã thanh toán";
       case DepositStatus.TradeRequested:
         return "Giao dịch trao đổi đã được yêu cầu";
+      case DepositStatus.RefundRequest:
+        return "Yêu cầu hoàn tiền";
+      case DepositStatus.Refund:
+        return "Đã hoàn tiền";
       default:
         return "Trạng thái không xác định";
     }
@@ -120,10 +137,13 @@ const TransactionStatus: FC<TransactionStatusProps> = ({ status }) => {
       case DepositStatus.PaymentFailed:
         return "Thanh toán thất bại";
       case DepositStatus.Paid:
-        return "Đã thanh toán";
+        return "Đã thanh toán khoản tiền giữ chỗ";
       case DepositStatus.TradeRequested:
         return "Giao dịch trao đổi đã được yêu cầu";
-
+      case DepositStatus.RefundRequest:
+        return "Yêu cầu hoàn tiền đã được gửi";
+      case DepositStatus.Refund:
+        return "Tiền đã được hoàn về tài khoản của bạn, hãy kiểm tra tài khoản ngân hàng của bạn";
       default:
         return "Không xác định";
     }
@@ -282,7 +302,8 @@ const TransactionDetail = () => {
   const [data, setData] = useState<Deposit>();
   const [paymentUrl, setPaymentUrl] = useState<string>();
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
-  const [tradeModalVisible, setTradeModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [note, setNote] = useState("");
   const fetchDepositDetail = async () => {
     try {
       const res = await getDepositDetail(id);
@@ -291,6 +312,26 @@ const TransactionDetail = () => {
     } catch (error) {
       console.error("Get deposit detail API error:", error);
       throw error;
+    }
+  };
+
+  const sendRequestRefund = async () => {
+    if (note === "") {
+      Alert.alert("Bạn vui lòng nhập lý do muốn huỷ giao dịch");
+      return false;
+    }
+    try {
+      if (data?.depositID) {
+        const res = await sendRequestRefundDeposit(data.depositID, note);
+        console.log("Send request refund", res);
+        setModalVisible(false);
+        router.back();
+        return res;
+      }
+      // return res.url;
+    } catch (error) {
+      console.error(error);
+    } finally {
     }
   };
 
@@ -362,16 +403,6 @@ const TransactionDetail = () => {
     }
   };
 
-  const onTradeRequest = () => {
-    router.push({
-      pathname: "/personal/pick-trade-apartment",
-      params: {
-        apartmentId: data?.apartmentID,
-        depositId: data?.depositID,
-      },
-    });
-  };
-
   React.useEffect(() => {
     if (data?.depositStatus === DepositStatus.Paid) {
       setPaymentModalVisible(false);
@@ -392,47 +423,60 @@ const TransactionDetail = () => {
         >
           <ThemedView>
             <TransactionStatus status={data?.depositStatus as DepositStatus} />
-            <TransactionProcess
-              statusData={data?.depositStatus as DepositStatus}
-              disbursementStatusData={data?.disbursementStatus}
-            />
+
+            {data?.depositStatus === DepositStatus.Refund ||
+            data?.depositStatus === DepositStatus.RefundRequest ? (
+              <></>
+            ) : (
+              <>
+                <TransactionProcess
+                  statusData={data?.depositStatus as DepositStatus}
+                  disbursementStatusData={data?.disbursementStatus}
+                />
+              </>
+            )}
+
             <ThemedView
               style={{
                 padding: 20,
               }}
             >
-              <ThemedText type="default">
-                Bạn cần phải thanh toán trong:{" "}
-              </ThemedText>
               {(data?.depositStatus === DepositStatus.Accept &&
                 data?.updateDate !== data?.createDate &&
                 timeLeft &&
                 timeLeft.hours != 0) ||
-              timeLeft.minutes != 0 ||
-              timeLeft.seconds != 0 ? (
-                <View
-                  style={{
-                    width: "100%",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <ThemedText
+                timeLeft.minutes != 0 ||
+                (timeLeft.seconds != 0 && (
+                  <View
                     style={{
-                      fontSize: 18,
-                      textAlign: "right",
-                      borderWidth: 1,
-                      borderColor: "red",
-                      borderRadius: 5,
-                      padding: 5,
+                      width: "100%",
+                      alignItems: "flex-end",
                     }}
-                    type="price"
                   >
-                    {timeLeft.hours} tiếng {timeLeft.minutes} phút{" "}
-                    {timeLeft.seconds} giây
-                  </ThemedText>
-                </View>
-              ) : (
-                <>
+                    <ThemedText type="default">
+                      Bạn cần phải thanh toán trong:{" "}
+                    </ThemedText>
+                    <ThemedText
+                      style={{
+                        fontSize: 18,
+                        textAlign: "right",
+                        borderWidth: 1,
+                        borderColor: "red",
+                        borderRadius: 5,
+                        padding: 5,
+                      }}
+                      type="price"
+                    >
+                      {timeLeft.hours} tiếng {timeLeft.minutes} phút{" "}
+                      {timeLeft.seconds} giây
+                    </ThemedText>
+                  </View>
+                ))}
+
+              {/* show skeleton */}
+              {data &&
+                data?.depositStatus === DepositStatus.Accept &&
+                new Date(data?.expiryDate).getTime() - Date.now() < 0 && (
                   <View style={{ width: "100%", alignItems: "flex-end" }}>
                     <ContentLoader
                       speed={2}
@@ -461,10 +505,10 @@ const TransactionDetail = () => {
                       />
                     </ContentLoader>
                   </View>
-                </>
-              )}
+                )}
 
               {data &&
+                data?.depositStatus === DepositStatus.Accept &&
                 new Date(data?.expiryDate).getTime() - Date.now() < 0 && (
                   <ThemedText
                     style={{
@@ -544,29 +588,55 @@ const TransactionDetail = () => {
               >
                 ({numberToWords(data?.paymentAmount as number)})
               </ThemedText>
-              {data?.depositType === DepositType.Trade &&
-                data?.depositStatus === DepositStatus.Accept && (
-                  <View>
-                    <ThemedText
-                      type="default"
-                      style={[
-                        styles.transactionInfoTitle,
-                        {
-                          width: "100%",
-                          flexWrap: "wrap",
-                          textAlign: "right",
-                        },
-                      ]}
-                    >
-                      *(Đã bao gồm{" "}
-                      <ThemedText type="defaultSemiBold">
-                        {formatCurrency(data?.tradeFee as number)}
-                      </ThemedText>{" "}
-                      tiền phí trao đổi và trừ đi khoản tiền mà bạn đã thanh
-                      toán trước đó)
+              {data?.depositStatus === DepositStatus.RefundRequest && (
+                <View>
+                  <ThemedText type="defaultSemiBold">
+                    Số tiền hoàn tiền:{" "}
+                    <ThemedText type="price">
+                      {formatCurrency(data?.disbursementDeposit)}
+                    </ThemedText>
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.transactionInfoTitle,
+                      {
+                        width: "100%",
+                        flexWrap: "wrap",
+                        textAlign: "right",
+                      },
+                    ]}
+                    type="defaultSemiBold"
+                  >
+                    (Đang chờ xác nhận hoàn tiền)
+                  </ThemedText>
+                </View>
+              )}
+
+              {data?.depositStatus === DepositStatus.Refund ? (
+                <View>
+                  <View style={styles.transactionInfoCol}>
+                    <ThemedText type="small">Số tiền đã hoàn: </ThemedText>
+                    <ThemedText type="price">
+                      {formatCurrency(data?.disbursementDeposit)}
                     </ThemedText>
                   </View>
-                )}
+                  <ThemedText
+                    style={[
+                      styles.transactionInfoTitle,
+                      {
+                        width: "100%",
+                        flexWrap: "wrap",
+                        textAlign: "right",
+                      },
+                    ]}
+                    type="default"
+                  >
+                    (Đã hoàn tiền)
+                  </ThemedText>
+                </View>
+              ) : (
+                <></>
+              )}
 
               <Line width={"100%"} />
               <View style={styles.transactionInfoCol}>
@@ -665,23 +735,26 @@ const TransactionDetail = () => {
         )}
 
       {data?.depositStatus === DepositStatus.Paid &&
-        data?.updateDate !== data?.createDate && (
-          // data?.disbursementStatus == "PendingDisbursement" &&
-          <TouchableOpacity
+        new Date(data?.expiryDate).getTime() - Date.now() > 0 && (
+          <ThemedView
             style={{
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              paddingBottom: 30,
-              borderTopWidth: 1,
-              paddingTop: 20,
-            }}
-            onPress={() => {
-              setTradeModalVisible(true);
+              paddingBottom: 20,
             }}
           >
-            <ThemedText type="defaultSemiBold">Có nhu cầu trao đổi?</ThemedText>
-          </TouchableOpacity>
+            <Button
+              backgroundColor="#ffc6c6"
+              textColor="#FF4040"
+              handlePress={() => {
+                setModalVisible(true);
+              }}
+              title="Không còn nhu cầu mua nữa? 
+              Gửi yêu cầu hoàn tiền?"
+              width={"90%"}
+            />
+          </ThemedView>
         )}
 
       <PaymentModal
@@ -693,62 +766,117 @@ const TransactionDetail = () => {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={tradeModalVisible}
+        visible={modalVisible}
         onRequestClose={() => {
-          setTradeModalVisible(false);
-        }}
-        onPointerCancel={() => {
-          setTradeModalVisible(false);
+          setModalVisible(!modalVisible);
         }}
       >
-        <ThemedView style={styles.tradeModalContainer}>
-          <ThemedView
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View
             style={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#fff",
+              flex: 1,
               justifyContent: "center",
               alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.5)",
             }}
           >
-            <ThemedText type="defaultSemiBold">
-              Gửi yêu cầu trao đổi căn hộ
-            </ThemedText>
-            <ThemedText style={styles.centerText}>
-              Bạn có muốn trao đổi lên căn hộ khác
-            </ThemedText>
-            <ThemedText style={styles.centerText}>
-              Lưu ý: Bạn chỉ có thể trao đổi căn hộ cùng giá trị hoặc cao hơn,
-              ngoài ra bạn sẽ phải chịu thêm một khoản phí cho việc trao đổi
-              này.
-            </ThemedText>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 20,
-                gap: 10,
+                backgroundColor: "#fff",
+                width: "100%",
+                padding: 20,
+                borderRadius: 10,
+                height: 500,
+                position: "absolute",
+                bottom: 0,
               }}
             >
-              <Button
-                handlePress={() => {
-                  setTradeModalVisible(false);
+              <ThemedText type="heading" style={{ padding: 20 }}>
+                Nhập lý do muốn huỷ giao dịch
+              </ThemedText>
+              <TextInput
+                placeholder="Nhập lý do"
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  padding: 10,
+                  borderRadius: 5,
+                  marginBottom: 20,
+                  height: 100,
+                  textAlignVertical: "top",
                 }}
-                title="Hủy"
-                width={"45%"}
-                backgroundColor="#CCC"
+                value={note}
+                onChangeText={(text) => setNote(text)}
+                multiline={true}
+                numberOfLines={5}
               />
-              <Button
-                handlePress={() => {
-                  onTradeRequest();
-                  setTradeModalVisible(false);
+              <ThemedText type="default">
+                Bạn sẽ nhận lại được khoản tiền là{" "}
+                <ThemedText type="price">
+                  {" "}
+                  {formatCurrency(data?.disbursementDeposit)}
+                </ThemedText>{" "}
+                nếu yêu cầu được xác nhận
+              </ThemedText>
+              <ThemedText type="default">
+                Lưu ý: Yêu cầu hoàn tiền sẽ được xử lý trong vòng 7 ngày làm
+                việc sau khi yêu cầu được xác nhận.
+              </ThemedText>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 60,
                 }}
-                title="Chọn căn hộ "
-                width={"45%"}
-              />
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    sendRequestRefund();
+                  }}
+                  style={{
+                    borderWidth: 2,
+                    borderColor: "#ffd4d4",
+                    borderRadius: 5,
+                    width: "40%",
+                    alignItems: "center",
+                  }}
+                >
+                  <ThemedText
+                    style={{
+                      fontSize: 20,
+                      padding: 10,
+                      fontWeight: "bold",
+                    }}
+                    type="red"
+                  >
+                    Xác nhận
+                  </ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                  }}
+                  style={{
+                    backgroundColor: "#",
+                    borderRadius: 5,
+                    width: "40%",
+                    alignItems: "center",
+                  }}
+                >
+                  <ThemedText
+                    style={{
+                      fontSize: 20,
+                      padding: 10,
+                    }}
+                    type="default"
+                  >
+                    Huỷ
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
             </View>
-          </ThemedView>
-        </ThemedView>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </ThemedView>
   );

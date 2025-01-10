@@ -28,3 +28,14 @@ export const getProjectProviderCart = async (id: string) => {
     console.error(error);
   }
 };
+
+export const getProjectProviders = async (search?: string) => {
+  try {
+    const response = await apiClient.get(
+      `/projectproviders/search?providerName=${search}&pageIndex=1&pageSize=40`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -6,9 +6,10 @@ import {
   Pressable,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
 import { ThemedText } from "@/components/ThemedText";
@@ -181,14 +182,27 @@ const ProviderDetail = () => {
             >
               Dự án nổi bật
             </ThemedText>
-            <ThemedText
-              style={{
-                marginRight: 10,
+
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/(main)/(tabs)/(search)",
+                  params: {
+                    homeSearchType: "Dự án",
+                    providerId: id,
+                  },
+                });
               }}
-              type="red"
             >
-              Xem tất cả
-            </ThemedText>
+              <ThemedText
+                type="default"
+                style={{
+                  fontSize: 16,
+                }}
+              >
+                Xem thêm
+              </ThemedText>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

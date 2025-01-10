@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "@/components/ThemedView";
@@ -14,6 +14,7 @@ import AppoinmentRequest from "@/components/personal/AppoinmentRequest";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getPropertyList } from "@/services/api/property";
 import CalendarIcon from "@/assets/icon/consignment/calendar";
+import { useFocusEffect } from "expo-router";
 
 const RequestManage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -23,25 +24,6 @@ const RequestManage = () => {
   const [listAppointmentData, setListAppointmentData] = useState([]);
   const [consignmentData, setConsignmentData] = useState([]);
   const navigation = useNavigation();
-
-  // useEffect(() => {
-  //   let title = "Quản lý yêu cầu"; // Tiêu đề mặc định
-  //   if (status === "0") title = "Danh sách yêu cầu";
-  //   // if (status === "1") title = "Danh sách lịch hẹn";
-  //   // Cập nhật tiêu đề của header
-  //   navigation.setOptions({ headerTitle: title });
-  // }, [status]);
-
-  const getListTradeDeposit = async () => {
-    try {
-      const res = await getTradeList(userInfo?.id);
-      console.log("traderes", res?.deposits);
-      setExchangeData(res?.deposits);
-    } catch (error) {
-      console.error("Có lỗi xảy ra:", error);
-      throw error;
-    }
-  };
 
   const getListAppointmentRequest = async () => {
     try {
@@ -67,26 +49,12 @@ const RequestManage = () => {
 
   console.log("userInfo", userInfo);
 
-  // const
-
-  // const getListAppointment = async () => {
-  //   try {
-  //     const res = await getRequestAppointmentList(userInfo?.id);
-  //     console.log("API response:", res);
-  //     setData(res?.data?.results);
-  //   } catch (error) {
-  //     console.error("Có lỗi xảy ra:", error);
-  //     throw error;
-  //   }
-  // };
-
-  useEffect(() => {
-    if (status === "0") {
-      getListTradeDeposit();
+  useFocusEffect(
+    useCallback(() => {
       getListAppointmentRequest();
       getListRequestProperty();
-    }
-  }, []);
+    }, [])
+  );
 
   const EmptyRequestView = () => {
     return (
@@ -99,23 +67,6 @@ const RequestManage = () => {
   const renderContentDeposit = () => {
     switch (selectedIndex) {
       case 0:
-        return (
-          <View>
-            {exchangeData?.length > 0 ? (
-              <FlatList
-                data={exchangeData}
-                keyExtractor={(item: Deposit) => item.depositID}
-                style={{ width: "100%" }}
-                renderItem={({ item }) => <RequestItem data={item} />}
-              />
-            ) : (
-              <>
-                <EmptyRequestView />
-              </>
-            )}
-          </View>
-        );
-      case 1:
         return (
           <View>
             {listAppointmentData ? (
@@ -132,7 +83,7 @@ const RequestManage = () => {
             )}
           </View>
         );
-      case 2:
+      case 1:
         return (
           <View>
             {consignmentData ? (
@@ -146,20 +97,18 @@ const RequestManage = () => {
                       width: "100%",
                       padding: 10,
                       marginBottom: 10,
-                      borderRadius: 8,
-                      // shadowColor: "#000",
-                      // shadowOffset: {
-                      //   width: 0,
-                      //   height: 2,
-                      // },
-                      // shadowOpacity: 0.25,
-                      // shadowRadius: 3.84,
-                      // elevation: 5,
-                      // backgroundColor: "#fff",
-                      // display: "flex",
-                      // justifyContent: "center",
-                      borderColor: "#ccc",
-                      borderWidth: 1,
+                      borderRadius: 5,
+                      shadowColor: "#000",
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                      elevation: 5,
+                      backgroundColor: "#fff",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                     onPress={() => {
                       router.push({
@@ -176,37 +125,30 @@ const RequestManage = () => {
                           color:
                             item.requestStatus == "Pending"
                               ? "#f0ad4e"
-                              : item.requestStatus == "InProgressing"
-                              ? "blue"
                               : item.requestStatus == "Accepted"
-                              ? "#c0df9c"
-                              : item.requestStatus == "Completed"
                               ? "green"
+                              : item.requestStatus == "Expirated"
+                              ? "#c0df9c"
                               : item.requestStatus == "Rejected"
-                              ? "#ccc"
+                              ? "red"
                               : undefined,
                           backgroundColor:
                             item.requestStatus == "Pending"
                               ? "#fff"
-                              : item.requestStatus == "InProgressing"
-                              ? "#ccc"
                               : item.requestStatus == "Accepted"
-                              ? "#ccc"
-                              : item.requestStatus == "Completed"
-                              ? "#ccc"
+                              ? "#green"
+                              : item.requestStatus == "Expirated"
+                              ? "#c0df9c"
                               : item.requestStatus == "Rejected"
-                              ? "#ccc"
+                              ? "#red"
                               : undefined,
                         }}
                       >
                         {(item.requestStatus == "Pending" &&
                           "Đang chờ xác nhận") ||
-                          (item.requestStatus == "InProgressing" &&
-                            "Đang tiến hành xác nhận") ||
                           (item.requestStatus == "Accepted" && "Đã xác nhận") ||
-                          (item.requestStatus == "Completed" &&
-                            "Đã hoàn thành") ||
-                          (item.requestStatus == "Rejected" && "Đã từ chối")}
+                          (item.requestStatus == "Expirated" && "Đã hết hạn") ||
+                          (item.requestStatus == "Rejected" && "Đã bị từ chối")}
                       </ThemedText>
                     </View>
                     <View
@@ -290,7 +232,7 @@ const RequestManage = () => {
   return (
     <ThemedView style={styles.container}>
       <SegmentedControl
-        values={["Trao đổi", "Tư vấn", "Ký gửi"]}
+        values={["Tư vấn", "Ký gửi"]}
         selectedIndex={selectedIndex}
         onChange={(event) => {
           setSelectedIndex(event.nativeEvent.selectedSegmentIndex);

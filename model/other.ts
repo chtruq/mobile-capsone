@@ -1,18 +1,20 @@
 export function formatCurrency(
   value: number | undefined,
   locale: string = "vi-VN"
-): string {
+): string | undefined {
   const formatter = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
 
-  if (value >= 1_000_000_000 && value !== undefined) {
+  if (value !== undefined && value >= 1_000_000_000) {
     return formatter.format(value / 1_000_000_000) + " tỷ";
-  } else if (value >= 1_000_000 && value !== undefined) {
+  } else if (value !== undefined && value >= 1_000_000) {
     return formatter.format(value / 1_000_000) + " triệu";
   } else if (value !== undefined) {
     return formatter.format(value) + " VND";
+  } else {
+    return undefined;
   }
 }
 
@@ -63,7 +65,7 @@ export const numberToWords = (num: number) => {
 
   let words = "";
 
-  const getChunk = (n) => {
+  const getChunk = (n: number) => {
     let chunk = "";
     if (n >= 100) {
       chunk += units[Math.floor(n / 100)] + " trăm ";
@@ -92,4 +94,13 @@ export const numberToWords = (num: number) => {
   }
 
   return words.trim();
+};
+
+export const formatCurrency3Zero = (value: number) => {
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  return formatter.format(value);
 };

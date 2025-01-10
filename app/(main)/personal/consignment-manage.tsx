@@ -8,26 +8,27 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import { ThemedView } from "@/components/ThemedView";
-import { getListConsignmentsByAccount } from "@/services/api/consignment";
+import {
+  getConsigmentApartment,
+  getListConsignmentsByAccount,
+} from "@/services/api/consignment";
 import CircleMinusIcon from "@/assets/icon/minus";
 import Button from "@/components/button/Button";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { ThemedText } from "@/components/ThemedText";
 import CalendarIcon from "@/assets/icon/consignment/calendar";
+import { Apartment } from "@/model/apartments";
 
 const ConsignmentList = () => {
-  const [consignmentList, setConsignmentList] = React.useState<Property[]>();
+  const [consignmentList, setConsignmentList] = React.useState<Apartment[]>();
   const { userInfo } = useAuth();
   const getConsignments = async () => {
     // call api get consignments
     try {
-      const res = await getListConsignmentsByAccount(userInfo?.id);
-      // const res = await getListConsignmentsByAccount(
-      //   "373c06ff-936d-4f76-80b2-08dcf1ada0ec"
-      // );
-      console.log("API response:", res);
-      setConsignmentList(res.data?.results);
+      const response = await getConsigmentApartment(userInfo?.id);
+      console.log(response.data?.apartments);
+      setConsignmentList(response.data?.apartments);
     } catch (error) {
       console.error(error);
     }
@@ -70,7 +71,7 @@ const ConsignmentList = () => {
               width: "100%",
             }}
             data={consignmentList}
-            keyExtractor={(item) => item.requestID}
+            keyExtractor={(item) => item.apartmentID}
             renderItem={({ item }) => (
               <Pressable
                 style={{
@@ -92,8 +93,8 @@ const ConsignmentList = () => {
                 }}
                 onPress={() => {
                   router.push({
-                    pathname: "/(main)/personal/consignment-detail/[id]",
-                    params: { id: item.requestID },
+                    pathname: "/(main)/personal/appartment-consignment/[id]",
+                    params: { id: item.apartmentID },
                   });
                 }}
               >
@@ -103,37 +104,44 @@ const ConsignmentList = () => {
                     style={{
                       display: "flex",
                       color:
-                        item.requestStatus == "Pending"
+                        item.apartmentStatus == "Pending"
                           ? "#f0ad4e"
-                          : item.requestStatus == "InProgressing"
+                          : item.apartmentStatus == "InProgressing"
                           ? "blue"
-                          : item.requestStatus == "Accepted"
+                          : item.apartmentStatus == "Accepted"
                           ? "#c0df9c"
-                          : item.requestStatus == "Completed"
+                          : item.apartmentStatus == "Completed"
                           ? "green"
-                          : item.requestStatus == "Rejected"
+                          : item.apartmentStatus == "Rejected"
+                          ? "#ccc00"
+                          : item.apartmentStatus == "Unavailable"
                           ? "#ccc00"
                           : undefined,
                       backgroundColor:
-                        item.requestStatus == "Pending"
+                        item.apartmentStatus == "Pending"
                           ? "#fff"
-                          : item.requestStatus == "InProgressing"
+                          : item.apartmentStatus == "InProgressing"
                           ? "#blue"
-                          : item.requestStatus == "Accepted"
+                          : item.apartmentStatus == "Accepted"
                           ? "#c0df9c"
-                          : item.requestStatus == "Completed"
+                          : item.apartmentStatus == "Completed"
                           ? "#green"
-                          : item.requestStatus == "Rejected"
+                          : item.apartmentStatus == "Rejected"
+                          ? "#fff"
+                          : item.apartmentStatus == "Unavailable"
                           ? "#fff"
                           : undefined,
                     }}
                   >
-                    {(item.requestStatus == "Pending" && "Đang chờ xác nhận") ||
-                      (item.requestStatus == "InProgressing" &&
+                    {(item.apartmentStatus == "Pending" &&
+                      "Đang chờ xác nhận") ||
+                      (item.apartmentStatus == "InProgressing" &&
                         "Đang tiến hành xác nhận") ||
-                      (item.requestStatus == "Accepted" && "Đã xác nhận") ||
-                      (item.requestStatus == "Completed" && "Đã hoàn thành") ||
-                      (item.requestStatus == "Rejected" && "Đã bị từ chối")}
+                      (item.apartmentStatus == "Accepted" && "Đã xác nhận") ||
+                      (item.apartmentStatus == "Completed" &&
+                        "Đã hoàn thành") ||
+                      (item.apartmentStatus == "Rejected" && "Đã bị từ chối") ||
+                      (item.apartmentStatus == "Unavailable" && "Đã hủy")}
                   </ThemedText>
                 </View>
                 <View
@@ -162,8 +170,8 @@ const ConsignmentList = () => {
                         marginBottom: 5,
                       }}
                     >
-                      <ThemedText type="small">Mã yêu cầu: </ThemedText>
-                      <Text>{item.propertyRequestCode}</Text>
+                      <ThemedText type="small">Mã căn hộ: </ThemedText>
+                      <Text>{item.apartmentCode}</Text>
                     </View>
                     <ThemedText
                       style={{
@@ -174,8 +182,8 @@ const ConsignmentList = () => {
                       Thời gian tạo:{" "}
                     </ThemedText>
                     <Text>
-                      {item.requestDate &&
-                        new Date(item.requestDate).toLocaleString()}
+                      {item.effectiveStartDate &&
+                        new Date(item.expiryDate).toLocaleString()}
                     </Text>
                   </View>
                 </View>

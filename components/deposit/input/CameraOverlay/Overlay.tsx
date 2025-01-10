@@ -22,7 +22,9 @@ export const Overlay = () => {
   return (
     <Canvas
       style={
-        Platform.OS === "android" ? { flex: 1 } : StyleSheet.absoluteFillObject
+        Platform.OS === "android"
+          ? { flex: 1, position: "absolute", width: width, height: height }
+          : StyleSheet.absoluteFillObject
       }
     >
       <DiffRect inner={inner} outer={outer} color="black" opacity={0.5} />

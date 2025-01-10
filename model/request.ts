@@ -28,11 +28,18 @@ interface PropertyRequest {
   address: string;
   requestDate: string;
   updateDate: string;
-  requestStatus: string;
+  requestStatus: RequestStatus;
   userName: string;
   email: string;
   phoneNumber: string;
   assignedTeamMemberID: string | null;
   sellerId: string | null;
   note: string | null;
+}
+
+enum RequestStatus {
+  Pending = "Pending",
+  Accepted = "Accepted",
+  Expirated = "Expirated",
+  Rejected = "Rejected",
 }

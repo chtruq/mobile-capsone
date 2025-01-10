@@ -51,3 +51,19 @@ export const getProjectCart = async (
     throw error;
   }
 };
+
+export const getApartmentByOwner = async (id: string, accountID: string) => {
+  console.log("id", id);
+  console.log("accountID", accountID);
+
+  try {
+    const response = await apiClient.get(
+      `/apartments/${id}?accountId=${accountID}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Apartments detail API error:", error);
+    throw error;
+  }
+};

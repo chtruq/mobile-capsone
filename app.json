@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "mobilecapstone",
-    "slug": "mobilecapstone",
-    "scheme": "mobilecapstone",
+    "name": "Luxuer",
+    "slug": "Luxuer",
+    "scheme": "Luxuer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [

@@ -32,6 +32,7 @@ import { Colors } from "@/constants/Colors";
 interface ApartmentSearchProps {
   searchQuery: string;
   data: any;
+  projectId: string;
 }
 
 interface ItemCheckboxProps {
@@ -67,7 +68,11 @@ const ItemCheckbox: FC<ItemCheckboxProps> = ({
   );
 };
 
-const ApartmentSearch: FC<ApartmentSearchProps> = ({ searchQuery, data }) => {
+const ApartmentSearch: FC<ApartmentSearchProps> = ({
+  searchQuery,
+  data,
+  projectId,
+}) => {
   const [selectedSort, setSelectedSort] = React.useState("");
 
   const [ApartmentData, setApartmentData] = React.useState<Apartment[]>([]);
@@ -103,6 +108,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ searchQuery, data }) => {
     directions: [] as number[],
     balconyDirections: [] as number[],
     accountId: userInfo?.id,
+    projectId: projectId,
   });
 
   const handleSelect = (item: any) => {
@@ -384,6 +390,7 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ searchQuery, data }) => {
       directions: [],
       balconyDirections: [],
       accountId: userInfo?.id,
+      projectId: "",
     });
     setSelectedDistrict(null);
     setSelectedWard(null);
@@ -423,21 +430,34 @@ const ApartmentSearch: FC<ApartmentSearchProps> = ({ searchQuery, data }) => {
         renderItem={({ item }) => <ApartmentCard data={item} />}
         ListHeaderComponent={
           <>
-            <View style={styles.filter}>
+            <View
+              style={[
+                styles.filter,
+                {
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                },
+              ]}
+            >
+              {/* <TouchableOpacity>
+                <ThemedText type="defaultSemiBold">
+                  Loại hình
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <ThemedText type="defaultSemiBold">
+                  Khoảng giá
+                </ThemedText>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => {
                   setFilterVisible(!filterVisible);
                 }}
-                style={styles.filterItem}
+                style={[styles.filterItem]}
               >
                 <FilterIcon />
                 <ThemedText type="defaultSemiBold">Bộ lọc</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.filterItem}>
-                <ThemedText type="defaultSemiBold">Loại hình</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.filterItem}>
-                <ThemedText type="defaultSemiBold">Khoảng giá</ThemedText>
               </TouchableOpacity>
             </View>
             <View

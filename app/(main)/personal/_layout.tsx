@@ -159,6 +159,31 @@ const PersonalLayout = () => {
           headerBackTitle: "Trở về",
         }}
       />
+      <Stack.Screen
+        name="appointment-create"
+        options={{
+          headerShown: true,
+          headerTitle: "Tạo lịch hẹn",
+          headerBackTitle: "Trở về",
+        }}
+      />
+      <Stack.Screen
+        name="appointment-update/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: "Cập nhật lịch hẹn",
+          headerBackTitle: "Trở về",
+        }}
+      />
+
+      <Stack.Screen
+        name="appartment-consignment/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: "Chi tiết căn hộ ký gửi",
+          headerBackTitle: "Trở về",
+        }}
+      />
     </Stack>
   );
 };

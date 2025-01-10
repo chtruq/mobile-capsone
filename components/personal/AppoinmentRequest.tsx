@@ -18,9 +18,9 @@ const AppoinmentRequest: FC<AppoinmentRequestProps> = ({ data }) => {
       statusStyle = styles.statusProcessed;
       statusText = "Đã xác nhận";
       break;
-    case "Completed":
-      statusStyle = styles.statusCompleted;
-      statusText = "Đã hoàn thành";
+    case "Disabled":
+      statusStyle = styles.statusDisabled;
+      statusText = "Đã bị huỷ";
       break;
     case "Rejected":
       statusStyle = styles.statusRejected;
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   statusFailed: {
     backgroundColor: "#FF5722",
   },
-  statusCompleted: {
-    backgroundColor: "#8bc840",
+  statusDisabled: {
+    backgroundColor: "#ffc6c6",
   },
 
   statusText: {

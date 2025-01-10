@@ -68,6 +68,7 @@ export interface Deposit {
   apartmentID: string;
   teamMemberID: string | null;
   depositProfile: [DepositProfile];
+  disbursementDeposit: number;
 }
 
 export enum DepositStatus {
@@ -79,6 +80,8 @@ export enum DepositStatus {
   Paid = "Paid",
   TradeRequested = "TradeRequested",
   Exported = "Exported",
+  RefundRequest = "RefundRequest",
+  Refund = "Refund",
 }
 
 export enum DisbursementStatus {
