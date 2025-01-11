@@ -75,11 +75,10 @@ const RequestManage = () => {
                 keyExtractor={(item: AppointmentRequest) => item.requestID}
                 style={{ width: "100%" }}
                 renderItem={({ item }) => <AppoinmentRequest data={item} />}
+                ListEmptyComponent={<EmptyRequestView />}
               />
             ) : (
-              <>
-                <EmptyRequestView />
-              </>
+              <></>
             )}
           </View>
         );
@@ -196,6 +195,13 @@ const RequestManage = () => {
                     </View>
                   </Pressable>
                 )}
+                ListEmptyComponent={
+                  <View>
+                    <ThemedText type="defaultSemiBold">
+                      Chưa có yêu cầu nào!
+                    </ThemedText>
+                  </View>
+                }
               />
             ) : (
               <>

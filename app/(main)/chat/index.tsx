@@ -51,15 +51,33 @@ const ChatScreen = () => {
   const handlePress = (item: ChatMessage) => {
     setExpandedItemId(expandedItemId === item.id ? null : item.id);
   };
-  const fetchMessages = async () => {
-    setIsLoading(true);
+  const createSession = async () => {
     try {
       const createSession = await createChatSession(userInfo?.id || "");
       setSessionId(createSession?.data?.id);
+    } catch (error) {
+      console.error("Error creating session: ", error);
+      Toast.show({
+        type: "error",
+        text1: "Đang kết nối",
+      });
+    }
+  };
 
+  useEffect(() => {
+    createSession();
+  }, []);
+
+  const fetchMessages = async () => {
+    setIsLoading(true);
+    if (!sessionId) {
+      console.log("Session ID is required.");
+      return;
+    }
+    try {
       const fetchedMessages = await getMessages(sessionId);
       if (fetchedMessages?.data) {
-        setMessages(fetchedMessages.data);
+        setMessages(fetchedMessages?.data);
         setCustomerId(userInfo?.id || "");
       }
     } catch (error) {
@@ -82,7 +100,7 @@ const ChatScreen = () => {
       await connectToSignalR();
     };
     checkConnection();
-  }, []);
+  }, [sessionId]);
 
   // Connect to SignalR
   const connectToSignalR = async () => {
@@ -255,17 +273,7 @@ const ChatScreen = () => {
               <ActivityIndicator size="large" color={Colors.light.primary} />
             </View>
           )}
-          {/* <Text>
-            Connection Status: {isConnected ? "Connected" : "Disconnected"}
-          </Text>
 
-          <Text>Connection Status: {status}</Text>
-
-          {!messages && <ActivityIndicator size="large" color="#0000ff" />}
-
-          {error && <Text style={{ color: "red" }}>{error}</Text>}
-
-          <Text>Chat Screen</Text> */}
           <FlatList
             style={{}}
             data={messages}

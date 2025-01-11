@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
@@ -22,6 +22,7 @@ import { login } from "@/services/api/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/hooks/useApi";
 import LoadingModal from "@/components/loading/LoadingModal";
+import * as SecureStore from "expo-secure-store";
 
 export default function SignIn() {
   const colorScheme = useColorScheme();
@@ -33,6 +34,15 @@ export default function SignIn() {
   const { loading, error, request: loginRequest } = useApi(login);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchEmail = async () => {
+      const storedEmail = await SecureStore.getItemAsync("email");
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    };
+    fetchEmail();
+  }, []);
   const handleLogin = async () => {
     try {
       setIsLoading(true);
@@ -165,68 +175,8 @@ export default function SignIn() {
                 width: "40%",
               }}
             ></ThemedView>
-            {/* <ThemedView
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginHorizontal: 10,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#A1A5C1",
-                  fontSize: 12,
-                  lineHeight: 24,
-                }}
-              >
-                OR
-              </Text>
-            </ThemedView>
-            <ThemedView
-              style={{
-                borderColor: "#ECEDF3",
-                borderWidth: 0.8,
-                width: "40%",
-              }}
-            ></ThemedView> */}
           </ThemedView>
 
-          {/* <ThemedView
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => console.log("Sign in with Google")}
-              style={{
-                backgroundColor: "#F5F4F8",
-                width: "80%",
-                height: 70,
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                paddingVertical: 10,
-                borderRadius: 10,
-                marginVertical: 10,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#A1A5C1",
-                  fontSize: 16,
-                  lineHeight: 24,
-                }}
-              >
-                Sign in with Google
-              </Text>
-              <Image
-                source={require("../../../assets/images/signInImage/google-icon.png")}
-                style={{ width: 24, height: 24, marginLeft: 10 }}
-              />
-            </TouchableOpacity>
-          </ThemedView> */}
           <ThemedView
             style={{
               flexDirection: "row",

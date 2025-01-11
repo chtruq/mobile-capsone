@@ -17,6 +17,7 @@ type NotificationContextType = {
   clearNotifications: () => void;
   reloadPage: boolean;
   setReloadPage: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoad: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -31,6 +32,7 @@ export const NotificationProvider = ({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { userInfo } = useAuth();
   const [reloadPage, setReloadPage] = useState(false);
+  const [load, setLoad] = useState(false);
   const fetchUserNotifications = async () => {
     try {
       if (!userInfo?.id) {
@@ -46,6 +48,10 @@ export const NotificationProvider = ({
       setReloadPage(false);
     }
   };
+
+  React.useEffect(() => {
+    fetchUserNotifications();
+  }, [load]);
 
   React.useEffect(() => {
     fetchUserNotifications();
@@ -67,6 +73,7 @@ export const NotificationProvider = ({
         clearNotifications,
         reloadPage,
         setReloadPage,
+        setLoad,
       }}
     >
       {children}

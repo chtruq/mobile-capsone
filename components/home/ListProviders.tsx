@@ -5,13 +5,17 @@ import { router } from "expo-router";
 import { getListProjectProvider } from "@/services/api/projectProvider";
 import { ApartmentProjectProvider } from "@/model/projectProvider";
 
-export default function ListProviders() {
+export default function ListProviders({
+  refreshData,
+}: {
+  refreshData: boolean;
+}) {
   const [data, setData] = React.useState([]);
 
   const getProjectProvider = async () => {
-    // call api get project provider
     try {
       const res = await getListProjectProvider();
+
       setData(res.data);
       return res.data;
     } catch (error) {
@@ -22,6 +26,12 @@ export default function ListProviders() {
   useEffect(() => {
     getProjectProvider();
   }, []);
+
+  useEffect(() => {
+    if (refreshData) {
+      getProjectProvider();
+    }
+  }, [refreshData]);
 
   return (
     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>

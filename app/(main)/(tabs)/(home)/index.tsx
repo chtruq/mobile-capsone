@@ -22,7 +22,7 @@ import ListProviders from "@/components/home/ListProviders";
 import { StatusBar } from "expo-status-bar";
 import ListProject from "@/components/home/ListProject";
 import { ThemedView } from "@/components/ThemedView";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { getUserNotifications } from "@/services/api/notification";
 import { useAuth } from "@/context/AuthContext";
 
@@ -39,7 +39,6 @@ export default function Home() {
   const refreshData = () => {
     setRefreshing(true);
     setTimeout(() => {
-      router.canDismiss();
       setRefreshing(false);
     }, 1000);
   };
@@ -145,7 +144,7 @@ export default function Home() {
                   </ThemedText>
                 </TouchableOpacity>
               </View>
-              <Project refreshData={refreshData} />
+              <Project refreshData={refreshing} />
 
               {/* Provider noi bat */}
 
@@ -181,7 +180,7 @@ export default function Home() {
                   </ThemedText>
                 </TouchableOpacity>
               </View>
-              <ListProviders />
+              <ListProviders refreshData={refreshing} />
               {/* Apartment */}
 
               <View
@@ -221,7 +220,7 @@ export default function Home() {
                   </ThemedText>
                 </TouchableOpacity>
               </View>
-              <ListProject />
+              <ListProject refreshData={refreshing} />
             </ThemedViewSHKeyboard>
 
             <StatusBar
