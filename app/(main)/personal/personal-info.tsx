@@ -12,7 +12,7 @@ import React, { FC, useEffect, useState } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/context/AuthContext";
-import { getUserInfo } from "@/services/api/account";
+import { getUserInfo, updateUserInfo } from "@/services/api/account";
 
 interface InputProps {
   label: string;
@@ -41,6 +41,14 @@ const PersonalUpdateData = () => {
   useEffect(() => {
     fetchUserInfo();
   }, []);
+
+  const updateUserInfoFunc = async () => {
+    try {
+      const res = await updateUserInfo(userInfo?.id || "", user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const PersonalInput: FC<InputProps> = ({ label, value, onChange }) => {
     return (
@@ -86,18 +94,11 @@ const PersonalUpdateData = () => {
               padding: 20,
             }}
           >
+            <ThemedText type="defaultSemiBold" style={{}}>
+              Họ và tên
+            </ThemedText>
             <View style={styles.line}>
               <PersonalInput label="Họ và tên" value={user?.name || ""} />
-              <PersonalInput
-                label="Chọn ngày sinh"
-                value=""
-                onChange={(value) => console.log(value)}
-              />
-              <PersonalInput
-                label="Giới tính"
-                value=""
-                onChange={(value) => console.log(value)}
-              />
             </View>
 
             <View>
@@ -120,7 +121,6 @@ const PersonalUpdateData = () => {
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  // paddingVertical: 10,
                   borderBottomWidth: 0.5,
                   borderBottomColor: "gray",
                   alignItems: "center",

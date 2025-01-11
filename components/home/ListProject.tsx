@@ -23,50 +23,8 @@ import ProjectCard from "../Search/Project/ProjectCard";
 import { ProjectApartment } from "@/model/projects";
 import { FlatList } from "react-native";
 
-export default function ListProject() {
+export default function ListProject({ refreshData }: { refreshData: boolean }) {
   const [data, setData] = React.useState([]);
-
-  // const data = [
-  //   {
-  //     id: 1,
-  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
-  //     image: require("@/assets/images/home/home.png"),
-  //     area: "55,8",
-  //     location: "Quận 9, TP.HCM",
-  //     price: "1,5 tỷ",
-  //     isFav: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
-  //     image: require("@/assets/images/home/home.png"),
-
-  //     area: "55,8",
-  //     location: "Quận 9, TP.HCM",
-  //     price: "1,5 tỷ",
-  //     isFav: true,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
-  //     image: require("@/assets/images/home/home.png"),
-
-  //     area: "55,8",
-  //     location: "Quận 9, TP.HCM",
-  //     price: "1,5 tỷ",
-  //     isFav: false,
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Căn hộ view sông Sài Gòn, view grand park 81",
-  //     image: require("@/assets/images/home/home.png"),
-
-  //     area: "55,8",
-  //     location: "Quận 9, TP.HCM",
-  //     price: "1,5 tỷ",
-  //     isFav: false,
-  //   },
-  // ];
 
   const { userInfo } = useAuth();
   const colorScheme = useColorScheme();
@@ -84,7 +42,11 @@ export default function ListProject() {
     getProjects();
   }, [userInfo, apartmentsSearch]);
 
-  //refresh when add or remove favorite
+  useEffect(() => {
+    if (refreshData) {
+      getProjects();
+    }
+  }, [refreshData]);
 
   return (
     <FlatList

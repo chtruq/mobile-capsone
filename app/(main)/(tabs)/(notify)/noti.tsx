@@ -34,10 +34,14 @@ type Notifications = {
 
 const Notify = () => {
   const { userToken, userInfo } = useAuth();
-  const { notifications, addNotification, reloadPage, setReloadPage } =
+  const { notifications, addNotification, reloadPage, setReloadPage, setLoad } =
     useNotifications();
   const [connectionStatus, setConnectionStatus] =
     useState<string>("Disconnected");
+
+  useEffect(() => {
+    setLoad(true);
+  }, []);
 
   const initializeSignalR = async () => {
     if (!userToken) {
@@ -45,8 +49,6 @@ const Notify = () => {
       return;
     }
     try {
-      console.log("Initializing SignalR...");
-      setConnectionStatus("Connecting...");
       signalRService.setNotificationCallback((notification) => {
         console.log("Notification callback triggered:", notification);
         addNotification(notification);

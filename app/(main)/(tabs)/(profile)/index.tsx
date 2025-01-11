@@ -171,6 +171,16 @@ export default function Profile() {
           }}
           icon={<CalendarIcon />}
         />
+        <ProfileTabBtn
+          title="Chat với chúng tôi"
+          onPress={() => {
+            router.push({
+              pathname: "/(main)/chat",
+              params: { status: 1 },
+            });
+          }}
+          icon={<CalendarIcon />}
+        />
 
         <ThemedText
           style={{

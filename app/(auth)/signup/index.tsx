@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ScrollView,
 } from "react-native";
 import React from "react";
 import { ThemedView } from "@/components/ThemedView";
@@ -86,117 +87,114 @@ export default function SignUp() {
               touched,
             }) => (
               <>
-                <ThemedView
+                <ScrollView
                   style={{
-                    marginTop: 30,
-                    marginHorizontal: 20,
+                    flex: 1.5,
                   }}
                 >
-                  <ThemedText type="title">Tạo tài khoản của bạn</ThemedText>
-                  <ThemedText type="default" style={{ marginTop: 20 }}>
-                    Tạo tài khoản để trải nghiệm toàn bộ dịch vụ
-                  </ThemedText>
-
                   <ThemedView
                     style={{
-                      marginTop: 20,
-                      width: "100%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 20,
+                      marginTop: 30,
+                      marginHorizontal: 20,
                     }}
                   >
-                    <Input
-                      placeholder="Họ và tên"
-                      fieldName="name"
-                      style={{ marginTop: 10 }}
-                      value={values.name}
-                      onChangeText={handleChange("name")}
-                      onBlur={handleBlur("name")}
-                      errorMessage={
-                        touched.name && errors.name ? errors.name : ""
-                      }
-                      icon={
-                        <Feather
-                          name="user"
-                          size={20}
-                          color={colorScheme === "dark" ? "white" : "black"}
-                        />
-                      }
-                    />
-                    <Input
-                      placeholder="Email"
-                      fieldName="email"
-                      value={values.email}
-                      onChangeText={handleChange("email")}
-                      onBlur={handleBlur("email")}
-                      errorMessage={
-                        touched.email && errors.email ? errors.email : ""
-                      }
-                      style={{ marginTop: 10 }}
-                      icon={
-                        <Feather
-                          name="mail"
-                          size={24}
-                          color={colorScheme === "dark" ? "white" : "black"}
-                        />
-                      }
-                    />
+                    <ThemedText type="title">Tạo tài khoản của bạn</ThemedText>
+                    <ThemedText type="default" style={{ marginTop: 20 }}>
+                      Tạo tài khoản để trải nghiệm toàn bộ dịch vụ
+                    </ThemedText>
 
-                    <Input
-                      placeholder="Mật khẩu"
-                      fieldName="password"
-                      style={{ marginTop: 10 }}
-                      value={values.password}
-                      onChangeText={handleChange("password")}
-                      onBlur={handleBlur("password")}
-                      errorMessage={
-                        touched.password && errors.password
-                          ? errors.password
-                          : ""
-                      }
-                      hidePassword
-                      icon={
-                        <Feather
-                          name="lock"
-                          size={24}
-                          color={colorScheme === "dark" ? "white" : "black"}
-                        />
-                      }
-                    />
+                    <ThemedView
+                      style={{
+                        marginTop: 20,
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: 20,
+                      }}
+                    >
+                      <Input
+                        placeholder="Họ và tên"
+                        fieldName="name"
+                        style={{ marginTop: 10 }}
+                        value={values.name}
+                        onChangeText={handleChange("name")}
+                        onBlur={handleBlur("name")}
+                        errorMessage={
+                          touched.name && errors.name ? errors.name : ""
+                        }
+                        icon={
+                          <Feather
+                            name="user"
+                            size={20}
+                            color={colorScheme === "dark" ? "white" : "black"}
+                          />
+                        }
+                      />
+                      <Input
+                        placeholder="Email"
+                        fieldName="email"
+                        value={values.email}
+                        onChangeText={handleChange("email")}
+                        onBlur={handleBlur("email")}
+                        errorMessage={
+                          touched.email && errors.email ? errors.email : ""
+                        }
+                        style={{ marginTop: 10 }}
+                        icon={
+                          <Feather
+                            name="mail"
+                            size={24}
+                            color={colorScheme === "dark" ? "white" : "black"}
+                          />
+                        }
+                      />
 
-                    <Input
-                      placeholder="Nhập lại mật khẩu"
-                      fieldName="confirmPassword"
-                      // style={{ marginTop: 10 }}
-                      value={values.confirmPassword}
-                      onChangeText={handleChange("confirmPassword")}
-                      onBlur={handleBlur("confirmPassword")}
-                      errorMessage={
-                        touched.confirmPassword && errors.confirmPassword
-                          ? errors.confirmPassword
-                          : ""
-                      }
-                      hidePassword
-                      icon={
-                        <Feather
-                          name="lock"
-                          size={24}
-                          color={colorScheme === "dark" ? "white" : "black"}
-                        />
-                      }
-                    />
+                      <Input
+                        placeholder="Mật khẩu"
+                        fieldName="password"
+                        style={{ marginTop: 10 }}
+                        value={values.password}
+                        onChangeText={handleChange("password")}
+                        onBlur={handleBlur("password")}
+                        errorMessage={
+                          touched.password && errors.password
+                            ? errors.password
+                            : ""
+                        }
+                        hidePassword
+                        icon={
+                          <Feather
+                            name="lock"
+                            size={24}
+                            color={colorScheme === "dark" ? "white" : "black"}
+                          />
+                        }
+                      />
+
+                      <Input
+                        placeholder="Nhập lại mật khẩu"
+                        fieldName="confirmPassword"
+                        // style={{ marginTop: 10 }}
+                        value={values.confirmPassword}
+                        onChangeText={handleChange("confirmPassword")}
+                        onBlur={handleBlur("confirmPassword")}
+                        errorMessage={
+                          touched.confirmPassword && errors.confirmPassword
+                            ? errors.confirmPassword
+                            : ""
+                        }
+                        hidePassword
+                        icon={
+                          <Feather
+                            name="lock"
+                            size={24}
+                            color={colorScheme === "dark" ? "white" : "black"}
+                          />
+                        }
+                      />
+                    </ThemedView>
                   </ThemedView>
-
-                  <ThemedView
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginTop: 20,
-                    }}
-                  ></ThemedView>
-                </ThemedView>
+                </ScrollView>
 
                 <ThemedBottomBtn>
                   <ThemedButton

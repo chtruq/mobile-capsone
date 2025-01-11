@@ -1,20 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import * as SecureStore from "expo-secure-store";
+import { Alert } from "react-native";
 
 type AuthContextType = {
   userToken: string | null;
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  userInfo: {
-    id: string;
-    email: string;
-    iat: number;
-    exp: number;
-    name: string;
-    phone: string;
-  } | null;
+  userInfo: any;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,10 +60,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUserToken(token);
     await SecureStore.setItemAsync("userToken", token);
     const decoded: any = jwtDecode(token);
+    const role =
+      decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    console.log("role", role);
     if (!decoded || Object.keys(decoded).length === 0) {
       handleLogout();
       return;
     }
+    if (
+      !role.includes("Customer") &&
+      !role.includes("Apartment Owner,Customer")
+    ) {
+      handleLogout();
+      Alert.alert("Bạn không có quyền truy cập vào ứng dụng");
+      return;
+    }
+
     setIsAuthenticated(true);
     scheduleAutoLogout(decoded.exp);
     setUserInfo(decoded);

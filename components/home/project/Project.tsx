@@ -18,32 +18,9 @@ import { Apartment } from "@/model/apartments";
 import { useAuth } from "@/context/AuthContext";
 import ApartmentCard from "@/components/Search/Apartment/ApartmentCard";
 
-const Project = ({ refreshData }: { refreshData: () => void }) => {
+const Project = ({ refreshData }: { refreshData: boolean }) => {
   const [data, setData] = useState([]);
-  // const data = [
-  //   {
-  //     id: 1,
-  //     title: "Sky Dandelions Apartment",
-  //     image: require("@/assets/images/home/home.png"),
-  //     location: "Quận 9, Hồ Chí Minh",
-  //     isFav: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Sky Dandelions Apartment",
-  //     image: require("@/assets/images/home/home.png"),
 
-  //     location: "Quận 9, Hồ Chí Minh",
-  //     isFav: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Sky Dandelions Apartment",
-  //     image: require("@/assets/images/home/home.png"),
-  //     location: "Quận 9, Hồ Chí Minh",
-  //     isFav: false,
-  //   },
-  // ];
   const { userInfo } = useAuth();
 
   const getApartments = async () => {
@@ -63,6 +40,12 @@ const Project = ({ refreshData }: { refreshData: () => void }) => {
   useEffect(() => {
     getApartments();
   }, [userInfo, apartmentsSearch]);
+
+  useEffect(() => {
+    if (refreshData) {
+      getApartments();
+    }
+  }, [refreshData]);
 
   return (
     <ScrollView

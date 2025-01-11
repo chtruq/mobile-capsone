@@ -7,6 +7,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Linking,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
@@ -60,6 +62,21 @@ const ProjectDetail = () => {
     getProjectData();
     getProjectCartList();
   }, []);
+
+  const handleOpenLink = async () => {
+    const url = data?.addressUrl;
+    if (!url) {
+      Alert.alert("Không có liên kết địa chỉ!");
+      return;
+    }
+    const supported = await Linking.canOpenURL(url as string);
+    if (supported) {
+      console.log("Opening the link", url);
+      await Linking.openURL(url as string);
+    } else {
+      alert("Không thể mở liên kết này!");
+    }
+  };
 
   return (
     <ThemedScrollView
@@ -151,24 +168,27 @@ const ProjectDetail = () => {
         >
           {data?.projectApartmentName}
         </ThemedText>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <MaterialIcons name="location-on" size={16} color="#53587A" />
-          <ThemedText
-            type="default"
+        <TouchableOpacity onPress={handleOpenLink}>
+          <View
             style={{
-              fontSize: 16,
-              color: "gray",
-              textDecorationLine: "underline",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            {data?.address}
-          </ThemedText>
-        </View>
+            <MaterialIcons name="location-on" size={16} color="#53587A" />
+            <ThemedText
+              type="default"
+              style={{
+                fontSize: 16,
+                color: "gray",
+                textDecorationLine: "underline",
+              }}
+            >
+              {data?.address}
+            </ThemedText>
+          </View>
+        </TouchableOpacity>
+
         <View style={styles.flex}>
           <ThemedText>Chủ đầu tư: </ThemedText>
           <ThemedText>{data?.apartmentProjectProviderName}</ThemedText>
