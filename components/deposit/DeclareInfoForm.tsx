@@ -238,7 +238,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
       return false;
     }
     if (!isChecked3) {
-      Alert.alert("Vui lòng xác nhận đồng ý với Hợp đồng đặt cọc giữ chỗ");
+      Alert.alert("Vui lòng xác nhận đồng ý với Hợp đồng đặt căn");
       return false;
     }
     return true;
@@ -324,7 +324,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
               </ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.optionContainer}
               onPress={() => setSelectedOption("other")}
             >
@@ -340,7 +340,7 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
               >
                 Tôi đặt cọc giữ chỗ hộ người khác
               </ThemedText>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <ThemedText type="heading">Giấy tờ chứng thực cá nhân</ThemedText>
@@ -550,8 +550,8 @@ const DeclareInfoForm: FC<DeclareInfoFormProps> = ({ onSubmitInfo, data }) => {
                 color={isChecked2 ? "#000000" : undefined}
               />
               <ThemedText style={styles.checkBoxText}>
-                Tôi cam kết các thông tin bên đặt cọc giữ chỗ được cung cấp tại
-                đây là hoàn toàn chính xác
+                Tôi cam kết các thông tin được cung cấp tại đây là hoàn toàn
+                chính xác
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity

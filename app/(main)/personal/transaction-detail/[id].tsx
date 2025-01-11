@@ -270,7 +270,7 @@ const TransactionProcess: FC<TransactionProcessProps> = ({
         <ProcessItems
           disbursementStatus={disbursementStatusData}
           currentStatus={statusData}
-          title="Thoả thuận đặt cọc giữ chỗ"
+          title="Thoả thuận đặt căn"
           stepIndex={2}
         />
         <ProcessItems
@@ -289,7 +289,7 @@ const TransactionProcess: FC<TransactionProcessProps> = ({
   return (
     <View style={{ padding: 20 }}>
       <ThemedText type="defaultSemiBold">
-        Theo dõi tiến trình đặt cọc giữ chỗ
+        Theo dõi tiến trình đặt căn
       </ThemedText>
       <ProcessList />
     </View>

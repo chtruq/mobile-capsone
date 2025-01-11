@@ -270,7 +270,7 @@ const PickTradeApartment = () => {
                           Giá trị: {formatCurrency(item.price)}
                         </ThemedText>
                         <ThemedText>
-                          Thanh toán thêm giá trị đặt cọc giữ chỗ:{" "}
+                          Thanh toán thêm giá trị đặt căn:{" "}
                           {item?.depositAmount
                             ? formatCurrency(
                                 neededDepositAmount > 0
@@ -381,8 +381,8 @@ const PickTradeApartment = () => {
               }}
             >
               Khi yêu cầu trao đổi được xác nhận, ngoài khoản tiền cần phải
-              thanh toán thêm cho việc đặt cọc giữ chỗ, bạn cần phải thanh toán
-              thêm phí thủ tục cho hệ thống
+              thanh toán thêm cho việc đặt căn, bạn cần phải thanh toán thêm phí
+              thủ tục cho hệ thống
             </ThemedText>
             <ThemedText
               style={{

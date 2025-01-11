@@ -28,7 +28,7 @@ import PriceIcon from "@/assets/icon/details/price";
 import { formatArea, formatCurrency } from "@/model/other";
 import HouseDirectionIcon from "@/assets/icon/details/direction";
 import BalconyDirectionIcon from "@/assets/icon/details/balcony";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import View360 from "@/assets/icon/360";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
 import { formatDirection } from "@/utils/format/direction";
@@ -260,6 +260,31 @@ const ApartmentConsignmentDetails = () => {
             </View>
           )}
         </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginVertical: 10,
+          }}
+        >
+          <ThemedText>Mã căn hộ:</ThemedText>
+          <ThemedText type="defaultSemiBold">{data?.apartmentCode}</ThemedText>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <ThemedText>Căn hộ thuộc dự án:</ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {data?.projectApartmentName.includes("Ký gửi")
+              ? "Đã có chủ sở hữu"
+              : data?.projectApartmentName}
+          </ThemedText>
+        </View>
 
         <View style={{ marginVertical: 10 }}>
           <ThemedText type="heading">Mô tả</ThemedText>
@@ -325,11 +350,29 @@ const ApartmentConsignmentDetails = () => {
               Icon={<BalconyDirectionIcon width={20} height={20} />}
               title="Hướng ban công"
             />
+            <ApartmentDetails
+              data={data?.building}
+              Icon={<FontAwesome name="building-o" size={20} color="black" />}
+              title="Tòa nhà"
+            />
+            <ApartmentDetails
+              data={data?.floor}
+              Icon={<FontAwesome name="building-o" size={20} color="black" />}
+              title="Tầng"
+            />
           </View>
         </View>
       </View>
 
-      <ThemedText type="heading">Thống kê căn hộ</ThemedText>
+      <ThemedText
+        style={{
+          marginVertical: 10,
+          marginHorizontal: 10,
+        }}
+        type="heading"
+      >
+        Thống kê căn hộ
+      </ThemedText>
       <View
         style={{
           flexDirection: "row",
@@ -405,54 +448,78 @@ const ApartmentConsignmentDetails = () => {
         </View>
       </View>
 
-      <ThemedText type="heading">Xác nhận tình trạng căn hộ</ThemedText>
-      <View
+      <ThemedText
         style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
           marginVertical: 10,
+          marginHorizontal: 10,
         }}
+        type="heading"
       >
-        <ThemedText type="defaultSemiBold">
-          Không còn nhu cầu bán nữa ?{" "}
-        </ThemedText>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          marginVertical: 10,
-        }}
-      >
-        <ThemedText
+        Xác nhận tình trạng căn hộ
+      </ThemedText>
+
+      {data?.apartmentStatus == "Sold" ? (
+        <View
           style={{
-            fontSize: 20,
-          }}
-          type="heading"
-        >
-          Huỷ{" "}
-        </ThemedText>
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisible(true);
+            justifyContent: "center",
+            alignItems: "center",
+            marginVertical: 10,
           }}
         >
-          <ThemedText
-            style={{
-              color: "#FF0000",
-            }}
-            type="heading"
-          >
-            tại đây
+          <ThemedText type="default">
+            Căn hộ của bạn đã có người đặt.
           </ThemedText>
-        </TouchableOpacity>
-      </View>
+          <ThemedText type="default"></ThemedText>
+        </View>
+      ) : (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginVertical: 10,
+          }}
+        >
+          <ThemedText type="defaultSemiBold">
+            Không còn nhu cầu bán nữa ?{" "}
+          </ThemedText>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginVertical: 10,
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 20,
+              }}
+              type="heading"
+            >
+              Huỷ{" "}
+            </ThemedText>
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(true);
+              }}
+            >
+              <ThemedText
+                style={{
+                  color: "#FF0000",
+                }}
+                type="heading"
+              >
+                tại đây
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       <View
         style={{
-          height: 200,
+          height: 50,
         }}
       ></View>
 

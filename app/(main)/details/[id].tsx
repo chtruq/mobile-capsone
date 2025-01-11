@@ -22,7 +22,11 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { StatusBar } from "expo-status-bar";
 import FavIcon from "@/components/favoriteIcon/FavIcon";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import View360 from "@/assets/icon/360";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
 import PriceIcon from "@/assets/icon/details/price";
@@ -458,6 +462,20 @@ export default function ProductDetails() {
               {data?.apartmentCode}
             </ThemedText>
           </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <ThemedText>Căn hộ thuộc dự án:</ThemedText>
+            <ThemedText type="defaultSemiBold">
+              {data?.projectApartmentName.includes("Ký gửi")
+                ? "Đã có chủ sở hữu"
+                : data?.projectApartmentName}
+            </ThemedText>
+          </View>
 
           <View style={{ marginVertical: 10 }}>
             <ThemedText type="heading">Mô tả</ThemedText>
@@ -522,6 +540,16 @@ export default function ProductDetails() {
                 data={formatDirection(data?.balconyDirection ?? "")}
                 Icon={<BalconyDirectionIcon width={20} height={20} />}
                 title="Hướng ban công"
+              />
+              <ApartmentDetails
+                data={data?.building}
+                Icon={<FontAwesome name="building-o" size={20} color="black" />}
+                title="Tòa nhà"
+              />
+              <ApartmentDetails
+                data={data?.floor}
+                Icon={<FontAwesome name="building-o" size={20} color="black" />}
+                title="Tầng"
               />
             </View>
           </View>
@@ -610,7 +638,7 @@ export default function ProductDetails() {
           }}
         >
           <Button
-            title="Đặt cọc giữ chỗ"
+            title="Đặt căn"
             width={"90%"}
             handlePress={() => {
               router.push({

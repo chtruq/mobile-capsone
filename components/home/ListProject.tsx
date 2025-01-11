@@ -57,7 +57,7 @@ export default function ListProject({ refreshData }: { refreshData: boolean }) {
         item.projectApartmentID.toString()
       }
       renderItem={({ item }) => (
-        <View style={{ padding: 5, width: 300 }}>
+        <View style={{ padding: 5, width: 350 }}>
           <ProjectCard data={item} />
         </View>
       )}

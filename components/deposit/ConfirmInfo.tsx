@@ -148,9 +148,9 @@ const ConfirmInfo: FC<Props> = ({ data, onConfirm, onBack }) => {
             >
               <ThemedText type="subtitle">.</ThemedText>
               <ThemedText type="small">
-                Khi bạn xác nhận yêu cầu, yêu cầu đặt cọc giữ chỗ căn hộ sẽ được
-                gủi đến hệ thống của chúng tôi. Bạn sẽ nhận được thông báo xác
-                nhận qua email.
+                Khi bạn xác nhận yêu cầu, yêu cầu đặt căn sẽ được gủi đến hệ
+                thống của chúng tôi. Bạn sẽ nhận được thông báo xác nhận qua
+                email.
               </ThemedText>
             </View>
           </View>

@@ -116,6 +116,8 @@ const ConsignmentList = () => {
                           ? "#ccc00"
                           : item.apartmentStatus == "Unavailable"
                           ? "#ccc00"
+                          : item.apartmentStatus == "Sold"
+                          ? "#ccc00"
                           : undefined,
                       backgroundColor:
                         item.apartmentStatus == "Pending"
@@ -130,6 +132,8 @@ const ConsignmentList = () => {
                           ? "#fff"
                           : item.apartmentStatus == "Unavailable"
                           ? "#fff"
+                          : item.apartmentStatus == "Sold"
+                          ? "#fff"
                           : undefined,
                     }}
                   >
@@ -141,7 +145,8 @@ const ConsignmentList = () => {
                       (item.apartmentStatus == "Completed" &&
                         "Đã hoàn thành") ||
                       (item.apartmentStatus == "Rejected" && "Đã bị từ chối") ||
-                      (item.apartmentStatus == "Unavailable" && "Đã hủy")}
+                      (item.apartmentStatus == "Unavailable" && "Đã hủy") ||
+                      (item.apartmentStatus == "Sold" && "Đã bán")}
                   </ThemedText>
                 </View>
                 <View

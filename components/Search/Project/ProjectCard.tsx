@@ -65,7 +65,9 @@ const ProjectCard: FC<ProjectCardProps> = ({ data }) => {
               <LocationIcon width={16} height={16} />
               <ThemedText
                 numberOfLines={1}
-                style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                style={{
+                  color: "#666",
+                }}
               >
                 {data?.address}
               </ThemedText>
@@ -81,6 +83,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    marginTop: 4,
+    width: "90%",
   },
 });
 

@@ -4,6 +4,7 @@ import {
   useColorScheme,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
@@ -64,25 +65,25 @@ export default function Otp() {
   const onSendAgain = async () => {
     try {
       setSecond(60);
-      const data = await resendOtp(email);
+      const data = await resendOtp(email as string);
       console.log(data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const onConfirmOTP = () => {
+  const onConfirmOTP = async () => {
     if (!validation()) {
       setValidationErrorMsg("Vui lòng nhập mã OTP!");
       return;
     }
     try {
-      const data = verifyOtpRequest(email, otp);
+      const data = await verifyOtpRequest(email, otp);
       console.log(data);
-
-      router.push("/(auth)/(signin)");
+      if (data) router.push("/(auth)/(signin)");
     } catch (error) {
       console.log(error);
+      Alert.alert("Lỗi", "Mã OTP không chính xác!");
     }
   };
 

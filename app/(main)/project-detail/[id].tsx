@@ -74,7 +74,7 @@ const ProjectDetail = () => {
       console.log("Opening the link", url);
       await Linking.openURL(url as string);
     } else {
-      alert("Không thể mở liên kết này!");
+      Alert.alert("Không thể mở liên kết này!");
     }
   };
 
@@ -182,6 +182,7 @@ const ProjectDetail = () => {
                 fontSize: 16,
                 color: "gray",
                 textDecorationLine: "underline",
+                width: "90%",
               }}
             >
               {data?.address}

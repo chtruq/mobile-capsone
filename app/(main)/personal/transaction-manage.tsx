@@ -74,6 +74,34 @@ const TransactionManage = () => {
           keyExtractor={(item: Deposit) => item.depositID.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.2}
+          ListEmptyComponent={
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 20,
+              }}
+            >
+              {/* <CircleMinus /> */}
+              <ThemedText
+                style={{
+                  marginTop: 20,
+                  textAlign: "center",
+                }}
+                type="defaultSemiBold"
+              >
+                Chưa có giao dịch nào
+              </ThemedText>
+              <ThemedText
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                Hệ thống sẽ tự động cập nhật giao dịch mới nhất nếu có phát sinh
+              </ThemedText>
+            </View>
+          }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
