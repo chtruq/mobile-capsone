@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const API_URL = "https://api.matterport.com/api/models/graph";
-const TOKEN_ID = "33c96763d9d9a62f";
-const TOKEN_SECRET = "59476f444e9c9c7f10d7ad36ebe15db7";
+const API_URL = 
+const TOKEN_ID = 
+const TOKEN_SECRET = 
 
 export const fetchModels = async () => {
   try {
